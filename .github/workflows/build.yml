@@ -45,7 +45,7 @@ jobs:
 
       - name: 构建博客前台
         if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm run build:web
+        run: pnpm run build
 
       - name: 部署博客前台
         if: steps.check_changes.outputs.changes == 'true'
@@ -55,8 +55,21 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "apps/hs-blog-web/dist/*"
+          source: "apps/hs-blog-web/.output/*,apps/hs-blog-web/ecosystem.config.js,.env.production"
           target: "/www/wwwroot/hs-blog-web"
+          
+      - name: 启动博客前台
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            cd /www/wwwroot/hs-blog-web
+            pm2 delete hs-blog-web || true
+            pm2 start ecosystem.config.cjs --env-file .env.production --env production
 
   build-and-deploy-admin:
     runs-on: ubuntu-latest
@@ -94,7 +107,7 @@ jobs:
 
       - name: 构建管理后台
         if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm run build:admin
+        run: pnpm run build
 
       - name: 部署管理后台
         if: steps.check_changes.outputs.changes == 'true'
@@ -106,6 +119,7 @@ jobs:
           port: 22
           source: "apps/hs-blog-admin/dist/*"
           target: "/www/wwwroot/hs-blog-admin"
+          strip_components: 3
 
   build-and-deploy-server:
     runs-on: ubuntu-latest
@@ -143,7 +157,7 @@ jobs:
 
       - name: 构建API服务
         if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm run build:server
+        run: pnpm run build
 
       - name: 复制dist文件到服务器
         if: steps.check_changes.outputs.changes == 'true'
@@ -153,7 +167,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "apps/hs-blog-server/dist/*,apps/hs-blog-server/package.json,pnpm-lock.yaml"
+          source: "apps/hs-blog-server/dist/*,apps/hs-blog-server/package.json,apps/hs-blog-server/ecosystem.config.js,pnpm-lock.yaml,.env.production"
           target: "/www/wwwroot/hs-blog-server"
 
       - name: 部署API服务
@@ -168,4 +182,4 @@ jobs:
             cd /www/wwwroot/hs-blog-server
             pnpm install --prod
             pm2 delete hs-blog-server || true
-            pm2 start npm --name hs-blog-server -- run start:prod 
+            pm2 start ecosystem.config.cjs --env-file .env.production --env production
