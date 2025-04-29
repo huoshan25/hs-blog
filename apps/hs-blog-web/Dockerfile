@@ -1,5 +1,5 @@
 # 构建阶段
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN pnpm install
 RUN cd apps/hs-blog-web && npm run build
 
 # 生产阶段 - 使用node运行Nuxt应用，使用Nginx作为前端代理
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
