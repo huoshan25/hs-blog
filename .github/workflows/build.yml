@@ -1,248 +1,42 @@
-name: 构建项目
+name: 全部项目构建
 
 on:
+  # 手动触发
+  workflow_dispatch:
+  # 或在更改项目根目录或共享包配置时触发
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
+      - 'turbo.json'
+      - '.env.production'
+      - '.env.example'
 
 jobs:
-  build-and-deploy-web:
+  trigger-all-workflows:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'web')
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
+      - name: 触发博客前台工作流
+        uses: benc-uk/workflow-dispatch@v1
         with:
-          fetch-depth: 0
-
-      - name: 检查博客前台变更
-        id: check_changes
-        run: |
-          if [[ $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^apps/hs-blog-web/') ]]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "changes=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: 设置Node.js
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-
-      - name: 安装pnpm
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: 安装依赖
-        if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm install
-
-      - name: 构建博客前台
-        if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm build:blog-web
-
-      - name: 部署博客前台
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-          source: "apps/hs-blog-web/.output/*,apps/hs-blog-web/ecosystem.config.cjs,.env.production"
-          target: "/www/wwwroot/hs-blog-web"
+          workflow: blog-web.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: 启动博客前台
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: appleboy/ssh-action@master
+      - name: 触发门户网站工作流
+        uses: benc-uk/workflow-dispatch@v1
         with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-          script: |
-            cd /www/wwwroot/hs-blog-web
-            pm2 delete hs-blog-web || true
-            pm2 start ecosystem.config.cjs --env production
-
-  build-and-deploy-portal:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'portal')
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: 检查门户变更
-        id: check_changes
-        run: |
-          if [[ $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^apps/hs-blog-portal/') ]]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "changes=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: 设置Node.js
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-
-      - name: 安装pnpm
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: 安装依赖
-        if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm install
-
-      - name: 构建门户
-        if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm build:blog-portal
-
-      - name: 部署门户
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-          source: "apps/hs-blog-portal/.next/*,apps/hs-blog-portal/public/*,apps/hs-blog-portal/package.json,apps/hs-blog-portal/ecosystem.config.cjs,.env.production"
-          target: "/www/wwwroot/hs-blog-portal"
+          workflow: blog-portal.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: 启动门户
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: appleboy/ssh-action@master
+      - name: 触发管理后台工作流
+        uses: benc-uk/workflow-dispatch@v1
         with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-          script: |
-            cd /www/wwwroot/hs-blog-portal
-            pnpm install --prod
-            pm2 delete hs-blog-portal || true
-            pm2 start ecosystem.config.cjs --env production
-
-  build-and-deploy-admin:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'admin')
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
+          workflow: blog-admin.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: 触发API服务工作流
+        uses: benc-uk/workflow-dispatch@v1
         with:
-          fetch-depth: 0
-
-      - name: 检查管理后台变更
-        id: check_changes
-        run: |
-          if [[ $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^apps/hs-blog-admin/') ]]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "changes=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: 设置Node.js
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-
-      - name: 安装pnpm
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: 安装依赖
-        if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm install
-
-      - name: 构建管理后台
-        if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm build:blog-admin
-
-      - name: 部署管理后台
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-          source: "apps/hs-blog-admin/dist/*"
-          target: "/www/wwwroot/hs-blog-admin"
-          strip_components: 3
-
-  build-and-deploy-server:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'server')
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: 检查API服务变更
-        id: check_changes
-        run: |
-          if [[ $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^apps/hs-blog-server/') ]]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "changes=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: 设置Node.js
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-
-      - name: 安装pnpm
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: 安装依赖
-        if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm install
-
-      - name: 构建API服务
-        if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm build:blog-server
-
-      - name: 复制dist文件到服务器
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-          source: "apps/hs-blog-server/dist/*,apps/hs-blog-server/package.json,apps/hs-blog-server/ecosystem.config.cjs,pnpm-lock.yaml,.env.production"
-          target: "/www/wwwroot/hs-blog-server"
-
-      - name: 部署API服务
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-          script: |
-            cd /www/wwwroot/hs-blog-server
-            pnpm install --prod
-            pm2 delete hs-blog-server || true
-            pm2 start ecosystem.config.cjs --env production
+          workflow: blog-server.yml
+          token: ${{ secrets.GITHUB_TOKEN }}

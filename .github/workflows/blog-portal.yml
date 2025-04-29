@@ -1,0 +1,59 @@
+name: 门户网站构建部署
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/hs-blog-portal/**'
+      - 'packages/**'  # 共享包可能被依赖
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/hs-blog-portal/**'
+      - 'packages/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'  # 使用更新的Node.js版本，满足Next.js需求
+
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 构建门户
+        run: pnpm build:blog-portal
+
+      - name: 部署门户
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          source: "apps/hs-blog-portal/.next/*,apps/hs-blog-portal/public/*,apps/hs-blog-portal/package.json,apps/hs-blog-portal/ecosystem.config.js,.env.production"
+          target: "/www/wwwroot/hs-blog-portal"
+          
+      - name: 启动门户
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            cd /www/wwwroot/hs-blog-portal
+            pnpm install --prod
+            pm2 delete hs-blog-portal || true
+            pm2 start ecosystem.config.js --env-file .env.production --env production 

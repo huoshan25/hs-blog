@@ -1,0 +1,59 @@
+name: API服务构建部署
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/hs-blog-server/**'
+      - 'packages/**'  # 共享包可能被依赖
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/hs-blog-server/**'
+      - 'packages/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 构建API服务
+        run: pnpm build:blog-server
+
+      - name: 复制dist文件到服务器
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          source: "apps/hs-blog-server/dist/*,apps/hs-blog-server/package.json,apps/hs-blog-server/ecosystem.config.js,pnpm-lock.yaml,.env.production"
+          target: "/www/wwwroot/hs-blog-server"
+
+      - name: 部署API服务
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            cd /www/wwwroot/hs-blog-server
+            pnpm install --prod
+            pm2 delete hs-blog-server || true
+            pm2 start ecosystem.config.js --env-file .env.production --env production 
