@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'nzgrRuYinZouZhangKai';
+  font-size: 18px;
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  /* 主色调*/
+  --theme-primary: #3b82f6;
+  /* 文本颜色*/
+  --theme-text: #1f2937;
+  /* 背景色*/
+  --theme-bg: #ffffff;
+  --theme-hover: #f1f5f9;
+  --theme-body: #f8fafc;
+  /* 边框颜色*/
+  --theme-border: #e2e8f0;
+  /* 图片背景微调*/
+  --theme-bg-img: #ebebeb;
+}
+
+:root.dark {
+  /* 暗色主题蓝色调亮一些 */
+  --theme-primary: #60a5fa;
+  --theme-text: #f1f5f9;
+  --theme-bg: #1e293b;
+  --theme-hover: #334155;
+  --theme-body: #0f172a;
+  --theme-border: #475569;
+  --theme-bg-img: #2c2c2c;
+}
+
+body {
+  background: var(--theme-body);
+  background-image: radial-gradient(var(--theme-bg-img) 1px, transparent 1px);
+  background-size: 20px 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: url(/svg/cursorStyle.svg), auto;
+}
+
+::view-transition-new(root) {
+  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><filter id="blur"><feGaussianBlur stdDeviation="2"/></filter></defs><circle cx="0" cy="0" r="18" fill="white" filter="url(%23blur)"/></svg>') top left / 0 no-repeat;
+  mask-origin: content-box;
+  animation: scale 1s;
+  transform-origin: top left;
+}
+
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+  animation: scale 1s;
+  transform-origin: top left;
+  z-index: -1;
+}
+
+@keyframes scale {
+  to {
+    mask-size: 350vmax;
+  }
+}
