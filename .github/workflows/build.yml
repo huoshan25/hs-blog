@@ -45,7 +45,7 @@ jobs:
 
       - name: 构建博客前台
         if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm run build
+        run: pnpm build:blog-web
 
       - name: 部署博客前台
         if: steps.check_changes.outputs.changes == 'true'
@@ -107,7 +107,7 @@ jobs:
 
       - name: 构建管理后台
         if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm run build
+        run: pnpm build:blog-admin
 
       - name: 部署管理后台
         if: steps.check_changes.outputs.changes == 'true'
@@ -157,7 +157,7 @@ jobs:
 
       - name: 构建API服务
         if: steps.check_changes.outputs.changes == 'true'
-        run: pnpm run build
+        run: pnpm build:blog-server
 
       - name: 复制dist文件到服务器
         if: steps.check_changes.outputs.changes == 'true'
