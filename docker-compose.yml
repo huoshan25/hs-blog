@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  blog-web:
+    build:
+      context: .
+      dockerfile: apps/hs-blog-web/Dockerfile
+    container_name: hs-blog-web
+    restart: always
+    ports:
+      - "7788:3000"
+    env_file:
+      - .env.production
+    volumes:
+      - blog_web_data:/app/data
+    networks:
+      - hs-blog-network
+    depends_on:
+      - blog-server
+    mem_limit: 256M
+
+  blog-portal:
+    build:
+      context: .
+      dockerfile: apps/hs-blog-portal/Dockerfile
+    container_name: hs-blog-portal
+    restart: always
+    ports:
+      - "7787:7787"
+    env_file:
+      - .env.production
+    volumes:
+      - blog_portal_data:/app/data
+    networks:
+      - hs-blog-network
+    depends_on:
+      - blog-server
+    mem_limit: 256M
+
+  blog-admin:
+    build:
+      context: .
+      dockerfile: apps/hs-blog-admin/Dockerfile
+    container_name: hs-blog-admin
+    restart: always
+    ports:
+      - "7789:7789"
+    networks:
+      - hs-blog-network
+    mem_limit: 128M
+
+  blog-server:
+    build:
+      context: .
+      dockerfile: apps/hs-blog-server/Dockerfile
+    container_name: hs-blog-server
+    restart: always
+    ports:
+      - "7790:7790"
+    env_file:
+      - .env.production
+    volumes:
+      - blog_server_data:/app/data
+    networks:
+      - hs-blog-network
+    mem_limit: 512M
+
+networks:
+  hs-blog-network:
+    driver: bridge
+
+volumes:
+  blog_web_data:
+  blog_portal_data:
+  blog_server_data: 

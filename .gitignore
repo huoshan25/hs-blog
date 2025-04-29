@@ -53,3 +53,7 @@ coverage
 
 # Turborepo
 .turbo
+
+# 添加Docker相关忽略项
+.docker/data/
+.docker/logs/

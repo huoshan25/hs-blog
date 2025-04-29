@@ -12,35 +12,82 @@ on:
       - 'turbo.json'
       - '.env.production'
       - '.env.example'
+      - 'docker-compose.yml'
 
 jobs:
-  trigger-all-workflows:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: 触发博客前台工作流
-        uses: benc-uk/workflow-dispatch@v1
-        continue-on-error: true  # 即使失败也继续执行后续步骤
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: 登录到Docker Hub
+        uses: docker/login-action@v2
         with:
-          workflow: blog-web.yml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: 触发门户网站工作流
-        uses: benc-uk/workflow-dispatch@v1
-        continue-on-error: true  # 即使失败也继续执行后续步骤
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 构建并推送博客前台Docker镜像
+        uses: docker/build-push-action@v4
+        continue-on-error: true
         with:
-          workflow: blog-portal.yml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: 触发管理后台工作流
-        uses: benc-uk/workflow-dispatch@v1
-        continue-on-error: true  # 即使失败也继续执行后续步骤
+          context: .
+          file: ./apps/hs-blog-web/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-web:latest
+
+      - name: 构建并推送门户网站Docker镜像
+        uses: docker/build-push-action@v4
+        continue-on-error: true
         with:
-          workflow: blog-admin.yml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: 触发API服务工作流
-        uses: benc-uk/workflow-dispatch@v1
-        continue-on-error: true  # 即使失败也继续执行后续步骤
+          context: .
+          file: ./apps/hs-blog-portal/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-portal:latest
+
+      - name: 构建并推送管理后台Docker镜像
+        uses: docker/build-push-action@v4
+        continue-on-error: true
         with:
-          workflow: blog-server.yml
-          token: ${{ secrets.GITHUB_TOKEN }}
+          context: .
+          file: ./apps/hs-blog-admin/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-admin:latest
+
+      - name: 构建并推送API服务Docker镜像
+        uses: docker/build-push-action@v4
+        continue-on-error: true
+        with:
+          context: .
+          file: ./apps/hs-blog-server/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-server:latest
+
+      - name: 拷贝docker-compose和环境文件到服务器
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          source: "docker-compose.yml,.env.production"
+          target: "/www/wwwroot/hs-blog"
+
+      - name: 部署到服务器
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            cd /www/wwwroot/hs-blog
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-web:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-portal:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-admin:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-server:latest
+            docker-compose down
+            docker-compose up -d

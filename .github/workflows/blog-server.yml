@@ -19,33 +19,24 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 设置Node.js
-        uses: actions/setup-node@v4
+      - name: 设置Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: 登录到Docker Hub
+        uses: docker/login-action@v2
         with:
-          node-version: '20.x'
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: 安装pnpm
-        uses: pnpm/action-setup@v2
+      - name: 构建并推送Docker镜像
+        uses: docker/build-push-action@v4
         with:
-          version: 8
+          context: .
+          file: ./apps/hs-blog-server/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-server:latest
 
-      - name: 安装依赖
-        run: pnpm install
-
-      - name: 构建API服务
-        run: pnpm build:blog-server
-
-      - name: 复制dist文件到服务器
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-          source: "apps/hs-blog-server/dist/*,apps/hs-blog-server/package.json,apps/hs-blog-server/ecosystem.config.js,pnpm-lock.yaml,.env.production"
-          target: "/www/wwwroot/hs-blog-server"
-
-      - name: 部署API服务
+      - name: 部署到服务器
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
@@ -53,7 +44,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
-            cd /www/wwwroot/hs-blog-server
-            pnpm install --prod
-            pm2 delete hs-blog-server || true
-            pm2 start ecosystem.config.js --env-file .env.production --env production 
+            cd /www/wwwroot/hs-blog
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hs-blog-server:latest
+            docker-compose down blog-server
+            docker-compose up -d blog-server 
