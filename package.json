@@ -1,0 +1,26 @@
+{
+  "name": "hs-blog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "packageManager": "pnpm@8.15.4",
+  "scripts": {
+    "dev": "turbo dev",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:blog-web": "pnpm --filter hs-blog-web dev",
+    "dev:blog-admin": "pnpm --filter hs-blog-admin dev",
+    "dev:blog-server": "pnpm --filter hs-blog-server dev",
+    "build:blog-web": "pnpm --filter hs-blog-web build",
+    "build:blog-admin": "pnpm --filter hs-blog-admin build",
+    "build:blog-server": "pnpm --filter hs-blog-server build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vueuse/core": "^13.0.0",
+    "cross-env": "^7.0.3",
+    "turbo": "^2.5.2"
+  }
+}
