@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useHomePageTranslation } from '@/hooks/useTranslation'
 
+
 export default function Home() {
   const lang = useHomePageTranslation()
   return (
