@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Sky Hub 验证码</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .title {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        .code-container {
+            background: linear-gradient(135deg, #0396FF 10%, #0066ff 100%);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 5px;
+            font-family: monospace;
+        }
+        .content {
+            margin: 20px 0;
+            color: #666;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="<%= appLogoUrl %>" alt="<%= appName %> Logo" class="logo">
+            <div class="title">验证码</div>
+            <div class="subtitle">SkyHub社区</div>
+        </div>
+        
+        <div class="content">
+            <p>亲爱的光之子：</p>
+            <p>您正在使用邮箱验证功能，验证码如下：</p>
+        </div>
+        
+        <div class="code-container">
+            <div class="code"><%= code %></div>
+        </div>
+        
+        <div class="content">
+            <p>验证码有效期为 5 分钟，请尽快使用。</p>
+            <p>如果这不是您的操作，请忽略此邮件。</p>
+        </div>
+
+        <div class="footer">
+            <p>此邮件由系统自动发送，请勿回复。</p>
+            <p>© <%= new Date().getFullYear() %> <%= appName %>. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
