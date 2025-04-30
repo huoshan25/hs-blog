@@ -2,6 +2,9 @@ import '@/styles/globals.css'
 import Navbar from '@/components/navbar'
 import {LanguageProvider} from "@/app/context/LanguageContext";
 
+// 添加web-shared客户端组件
+import WebSharedProvider from '@/components/WebSharedProvider';
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -31,10 +34,13 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <LanguageProvider>
-          <Navbar />
-          {children}
-        </LanguageProvider>
+        {/* 添加web-shared Provider包装 */}
+        <WebSharedProvider>
+          <LanguageProvider>
+            <Navbar />
+            {children}
+          </LanguageProvider>
+        </WebSharedProvider>
       </body>
     </html>
   )

@@ -12,10 +12,13 @@
     "dev:blog-admin": "pnpm --filter hs-blog-admin dev",
     "dev:blog-server": "pnpm --filter hs-blog-server dev",
     "dev:blog-portal": "pnpm --filter hs-blog-portal dev",
+    "dev:web-shared": "pnpm --filter web-shared dev",
     "build:blog-web": "pnpm --filter hs-blog-web build",
     "build:blog-admin": "pnpm --filter hs-blog-admin build",
     "build:blog-server": "pnpm --filter hs-blog-server build",
-    "build:blog-portal": "pnpm --filter hs-blog-portal build"
+    "build:blog-portal": "pnpm --filter hs-blog-portal build",
+    "build:web-shared": "pnpm --filter web-shared build",
+    "build": "pnpm build:web-shared && turbo build"
   },
   "keywords": [],
   "author": "",
