@@ -67,18 +67,30 @@ export class LoginDto {
   password: string;
 }
 
+/**
+ * 登录响应DTO
+ */
 export class LoginResponseDto {
-  @ApiProperty({
-    description: '访问令牌',
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-  })
+  /**
+   * 访问令牌
+   * @example 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJzdWIiOjEsImlhdCI6MTYyMjUwNjIwMCwiZXhwIjoxNjIyNTkyNjAwfQ.hV8vjvTrDCv8PuYvPbVuZQX8v-lh9kKl'
+   */
+  @ApiProperty({ description: '访问令牌' })
   accessToken: string;
 
-  @ApiProperty({
-    description: '刷新令牌',
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-  })
+  /**
+   * 刷新令牌
+   * @example 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJzdWIiOjEsImlhdCI6MTYyMjUwNjIwMCwiZXhwIjoxNjIyNzY1NDAwfQ.2Qh4j0'
+   */
+  @ApiProperty({ description: '刷新令牌' })
   refreshToken: string;
+  
+  /**
+   * 访问令牌过期时间（秒）
+   * @example 86400
+   */
+  @ApiProperty({ description: '访问令牌过期时间（秒）' })
+  expiresIn: number;
 }
 
 export class RefreshTokenDto {

@@ -26,7 +26,13 @@ import { JwtStrategy } from './jwt.strategy';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'), // 从环境变量获取 JWT 密钥
-        signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') }, // 从环境变量获取过期时间
+        verifyOptions: {
+          ignoreExpiration: false, // 不忽略过期时间
+        },
+        signOptions: {
+          expiresIn: configService.get('JWT_EXPIRES_IN'), // 从环境变量获取过期时间
+          algorithm: 'HS256', // 签名算法
+        },
       }),
       inject: [ConfigService],
     }),

@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Put } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { RequireAuth } from '../auth/decorators/require-auth.decorator';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
-import { UserService } from './user.service';
+import {Body, Controller, Get, Put} from '@nestjs/common';
+import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags,} from '@nestjs/swagger';
+import {CurrentUser} from '../auth/decorators/current-user.decorator';
+import {User} from './entities/user.entity';
+import {UpdateUserDto} from './dto/update-user.dto';
+import {UserService} from './user.service';
+import {ApiResponseObject} from '@/common/decorators/api-response.decorator';
+import {userVo} from '@/modules/user/vo/user.vo';
 
 /**
  * 用户控制器
@@ -16,17 +17,9 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  /**
-   * 获取当前用户信息
-   * @returns 用户信息
-   */
   @Get('profile')
-  @ApiOperation({ summary: '获取当前用户信息' })
-  @ApiResponse({
-    status: 200,
-    description: '获取成功',
-    type: User,
-  })
+  @ApiOperation({ summary: '获取当前登录用户信息' })
+  @ApiResponseObject(userVo)
   async getProfile(@CurrentUser() user: User) {
     const result = await this.userService.getUserStats(user.id);
     return {
@@ -35,20 +28,23 @@ export class UserController {
     };
   }
 
-  /**
-   * 更新用户信息
-   * @param user 当前用户信息
-   * @param updateUserDto 更新信息
-   * @returns 更新后的用户信息
-   */
+  @Get('stats')
+  @ApiOperation({ summary: '获取用户统计信息' })
+  async getUserStats(@CurrentUser() user: User) {
+    const stats = await this.userService.getUserStats(user.id);
+    return {
+      message: '获取用户统计信息成功',
+      data: stats,
+    };
+  }
+
   @Put('profile')
-  @ApiOperation({ summary: '更新用户信息' })
-  @ApiResponse({
-    status: 200,
-    description: '更新成功',
-    type: User,
-  })
-  async updateProfile(@CurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
+  @ApiOperation({ summary: '更新用户个人资料' })
+  @ApiResponse({ status: 200, description: '更新成功' })
+  async updateProfile(
+    @CurrentUser() user: User,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     const updatedUser = await this.userService.update(user.id, updateUserDto);
     return {
       message: '更新成功',

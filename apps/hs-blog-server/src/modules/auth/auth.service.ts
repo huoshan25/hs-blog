@@ -1,13 +1,13 @@
-import { LoggerService } from '@/core/logger/logger.service';
-import { RedisService } from '@/core/redis/redis.service';
-import { EmailService } from '@/modules/email/service/email.service';
-import { UserService } from '@/modules/user/user.service';
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { randomInt } from 'crypto';
-import { AuthConfig } from './auth.config';
-import { LoginDto, LoginResponseDto, RegisterDto } from './dto/auth.dto';
+import {LoggerService} from '@/core/logger/logger.service';
+import {RedisService} from '@/core/redis/redis.service';
+import {EmailService} from '@/modules/email/service/email.service';
+import {UserService} from '@/modules/user/user.service';
+import {BadRequestException, Injectable, UnauthorizedException,} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import {JwtService} from '@nestjs/jwt';
+import {randomInt} from 'crypto';
+import {AuthConfig} from './auth.config';
+import {LoginDto, RegisterDto} from './dto/auth.dto';
 
 /**
  * 认证服务
@@ -33,7 +33,11 @@ export class AuthService {
    * @param payload 令牌负载，包含用户ID、用户名和邮箱
    * @returns 包含访问令牌和刷新令牌的对象
    */
-  async generateToken(payload: { sub: number; username: string; email: string }) {
+  async generateToken(payload: {
+    sub: number;
+    username: string;
+    email: string;
+  }) {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.authConfig.jwtSecret,
       expiresIn: this.authConfig.jwtExpiresIn,
@@ -47,14 +51,37 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
+      expiresIn: this.getExpiresInSeconds(this.authConfig.jwtExpiresIn),
     };
+  }
+
+  /**
+   * 将过期时间字符串转换为秒数
+   * @param expiresIn 过期时间字符串，如 '1d', '2h', '30m'
+   * @returns 过期时间的秒数
+   */
+  private getExpiresInSeconds(expiresIn: string): number {
+    const unit = expiresIn.slice(-1);
+    const value = parseInt(expiresIn.slice(0, -1), 10);
+
+    switch (unit) {
+      case 'd':
+        return value * 24 * 60 * 60;
+      case 'h':
+        return value * 60 * 60;
+      case 'm':
+        return value * 60;
+      case 's':
+        return value;
+      default:
+        return 3600; // 默认1小时
+    }
   }
 
   /**
    * 验证访问令牌
    * @param token 访问令牌
    * @returns 解码后的令牌负载
-   * @throws UnauthorizedException 当令牌无效或已过期时
    */
   async verifyToken(token: string) {
     try {
@@ -70,8 +97,6 @@ export class AuthService {
   /**
    * 刷新令牌
    * @param token 刷新令牌
-   * @returns 新的访问令牌和刷新令牌
-   * @throws UnauthorizedException 当刷新令牌无效或已过期时
    */
   async refreshToken(token: string) {
     try {
@@ -140,8 +165,6 @@ export class AuthService {
    * 验证邮箱验证码
    * @param email 邮箱地址
    * @param code 验证码
-   * @returns 验证结果
-   * @throws BadRequestException 当验证码无效或已过期时
    */
   async verifyEmailCode(email: string, code: string) {
     try {
@@ -167,14 +190,14 @@ export class AuthService {
 
   /**
    * 用户登录
-   * @param loginDto 登录信息
-   * @returns 访问令牌和刷新令牌
-   * @throws UnauthorizedException 当用户名或密码错误时
+   * @param loginDto
    */
-  async login(loginDto: LoginDto): Promise<LoginResponseDto> {
+  async login(loginDto: LoginDto) {
     try {
       // 查找用户
-      const user = await this.userService.findByUsernameOrEmail(loginDto.usernameOrEmail);
+      const user = await this.userService.findByUsernameOrEmail(
+        loginDto.usernameOrEmail,
+      );
 
       // 验证密码
       const isValidPassword = await this.userService.validatePassword(
@@ -201,9 +224,7 @@ export class AuthService {
 
   /**
    * 用户注册
-   * @param registerDto 注册信息
-   * @returns 访问令牌和刷新令牌
-   * @throws BadRequestException 当验证码错误或密码不匹配时
+   * @param registerDto
    */
   async register(registerDto: RegisterDto) {
     try {
