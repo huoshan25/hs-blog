@@ -1,0 +1,25 @@
+/**
+ * 业务状态码枚举
+ */
+export enum BusinessStatus {
+  // 通用状态
+  SUCCESS = 0,
+  FAILED = -1,
+  
+  // 用户相关
+  USER_NOT_FOUND = 1001,
+  USER_ALREADY_EXISTS = 1002,
+  PASSWORD_ERROR = 1003,
+  TOKEN_EXPIRED = 1004,
+  TOKEN_INVALID = 1005,
+  
+  // 数据相关
+  DATA_NOT_FOUND = 2001,
+  DATA_ALREADY_EXISTS = 2002,
+  DATA_VALIDATION_FAILED = 2003,
+  
+  // 系统相关
+  SYSTEM_ERROR = 9001,
+  NETWORK_ERROR = 9002,
+  DATABASE_ERROR = 9003
+} 

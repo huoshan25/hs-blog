@@ -1,0 +1,25 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "项目文档站点",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev src",
+    "build": "vitepress build src",
+    "preview": "vitepress preview src"
+  },
+  "keywords": [
+    "docs",
+    "vitepress"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "web-shared": "workspace:*"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0-rc.44",
+    "vue": "^3.3.10"
+  }
+} 
