@@ -7,26 +7,53 @@ import Redis from 'ioredis';
 export class RedisService implements OnModuleDestroy {
   private readonly redis: Redis;
   private readonly logger = new LoggerService().setContext(RedisService.name);
+  private retryCount = 0;
 
   constructor(private configService: ConfigService) {
     const redisConfig = this.configService.get('redis');
+    const logger = this.logger;
+    
     this.redis = new Redis({
       host: redisConfig.host,
       port: redisConfig.port,
       password: redisConfig.password,
       db: redisConfig.db,
-      retryStrategy(times) {
-        const delay = Math.min(times * 50, 2000);
+      retryStrategy: (times) => {
+        this.retryCount = times;
+        const maxRetryTimes = 10;
+        if (times > maxRetryTimes) {
+          logger.error(`Redis连接失败，已达到最大重试次数(${maxRetryTimes})，不再重试`);
+          return null;
+        }
+        
+        // 指数退避策略，重试间隔呈指数增长
+        const delay = Math.min(Math.pow(2, times) * 100, 5000); // 最大延迟5秒
+        logger.log(`Redis连接失败，${delay}ms后第${times}次重试（最大${maxRetryTimes}次）`);
         return delay;
       },
+      connectTimeout: 5000, // 设置连接超时时间为5秒
+      maxRetriesPerRequest: 3 // 每个请求的最大重试次数
     });
 
     this.redis.on('connect', () => {
       this.logger.log('Redis客户端连接成功');
+      this.retryCount = 0; // 连接成功后重置计数器
     });
 
     this.redis.on('error', (error) => {
-      this.logger.error('Redis客户端错误', error);
+      this.logger.error(`Redis客户端错误: ${error.message}，当前重试次数: ${this.retryCount}`);
+    });
+
+    this.redis.on('close', () => {
+      this.logger.warn('Redis连接关闭');
+    });
+
+    this.redis.on('reconnecting', () => {
+      this.logger.log('Redis正在尝试重新连接');
+    });
+
+    this.redis.on('end', () => {
+      this.logger.warn('Redis连接终止，不会自动重连');
     });
   }
 
@@ -36,37 +63,6 @@ export class RedisService implements OnModuleDestroy {
 
   async onModuleDestroy() {
     await this.redis.quit();
-  }
-
-  /**
-   * 设置验证码
-   * @param email 邮箱
-   * @param code 验证码
-   */
-  async setEmailCode(email: string, code: string): Promise<void> {
-    const redisConfig = this.configService.get('redis');
-    const key = `${redisConfig.code.prefix}${email}`;
-    await this.redis.set(key, code, 'EX', redisConfig.code.expireTime);
-  }
-
-  /**
-   * 获取验证码
-   * @param email 邮箱
-   */
-  async getEmailCode(email: string): Promise<string | null> {
-    const redisConfig = this.configService.get('redis');
-    const key = `${redisConfig.code.prefix}${email}`;
-    return await this.redis.get(key);
-  }
-
-  /**
-   * 删除验证码
-   * @param email 邮箱
-   */
-  async deleteEmailCode(email: string): Promise<void> {
-    const redisConfig = this.configService.get('redis');
-    const key = `${redisConfig.code.prefix}${email}`;
-    await this.redis.del(key);
   }
 
   /**

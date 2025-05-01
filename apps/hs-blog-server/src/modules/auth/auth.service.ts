@@ -1,6 +1,7 @@
 import {LoggerService} from '@/core/logger/logger.service';
 import {RedisService} from '@/core/redis/redis.service';
 import {EmailService} from '@/modules/email/service/email.service';
+import {EmailVerificationService} from '@/modules/email/service/email-verification.service';
 import {UserService} from '@/modules/user/user.service';
 import {BadRequestException, Injectable, UnauthorizedException,} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
@@ -17,7 +18,6 @@ import {LoginDto, RegisterDto} from './dto/auth.dto';
 export class AuthService {
   private readonly logger = new LoggerService().setContext(AuthService.name);
   private readonly CODE_EXPIRE_TIME = 300; // 验证码过期时间（秒）
-  private readonly CODE_PREFIX = 'email:code:';
 
   constructor(
     private readonly jwtService: JwtService,
@@ -26,6 +26,7 @@ export class AuthService {
     private readonly redisService: RedisService,
     private readonly authConfig: AuthConfig,
     private readonly userService: UserService,
+    private readonly emailVerificationService: EmailVerificationService,
   ) {}
 
   /**
@@ -132,12 +133,14 @@ export class AuthService {
       throw new BadRequestException('该邮箱已被注册');
     }
     try {
+      // 删除可能存在的旧验证码
+      await this.emailVerificationService.deleteCode(email);
+      
       // 生成6位随机验证码
       const code = randomInt(100000, 999999).toString();
 
-      // 存储验证码到Redis
-      const key = `${this.CODE_PREFIX}${email}`;
-      await this.redisService.set(key, code, this.CODE_EXPIRE_TIME);
+      // 存储验证码
+      await this.emailVerificationService.setCode(email, code);
 
       // 从邮箱地址中提取用户名
       const username = email.split('@')[0];
@@ -168,19 +171,11 @@ export class AuthService {
    */
   async verifyEmailCode(email: string, code: string) {
     try {
-      const key = `${this.CODE_PREFIX}${email}`;
-      const savedCode = await this.redisService.get(key);
-
-      if (!savedCode) {
-        throw new BadRequestException('验证码已过期');
+      const isValid = await this.emailVerificationService.verifyCode(email, code);
+      
+      if (!isValid) {
+        throw new BadRequestException('验证码错误或已过期');
       }
-
-      if (savedCode !== code) {
-        throw new BadRequestException('验证码错误');
-      }
-
-      // 验证成功后删除验证码
-      await this.redisService.del(key);
       return true;
     } catch (error) {
       this.logger.error('验证码验证失败:', error);
@@ -260,6 +255,8 @@ export class AuthService {
           username: user.userName,
         },
       });
+
+      await this.emailVerificationService.deleteCode(registerDto.email);
 
       return tokens;
     } catch (error) {
