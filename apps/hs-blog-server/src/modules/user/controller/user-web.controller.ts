@@ -1,12 +1,12 @@
 import {Body, Controller, Get, Put} from '@nestjs/common';
 import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags,} from '@nestjs/swagger';
-import {CurrentUser} from '../auth/decorators/current-user.decorator';
-import {User} from './entities/user.entity';
-import {UpdateUserDto} from './dto/update-user.dto';
-import {UserService} from './user.service';
 import {ApiResponseObject} from '@/common/decorators/api-response.decorator';
 import {userVo} from '@/modules/user/vo/user.vo';
-import {TransformToVo} from "@/common/decorators/transform-to-vo.decorator";
+import {TransformToVo} from '@/common/decorators/transform-to-vo.decorator';
+import {UserService} from '@/modules/user/user.service';
+import {CurrentUser} from '@/modules/auth/decorators/current-user.decorator';
+import {User} from '@/modules/user/entities/user.entity';
+import {UpdateUserDto} from '@/modules/user/dto/update-user.dto';
 
 /**
  * 用户控制器
@@ -15,7 +15,7 @@ import {TransformToVo} from "@/common/decorators/transform-to-vo.decorator";
 @ApiTags('web', '用户')
 @Controller('web/user')
 @ApiBearerAuth()
-export class UserController {
+export class UserWebController {
   constructor(private readonly userService: UserService) {}
 
   @Get('profile')

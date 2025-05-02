@@ -14,6 +14,7 @@ import { UserModule } from '@/modules/user/user.module';
 import { OssModule } from '@/modules/oss/oss.module';
 import { LimModule } from '@/modules/lim/lim.module';
 import { TtsModule } from '@/modules/tts/tts.module';
+import { UrlPreviewModule } from '@/modules/url-preview/url-preview.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TtsModule } from '@/modules/tts/tts.module';
     LimModule,
     OssModule,
     TtsModule,
+    UrlPreviewModule,
   ],
   controllers: [AppController],
   providers: [AppService, BootstrapService, LoggerService, AppConfig],
