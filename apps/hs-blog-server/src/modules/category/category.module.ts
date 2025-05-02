@@ -15,5 +15,6 @@ import { CategoryBlogController } from '@/modules/category/controller/category-b
   ],
   controllers: [CategoryAdminController, CategoryBlogController],
   providers: [CategoryService],
+  exports: [CategoryService],
 })
 export class CategoryModule {}

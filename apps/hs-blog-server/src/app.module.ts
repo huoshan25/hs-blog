@@ -3,9 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from '@/database/database.module';
 import { NestConfigModule } from '@/config/config.module';
-import { BootstrapService } from '@/core/bootstrap/bootstrap.service';
-import { LoggerService } from '@/core/logger/logger.service';
-import { AppConfig } from '@/core/config/app.config';
+import { BootstrapModule } from '@/core/bootstrap/bootstrap.module';
 import { RedisModule } from '@/core/redis/redis.module';
 import { BullRootModule } from '@/core/bull/bull.module';
 import { AuthModule } from '@/modules/auth/auth.module';
@@ -25,6 +23,7 @@ import { TagModule } from '@/modules/tag/tag.module';
     DatabaseModule,
     RedisModule,
     BullRootModule,
+    BootstrapModule,
     AuthModule,
     EmailModule,
     UserModule,
@@ -37,6 +36,8 @@ import { TagModule } from '@/modules/tag/tag.module';
     TagModule,
   ],
   controllers: [AppController],
-  providers: [AppService, BootstrapService, LoggerService, AppConfig],
+  providers: [
+    AppService,
+  ],
 })
 export class AppModule {}

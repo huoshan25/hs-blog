@@ -1,6 +1,7 @@
-import { INestApplication, Injectable } from '@nestjs/common';
-import { AppConfig } from '../config/app.config';
-import { LoggerService } from '../logger/logger.service';
+import {INestApplication, Injectable} from '@nestjs/common';
+import {AppConfig} from '../config/app.config';
+import {LoggerService} from '../logger/logger.service';
+import {CategoryService} from '@/modules/category/service/category.service';
 
 /**
  * 应用启动服务
@@ -11,6 +12,7 @@ export class BootstrapService {
   constructor(
     private readonly appConfig: AppConfig,
     private readonly logger: LoggerService,
+    private readonly categoryService: CategoryService,
   ) {
     this.logger.setContext('Bootstrap');
   }
@@ -33,6 +35,25 @@ export class BootstrapService {
     }
 
     this.logger.log('应用配置完成');
+  }
+
+  /**
+   * 初始化应用数据
+   * @param app NestJS 应用实例
+   */
+  async initializeData(app: INestApplication) {
+    try {
+      // 初始化分类数据
+      await this.categoryService.seedDefaultCategories();
+      this.logger.log('分类数据初始化完成');
+
+      // 在这里可以添加其他数据初始化逻辑
+      // 例如：标签、用户角色等
+
+      this.logger.log('应用数据初始化完成');
+    } catch (error) {
+      this.logger.error('应用数据初始化失败', error.stack);
+    }
   }
 
   /**
