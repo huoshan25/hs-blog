@@ -6,6 +6,7 @@ import {UpdateUserDto} from './dto/update-user.dto';
 import {UserService} from './user.service';
 import {ApiResponseObject} from '@/common/decorators/api-response.decorator';
 import {userVo} from '@/modules/user/vo/user.vo';
+import {TransformToVo} from "@/common/decorators/transform-to-vo.decorator";
 
 /**
  * 用户控制器
@@ -20,6 +21,7 @@ export class UserController {
   @Get('profile')
   @ApiOperation({ summary: '获取当前登录用户信息' })
   @ApiResponseObject(userVo)
+  @TransformToVo(userVo)
   async getProfile(@CurrentUser() user: User) {
     const result = await this.userService.getUserStats(user.id);
     return {
