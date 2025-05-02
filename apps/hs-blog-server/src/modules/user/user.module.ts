@@ -5,8 +5,8 @@ import { EmailModule } from '@/modules/email/email.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { UserBlogController } from '@/modules/user/controller/user-blog.controller';
 
 @Module({
   imports: [
@@ -18,6 +18,6 @@ import { UserService } from './user.service';
   ],
   providers: [UserService],
   exports: [UserService],
-  controllers: [UserController],
+  controllers: [UserBlogController],
 })
 export class UserModule {}
