@@ -21,7 +21,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@vueuse/core": "^13.0.0",
     "cross-env": "^7.0.3",
     "turbo": "^2.5.2"
   }
