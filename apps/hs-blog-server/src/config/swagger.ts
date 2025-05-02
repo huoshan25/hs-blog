@@ -36,18 +36,18 @@ export const generateSwaggerDocument = (app: INestApplication) => {
   });
 
   /*手动筛选前台和后台的路径*/
-  const webDocument = JSON.parse(JSON.stringify(fullDocument));
+  const blogDocument = JSON.parse(JSON.stringify(fullDocument));
   const adminDocument = JSON.parse(JSON.stringify(fullDocument));
 
   /*筛选前台路径*/
-  webDocument.paths = Object.entries(webDocument.paths).reduce(
+  blogDocument.paths = Object.entries(blogDocument.paths).reduce(
     (acc, [path, methods]) => {
       const isWebPath =
-        path.startsWith('/web/') ||
+        path.startsWith('/blog/') ||
         Object.values(methods).some(
           (method) =>
             method.tags &&
-            method.tags.some((tag) => tag.toLowerCase().includes('web')),
+            method.tags.some((tag) => tag.toLowerCase().includes('blog')),
         );
 
       if (isWebPath) {
@@ -78,7 +78,7 @@ export const generateSwaggerDocument = (app: INestApplication) => {
   );
 
   /*设置 Swagger UI 路由*/
-  SwaggerModule.setup('web-api-docs', app, webDocument, {
+  SwaggerModule.setup('blog-api-docs', app, blogDocument, {
     customSiteTitle: 'HsBlog 前台 API 文档',
     customfavIcon: '/static/favicon.svg',
     customCss: '.swagger-ui .topbar { display: none }',
@@ -91,17 +91,17 @@ export const generateSwaggerDocument = (app: INestApplication) => {
   });
 
   /*保存 OpenAPI JSON 文件*/
-  writeFileSync('./web-openapi.json', JSON.stringify(webDocument));
+  writeFileSync('./blog-openapi.json', JSON.stringify(blogDocument));
   writeFileSync('./admin-openapi.json', JSON.stringify(adminDocument));
 
   /*设置 Knife4j*/
   knife4jSetup(app, {
     urls: [
       {
-        name: '前台 API',
-        url: `/web-api-docs-json`,
+        name: '博客前台 API',
+        url: `/blog-api-docs-json`,
         swaggerVersion: '3.0',
-        location: `/web-api-docs-json`,
+        location: `/blog-api-docs-json`,
       },
       {
         name: '后台 API',

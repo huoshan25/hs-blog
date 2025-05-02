@@ -12,8 +12,8 @@ import {UpdateUserDto} from '@/modules/user/dto/update-user.dto';
  * 用户控制器
  * 处理用户相关的 HTTP 请求
  */
-@ApiTags('web', '用户')
-@Controller('web/user')
+@ApiTags('blog', '用户')
+@Controller('blog/user')
 @ApiBearerAuth()
 export class UserBlogController {
   constructor(private readonly userService: UserService) {}

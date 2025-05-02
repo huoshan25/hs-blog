@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthConfig } from './auth.config';
-import { AuthController } from './auth.controller';
+import { AuthBlogController } from './auth-blog.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { JwtStrategy } from './jwt.strategy';
@@ -20,18 +20,19 @@ import { JwtStrategy } from './jwt.strategy';
  */
 @Module({
   imports: [
-    ConfigModule, // 导入配置模块
+    ConfigModule,
     JwtModule.registerAsync({
-      // 异步注册 JWT 模块
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'), // 从环境变量获取 JWT 密钥
+        secret: configService.get('JWT_SECRET'),
         verifyOptions: {
-          ignoreExpiration: false, // 不忽略过期时间
+          ignoreExpiration: false,
         },
         signOptions: {
-          expiresIn: configService.get('JWT_EXPIRES_IN'), // 从环境变量获取过期时间
-          algorithm: 'HS256', // 签名算法
+          //过期时间
+          expiresIn: configService.get('JWT_EXPIRES_IN'),
+          // 签名算法
+          algorithm: 'HS256',
         },
       }),
       inject: [ConfigService],
@@ -40,7 +41,7 @@ import { JwtStrategy } from './jwt.strategy';
     RedisModule,
     UserModule,
   ],
-  controllers: [AuthController], // 注册控制器
+  controllers: [AuthBlogController],
   providers: [
     AuthService,
     AuthConfig,
@@ -49,7 +50,7 @@ import { JwtStrategy } from './jwt.strategy';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-  ], // 注册服务和配置
-  exports: [AuthService, AuthConfig, JwtModule], // 导出服务和配置供其他模块使用
+  ],
+  exports: [AuthService, AuthConfig, JwtModule],
 })
 export class AuthModule {}

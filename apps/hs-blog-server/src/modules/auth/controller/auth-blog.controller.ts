@@ -1,19 +1,23 @@
-import {Body, Controller, HttpCode, HttpStatus, Post} from '@nestjs/common';
-import {ApiOperation, ApiTags} from '@nestjs/swagger';
-import {AuthService} from './auth.service';
-import {Public} from './decorators/public.decorator';
-import {LoginDto, LoginResponseDto, RefreshTokenDto, RegisterDto,} from './dto/auth.dto';
-import {SendEmailCodeDto, VerifyEmailCodeDto} from './dto/email-code.dto';
-import {ApiResponseObject} from '@/common/decorators/api-response.decorator';
-import {LoginResponseVo, registerResVo} from '@/modules/user/vo/user.vo';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiResponseObject } from '@/common/decorators/api-response.decorator';
+import { LoginResponseVo, registerResVo } from '@/modules/user/vo/user.vo';
+import { AuthService } from '@/modules/auth/auth.service';
+import { Public } from '@/modules/auth/decorators/public.decorator';
+import {
+  SendEmailCodeDto,
+  VerifyEmailCodeDto,
+} from '@/modules/auth/dto/email-code.dto';
+import {
+  LoginDto,
+  LoginResponseDto,
+  RefreshTokenDto,
+  RegisterDto,
+} from '@/modules/auth/dto/auth.dto';
 
-/**
- * 认证控制器
- * 处理认证相关的 HTTP 请求
- */
-@ApiTags('web', '认证')
-@Controller('web/auth')
-export class AuthController {
+@ApiTags('blog', '认证')
+@Controller('blog/auth')
+export class AuthBlogController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()

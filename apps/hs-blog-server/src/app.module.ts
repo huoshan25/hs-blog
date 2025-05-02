@@ -15,6 +15,9 @@ import { OssModule } from '@/modules/oss/oss.module';
 import { LimModule } from '@/modules/lim/lim.module';
 import { TtsModule } from '@/modules/tts/tts.module';
 import { UrlPreviewModule } from '@/modules/url-preview/url-preview.module';
+import { ArticleModule } from '@/modules/article/article.module';
+import { CategoryModule } from '@/modules/category/category.module';
+import { TagModule } from '@/modules/tag/tag.module';
 
 @Module({
   imports: [
@@ -29,6 +32,9 @@ import { UrlPreviewModule } from '@/modules/url-preview/url-preview.module';
     OssModule,
     TtsModule,
     UrlPreviewModule,
+    ArticleModule,
+    CategoryModule,
+    TagModule,
   ],
   controllers: [AppController],
   providers: [AppService, BootstrapService, LoggerService, AppConfig],

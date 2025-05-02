@@ -7,10 +7,14 @@ import { BootstrapService } from '@/core/bootstrap/bootstrap.service';
 import { HttpExceptionFilterInterceptors } from '@/core/interceptors/http-exception.interceptors';
 import { TransformInterceptors } from '@/core/interceptors/transform.interceptors';
 import { CustomValidationPipe } from '@/common/pipes/validation.pipe';
+import { CategoryService } from '@/modules/category/service/category.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const bootstrapService = app.get(BootstrapService);
+  // 注入CategoriesService并调用seedDefaultCategories方法
+  const categoriesService = app.get(CategoryService);
+  await categoriesService.seedDefaultCategories();
 
   /**配置静态资源目录*/
   app.useStaticAssets(join(__dirname, '..', 'public'), {
