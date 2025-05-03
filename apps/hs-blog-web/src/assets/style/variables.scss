@@ -1,0 +1,27 @@
+:root {
+  --theme-body: #f5f5f5;
+  --theme-primary: #1e80ff;
+  --theme-text: #000000;
+  --theme-bg: #ffffff;
+  --theme-hover: black;
+  --theme-border: #1e80ff;
+  --theme-nav-a-hover: black;
+  --theme-bg-img: #ebebeb;
+}
+
+.dark {
+  --theme-body: #1a1a1a;
+  --theme-primary: #eef0f3;
+  --theme-text: #ffffff;
+  --theme-bg: #1a1a1a;
+  --theme-hover: #ffffff;
+  --theme-border: #ffff;
+  --theme-nav-a-hover: #ffff;
+  --theme-bg-img: #2c2c2c;
+}
+
+$primary: var(--theme-primary);
+$text: var(--theme-text);
+$bg: var(--theme-bg);
+$hover: var(--theme-hover);
+$body: var(--theme-body);

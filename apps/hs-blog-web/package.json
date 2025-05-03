@@ -3,16 +3,33 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt build --dotenv .env.production",
     "dev": "nuxt dev --dotenv .env.development",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "nuxt": "^3.16.0",
+    "@ant-design/colors": "^8.0.0",
+    "@nuxt/image": "^1.10.0",
+    "dayjs": "^1.11.13",
+    "nuxt": "3.15.4",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "web-shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "@unocss/nuxt": "66.1.0-beta.13",
+    "@vicons/ionicons5": "^0.13.0",
+    "@vueuse/core": "^13.1.0",
+    "@vueuse/nuxt": "^13.1.0",
+    "naive-ui": "^2.41.0",
+    "nuxtjs-naive-ui": "^1.0.2",
+    "prettier": "^3.5.3",
+    "sass": "^1.80.7",
+    "unocss": "66.1.0-beta.13",
+    "unplugin-auto-import": "0.17.8",
+    "unplugin-vue-components": "0.25.2"
   }
 }

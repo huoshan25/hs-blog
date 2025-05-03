@@ -1,0 +1,52 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: $body;
+  background-image: radial-gradient(var(--theme-bg-img) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.router-link-active {
+  color: #1e80ff;
+}
+
+/**滚动条样式*/
+.scrollBar {
+  /* 自定义滚动条宽度 */
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  /* 滚动条轨道样式 */
+  ::-webkit-scrollbar-track {
+    background: #F8F8F8;
+  }
+
+  /* 滚动条滑块样式 */
+  ::-webkit-scrollbar-thumb {
+    background: #DDDDDD;
+    border-radius: 5px;
+  }
+
+  /* 鼠标悬停时滚动条滑块样式 */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #BBBBBB;
+  }
+}
+
+* {
+  font-family: 'Source Han Serif CN VF';
+}
+
+p {
+  font-size: 18px;
+}
+
+pre > code > span {
+  font-family: none;
+}

@@ -1,4 +1,3 @@
-
 /**
  * @typedef {import('prettier').Config} PrettierConfig
  * @typedef {import('prettier').PluginDescriptor} PrettierPluginDescriptor
@@ -69,7 +68,5 @@ module.exports = {
   singleAttributePerLine: false,
 
   /** 插件 */
-  plugins: [
-    '@trivago/prettier-plugin-sort-imports', // import排序
-  ]
+  plugins: []
 };
