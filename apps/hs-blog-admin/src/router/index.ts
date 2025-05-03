@@ -11,16 +11,26 @@ const router = createRouter({
         {
           path: 'dashboard',
           name: 'dashboard',
-          component: () => import('@/views/dashboard/index.vue')
+          component: () => import('@/views/dashboard/index.vue'),
         },
         {
           path: 'articleManage',
           name: 'articleManage',
-          component: () => import('@/views/articleManage/index.vue')
+          component: () => import('@/views/articleManage/index.vue'),
         },
-      ]
-    }
-  ]
+        {
+          path: 'categoryManage',
+          name: 'categoryManage',
+          component: () => import('@/views/categoryManage/index.vue'),
+        },
+        {
+          path: 'profileManage',
+          name: 'profileManage',
+          component: () => import('@/views/profileManage/index.vue'),
+        },
+      ],
+    },
+  ],
 })
 
 export default router
