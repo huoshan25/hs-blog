@@ -5,19 +5,22 @@ import { EmailModule } from '@/modules/email/email.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { UserService } from './user.service';
 import { UserBlogController } from '@/modules/user/controller/user-blog.controller';
+import { ProfileService } from '@/modules/user/service/profile.service';
+import { UserService } from '@/modules/user/service/user.service';
+import { Profile } from '@/modules/user/entities/profile.entity';
+import { UserAdminController } from '@/modules/user/controller/user-admin.controller';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Profile]),
     RedisModule,
     EmailModule,
     forwardRef(() => AuthModule),
     DatabaseModule,
   ],
-  providers: [UserService],
+  providers: [UserService, ProfileService],
   exports: [UserService],
-  controllers: [UserBlogController],
+  controllers: [UserBlogController, UserAdminController],
 })
 export class UserModule {}

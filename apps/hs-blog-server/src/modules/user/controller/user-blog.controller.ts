@@ -3,10 +3,11 @@ import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags,} from '@nestjs/swagge
 import {ApiResponseObject} from '@/common/decorators/api-response.decorator';
 import {userVo} from '@/modules/user/vo/user.vo';
 import {TransformToVo} from '@/common/decorators/transform-to-vo.decorator';
-import {UserService} from '@/modules/user/user.service';
 import {CurrentUser} from '@/modules/auth/decorators/current-user.decorator';
 import {User} from '@/modules/user/entities/user.entity';
 import {UpdateUserDto} from '@/modules/user/dto/update-user.dto';
+import {ProfileService} from '@/modules/user/service/profile.service';
+import {UserService} from '@/modules/user/service/user.service';
 
 /**
  * 用户控制器
@@ -16,7 +17,10 @@ import {UpdateUserDto} from '@/modules/user/dto/update-user.dto';
 @Controller('blog/user')
 @ApiBearerAuth()
 export class UserBlogController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly profileService: ProfileService,
+  ) {}
 
   @Get('profile')
   @ApiOperation({ summary: '获取当前登录用户信息' })
@@ -52,5 +56,11 @@ export class UserBlogController {
       message: '更新成功',
       data: updatedUser,
     };
+  }
+
+  @ApiOperation({ summary: '获取个人简介信息' })
+  @Get('personal-profile-info')
+  getConcise() {
+    return this.profileService.getProfile();
   }
 }

@@ -1,9 +1,9 @@
-import { LoggerService } from '@/core/logger/logger.service';
-import { UserService } from '@/modules/user/user.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import {LoggerService} from '@/core/logger/logger.service';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import {PassportStrategy} from '@nestjs/passport';
+import {ExtractJwt, Strategy} from 'passport-jwt';
+import {UserService} from '@/modules/user/service/user.service';
 
 /**
  * JWT 策略

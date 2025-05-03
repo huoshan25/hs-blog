@@ -1,19 +1,19 @@
-import {LoggerService} from '@/core/logger/logger.service';
-import {RedisService} from '@/core/redis/redis.service';
-import {EmailService} from '@/modules/email/service/email.service';
-import {EmailVerificationService} from '@/modules/email/service/email-verification.service';
-import {UserService} from '@/modules/user/user.service';
-import {BadRequestException, Injectable, UnauthorizedException,} from '@nestjs/common';
-import {ConfigService} from '@nestjs/config';
-import {JwtService} from '@nestjs/jwt';
-import {randomInt} from 'crypto';
-import {AuthConfig} from './auth.config';
-import {LoginDto, RegisterDto} from './dto/auth.dto';
+import { LoggerService } from '@/core/logger/logger.service';
+import { RedisService } from '@/core/redis/redis.service';
+import { EmailService } from '@/modules/email/service/email.service';
+import { EmailVerificationService } from '@/modules/email/service/email-verification.service';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { randomInt } from 'crypto';
+import { AuthConfig } from './auth.config';
+import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { UserService } from '@/modules/user/service/user.service';
 
-/**
- * 认证服务
- * 处理令牌的生成、验证和刷新，以及用户认证相关的功能
- */
 @Injectable()
 export class AuthService {
   private readonly logger = new LoggerService().setContext(AuthService.name);
@@ -135,7 +135,7 @@ export class AuthService {
     try {
       // 删除可能存在的旧验证码
       await this.emailVerificationService.deleteCode(email);
-      
+
       // 生成6位随机验证码
       const code = randomInt(100000, 999999).toString();
 
@@ -171,8 +171,11 @@ export class AuthService {
    */
   async verifyEmailCode(email: string, code: string) {
     try {
-      const isValid = await this.emailVerificationService.verifyCode(email, code);
-      
+      const isValid = await this.emailVerificationService.verifyCode(
+        email,
+        code,
+      );
+
       if (!isValid) {
         throw new BadRequestException('验证码错误或已过期');
       }
