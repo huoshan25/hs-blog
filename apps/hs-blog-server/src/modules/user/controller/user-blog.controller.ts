@@ -8,6 +8,7 @@ import {User} from '@/modules/user/entities/user.entity';
 import {UpdateUserDto} from '@/modules/user/dto/update-user.dto';
 import {ProfileService} from '@/modules/user/service/profile.service';
 import {UserService} from '@/modules/user/service/user.service';
+import {Public} from "@/modules/auth/decorators/public.decorator";
 
 /**
  * 用户控制器
@@ -15,6 +16,7 @@ import {UserService} from '@/modules/user/service/user.service';
  */
 @ApiTags('blog', '用户')
 @Controller('blog/user')
+@Public()
 @ApiBearerAuth()
 export class UserBlogController {
   constructor(
@@ -60,7 +62,29 @@ export class UserBlogController {
 
   @ApiOperation({ summary: '获取个人简介信息' })
   @Get('personal-profile-info')
-  getConcise() {
-    return this.profileService.getProfile();
+  async getConcise() {
+    const result = await this.profileService.getProfile();
+    return {
+      data: result,
+    }
+  }
+
+  /**
+   * 个人模块信息
+   */
+  @Get()
+  async getUserInfo() {
+    const data = {
+      name: 'volcano',
+      avatar: '/img/avatar.jpg',
+      avatarBackgroundImage: 'https://hs-blog.oss-cn-beijing.aliyuncs.com/user/PixPin_2024-10-18_10-32-30.png',
+      description: '“风很温柔 花很浪漫 你很特别 我很喜欢”',
+      articlesTotal: 0,
+      categoriesTotal: 0,
+      tagTotal: 0,
+    };
+    return {
+      data
+    }
   }
 }
