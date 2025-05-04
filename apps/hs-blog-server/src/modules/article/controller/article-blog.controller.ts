@@ -76,7 +76,10 @@ export class ArticleBlogController {
   @ApiOperation({ summary: '获取文章详情' })
   @Get('details')
   async articleDetails(@Query('id') id: number) {
-    return await this.articleService.articleDetails(id);
+    const result = await this.articleService.articleDetails(id);
+    return {
+      data: result,
+    };
   }
 
   @ApiOperation({ summary: '获取文章详情' })
