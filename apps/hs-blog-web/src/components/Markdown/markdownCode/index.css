@@ -1,0 +1,41 @@
+/* components/MarkdownCode/index.css */
+.code-card {
+    margin: 16px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.language-tag {
+    font-size: 14px;
+    color: #666;
+}
+
+.code-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.copy-btn, .toggle-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.copy-btn:hover, .toggle-btn:hover {
+    border-color: #2080f0;
+    color: #2080f0;
+}
