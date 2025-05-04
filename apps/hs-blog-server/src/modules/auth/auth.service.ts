@@ -2,6 +2,7 @@ import { LoggerService } from '@/core/logger/logger.service';
 import { RedisService } from '@/core/redis/redis.service';
 import { EmailService } from '@/modules/email/service/email.service';
 import { EmailVerificationService } from '@/modules/email/service/email-verification.service';
+import { UserRole } from '@/enum/user-role.enum';
 import {
   BadRequestException,
   Injectable,
@@ -211,6 +212,7 @@ export class AuthService {
         sub: user.id,
         username: user.userName,
         email: user.email,
+        role: user.role,
       };
 
       return this.generateToken(payload);
@@ -264,6 +266,47 @@ export class AuthService {
       return tokens;
     } catch (error) {
       this.logger.error('注册失败:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 管理员登录
+   * @param loginDto 登录参数
+   * @returns 登录令牌
+   */
+  async adminLogin(loginDto: LoginDto) {
+    try {
+      // 查找用户
+      const user = await this.userService.findByUsernameOrEmail(
+        loginDto.usernameOrEmail,
+      );
+
+      // 验证用户角色
+      if (user.role !== UserRole.ADMIN) {
+        throw new UnauthorizedException('该账号无管理员权限');
+      }
+
+      // 验证密码
+      const isValidPassword = await this.userService.validatePassword(
+        loginDto.password,
+        user.password,
+      );
+      if (!isValidPassword) {
+        throw new UnauthorizedException('密码错误');
+      }
+
+      // 生成令牌
+      const payload = {
+        sub: user.id,
+        username: user.userName,
+        email: user.email,
+        role: user.role,
+      };
+
+      return this.generateToken(payload);
+    } catch (error) {
+      this.logger.error('管理员登录失败:', error);
       throw error;
     }
   }

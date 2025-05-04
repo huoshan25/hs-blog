@@ -16,6 +16,10 @@ import { UrlPreviewModule } from '@/modules/url-preview/url-preview.module';
 import { ArticleModule } from '@/modules/article/article.module';
 import { CategoryModule } from '@/modules/category/category.module';
 import { TagModule } from '@/modules/tag/tag.module';
+import { CommentModule } from '@/modules/comment/comment.module';
+import { AdminModule } from '@/modules/admin/admin.module';
+import { AdminGuard } from '@/modules/auth/guards/admin.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -34,8 +38,16 @@ import { TagModule } from '@/modules/tag/tag.module';
     ArticleModule,
     CategoryModule,
     TagModule,
+    CommentModule,
+    AdminModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AdminGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -9,12 +9,16 @@ import { TagModule } from '../tag/tag.module';
 import { ArticleContentService } from './service/article-content.service';
 import { ArticleAdminController } from '@/modules/article/controller/article-admin.controller';
 import { ArticleBlogController } from '@/modules/article/controller/article-blog.controller';
+import { AuthModule } from '@/modules/auth/auth.module';
+import { UserModule } from '@/modules/user/user.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Article, Category, ArticleTag]),
     forwardRef(() => TagModule),
     OssModule,
+    AuthModule,
+    UserModule,
   ],
   controllers: [ArticleAdminController, ArticleBlogController],
   providers: [ArticleService, Logger, ArticleContentService],

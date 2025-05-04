@@ -1,4 +1,5 @@
 import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn,} from 'typeorm';
+import { UserRole } from '@/enum/user-role.enum';
 
 /**
  * 用户实体
@@ -71,6 +72,18 @@ export class User {
     comment: '个人简介，可选，最大长度500',
   })
   bio: string;
+
+  /**
+   * 用户角色
+   * @description 用户角色，admin: 管理员，user: 普通用户，默认为普通用户
+   */
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+    comment: '用户角色，admin: 管理员，user: 普通用户',
+  })
+  role: UserRole;
 
   /**
    * 创建时间

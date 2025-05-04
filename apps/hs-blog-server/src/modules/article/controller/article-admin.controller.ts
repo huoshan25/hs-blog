@@ -11,7 +11,6 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ArticleService } from '@/modules/article/service/article.service';
-import { TagService } from '@/modules/tag/service/tag.service';
 import { FindArticlesDto } from '@/modules/article/dto/find-articles.dto';
 import { EditArticlesStatus } from '@/modules/article/dto/edit-articles-status.dto';
 import { UpdateArticleDto } from '@/modules/article/dto/update-article.dto';
@@ -19,19 +18,28 @@ import { DeleteArticlesDto } from '@/modules/article/dto/delete-article.dto';
 import { CreateArticleDto } from '@/modules/article/dto/create-article.dto';
 import { CreateArticleTtsDto } from '@/modules/article/dto/caeate-article-tts.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Admin } from '@/modules/auth/decorators/admin.decorator';
 
-@ApiTags('admin', '文章模块')
 @ApiBearerAuth()
+@Admin()
+@ApiTags('admin', '文章模块')
 @Controller('admin/article')
 export class ArticleAdminController {
-  constructor(
-    private readonly articleService: ArticleService,
-    private readonly tagService: TagService,
-  ) {}
+  constructor(private readonly articleService: ArticleService) {}
+
+
+
+  @ApiOperation({ summary: '更新文章状态' })
+  @Put('status')
+  async editArticlesStatus(
+    @Body(ValidationPipe) editArticlesStatus: EditArticlesStatus,
+  ) {
+    return this.articleService.editArticlesStatus(editArticlesStatus);
+  }
 
   @ApiOperation({ summary: '获取文章列表' })
   @Get('list')
-  async findAll(@Query(ValidationPipe) query: FindArticlesDto) {
+  async findAlla(@Query(ValidationPipe) query: FindArticlesDto) {
     const [articles, total] = await this.articleService.findAll(query);
     // 处理数据，将 category 信息解构到文章字段中，并整理标签
     const list = articles.map((article) => {
@@ -46,14 +54,6 @@ export class ArticleAdminController {
       };
     });
     return { data: { list, total } };
-  }
-
-  @ApiOperation({ summary: '更新文章状态' })
-  @Put('status')
-  async editArticlesStatus(
-    @Body(ValidationPipe) editArticlesStatus: EditArticlesStatus,
-  ) {
-    return this.articleService.editArticlesStatus(editArticlesStatus);
   }
 
   @ApiOperation({ summary: '更新文章' })
@@ -78,14 +78,8 @@ export class ArticleAdminController {
     }
   }
 
-  @ApiOperation({ summary: '删除文章' })
-  @Delete()
-  async delete(@Body(ValidationPipe) deleteArticlesDto: DeleteArticlesDto) {
-    await this.articleService.deleteArticles(deleteArticlesDto);
-    return { message: '删除成功' };
-  }
-
   @Post()
+  @ApiOperation({ summary: '创建文章' })
   async createArticle(@Body() article: CreateArticleDto) {
     try {
       const result = await this.articleService.createArticle(article);
@@ -112,7 +106,15 @@ export class ArticleAdminController {
     return await this.articleService.articleDetails(id);
   }
 
+  @ApiOperation({ summary: '删除文章' })
+  @Delete()
+  async delete(@Body(ValidationPipe) deleteArticlesDto: DeleteArticlesDto) {
+    await this.articleService.deleteArticles(deleteArticlesDto);
+    return { message: '删除成功' };
+  }
+
   @Get('tags')
+  @ApiOperation({ summary: '获取文章标签列表' })
   async findAllTags() {
     const { tag_list, tag_total, article_total } =
       await this.articleService.findAllTags();

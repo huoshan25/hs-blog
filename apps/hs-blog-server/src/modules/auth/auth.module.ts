@@ -5,11 +5,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthConfig } from './auth.config';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { JwtStrategy } from './jwt.strategy';
-import {AuthBlogController} from "@/modules/auth/controller/auth-blog.controller";
+import { AuthBlogController } from "@/modules/auth/controller/auth-blog.controller";
+import { AuthAdminController } from '@/modules/auth/controller/auth-admin.controller';
+import { User } from '../user/entities/user.entity';
+import { RolesGuard } from './guards/roles.guard';
+import { AdminGuard } from './guards/admin.guard';
 
 /**
  * 认证模块
@@ -37,11 +43,16 @@ import {AuthBlogController} from "@/modules/auth/controller/auth-blog.controller
       }),
       inject: [ConfigService],
     }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    TypeOrmModule.forFeature([User]),
     EmailModule,
     RedisModule,
     UserModule,
   ],
-  controllers: [AuthBlogController],
+  controllers: [
+    AuthBlogController,
+    AuthAdminController,
+  ],
   providers: [
     AuthService,
     AuthConfig,
@@ -50,7 +61,9 @@ import {AuthBlogController} from "@/modules/auth/controller/auth-blog.controller
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    RolesGuard,
+    AdminGuard,
   ],
-  exports: [AuthService, AuthConfig, JwtModule],
+  exports: [AuthService, AuthConfig, JwtModule, RolesGuard, AdminGuard],
 })
 export class AuthModule {}
