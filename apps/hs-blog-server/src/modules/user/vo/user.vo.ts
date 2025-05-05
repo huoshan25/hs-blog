@@ -42,3 +42,9 @@ export class userVo {
   @ApiProperty({ description: '个人简介' })
   bio: string;
 }
+
+export class userAdminVo extends userVo {
+  @Expose()
+  @ApiProperty({ description: '角色 user:普通用户 admin:管理员' })
+  role: string;
+}
