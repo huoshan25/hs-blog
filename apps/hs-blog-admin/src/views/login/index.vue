@@ -8,7 +8,7 @@ import { useThemeOverrides } from '@/layout/useThemeOverrides.ts'
 
 const router = useRouter()
 
-const { token, refreshToken, setToken } = useUser()
+const { setToken, fetchUserInfo } = useUser()
 
 const loginForm = ref<loginReq>({
   usernameOrEmail: '',
@@ -41,6 +41,7 @@ const handleLogin = async () => {
     const res = await getLogin(loginForm.value)
     if (res.code === HttpStatus.OK) {
       setToken(res.data.accessToken, res.data.refreshToken)
+      fetchUserInfo()
       await router.push('/dashboard')
     } else {
       errorMessage.value = res.message || '登录失败，请检查用户名和密码'

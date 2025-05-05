@@ -1,6 +1,10 @@
 export interface UserInfoRes {
-  /**用户名*/
-  username: string
+  id: number;
+  userName: string;
+  email: string;
+  avatar: string;
+  bio: string;
+  role: string;
 }
 
 export interface loginReq {

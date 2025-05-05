@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import AppMain from './components/AppMain.vue'
-
 import type { MenuOption } from 'naive-ui'
 import { dateZhCN, zhCN } from 'naive-ui'
 import { useThemeOverrides } from '@/layout/useThemeOverrides.ts'
 import { useMenus } from '@/stores/useMenus.ts'
 import Footer from '@/layout/components/Footer.vue'
+import AppHeader from './components/AppHeader.vue'
 
 onMounted(() => {})
 
@@ -247,37 +247,40 @@ const updateMenuAndBreadcrumb = (key: string) => {
               </n-layout-sider>
               <div class="wrap scrollBar">
                 <div class="header">
-                  <img
-                    :src="collapsed ? '/svg/unfold.svg' : '/svg/shrink.svg'"
-                    height="25"
-                    class="p-[15px]"
-                    @click="handleFoldMenu"
-                  />
-                  <n-breadcrumb class="ml-[25px]">
-                    <n-breadcrumb-item>
-                      <n-dropdown :options="homeDropdownOptions" @select="handleDropdownSelect">
-                        <div class="trigger">首页</div>
-                      </n-dropdown>
-                    </n-breadcrumb-item>
-                    <n-breadcrumb-item
-                      v-for="(item, index) in breadcrumbList"
-                      :key="item"
-                      @click="handleBreadcrumbClick(index)"
-                    >
-                      <n-dropdown
-                        v-if="dropdownOptions[index]"
-                        :options="dropdownOptions[index]"
-                        @select="handleDropdownSelect"
+                  <div class="flex justify-center items-center">
+                    <img
+                        :src="collapsed ? '/svg/unfold.svg' : '/svg/shrink.svg'"
+                        height="25"
+                        class="p-[15px]"
+                        @click="handleFoldMenu"
+                    />
+                    <n-breadcrumb class="ml-[25px]">
+                      <n-breadcrumb-item>
+                        <n-dropdown :options="homeDropdownOptions" @select="handleDropdownSelect">
+                          <div class="trigger">首页</div>
+                        </n-dropdown>
+                      </n-breadcrumb-item>
+                      <n-breadcrumb-item
+                          v-for="(item, index) in breadcrumbList"
+                          :key="item"
+                          @click="handleBreadcrumbClick(index)"
                       >
-                        <div class="trigger">
+                        <n-dropdown
+                            v-if="dropdownOptions[index]"
+                            :options="dropdownOptions[index]"
+                            @select="handleDropdownSelect"
+                        >
+                          <div class="trigger">
+                            {{ item }}
+                          </div>
+                        </n-dropdown>
+                        <template v-else>
                           {{ item }}
-                        </div>
-                      </n-dropdown>
-                      <template v-else>
-                        {{ item }}
-                      </template>
-                    </n-breadcrumb-item>
-                  </n-breadcrumb>
+                        </template>
+                      </n-breadcrumb-item>
+                    </n-breadcrumb>
+                  </div>
+                  <AppHeader/>
                 </div>
                 <main class="content">
                   <n-card class="radius-[16px]">
@@ -307,6 +310,7 @@ const updateMenuAndBreadcrumb = (key: string) => {
     .header {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       padding: 16px 12px;
       background-color: white;
     }

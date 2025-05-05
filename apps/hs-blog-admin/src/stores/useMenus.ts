@@ -1,17 +1,23 @@
-import {CreateOutline, SpeedometerOutline, GitNetwork, PersonSharp, SettingsSharp} from "@vicons/ionicons5";
-import {type MenuOption, NIcon} from "naive-ui";
-import type {Component} from "vue";
+import {
+  CreateOutline,
+  GitNetwork,
+  PeopleSharp,
+  PersonSharp,
+  SettingsSharp,
+  SpeedometerOutline,
+} from '@vicons/ionicons5'
+import {type MenuOption, NIcon} from 'naive-ui'
+import type {Component} from 'vue'
 
 /**转换图标*/
 const renderIcon = (icon: Component) => {
-  return () => h(NIcon, null, {default: () => h(icon)})
+  return () => h(NIcon, null, { default: () => h(icon) })
 }
 
 /**
  * 后台菜单配置
  */
 export const useMenus = () => {
-
   /**菜单项*/
   const menuOptions = ref<MenuOption[]>([
     {
@@ -35,6 +41,11 @@ export const useMenus = () => {
       icon: renderIcon(PersonSharp),
     },
     {
+      label: '友链管理',
+      key: '/linkManage',
+      icon: renderIcon(PeopleSharp),
+    },
+    {
       label: '系统设置',
       key: '/systemSettings',
       icon: renderIcon(SettingsSharp),
@@ -42,6 +53,6 @@ export const useMenus = () => {
   ])
 
   return {
-    menuOptions
+    menuOptions,
   }
 }
