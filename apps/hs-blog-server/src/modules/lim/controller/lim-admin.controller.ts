@@ -3,9 +3,11 @@ import type { Response } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LimService } from '@/modules/lim/service/lim.service';
 import { LimConfigService } from '@/modules/lim/service/lim-config.service';
+import { Admin } from '@/modules/auth/decorators/admin.decorator';
 
 @ApiTags('admin', '大模型应用')
 @Controller('admin/openai')
+@Admin()
 export class LimAdminController {
   constructor(
     private readonly limService: LimService,

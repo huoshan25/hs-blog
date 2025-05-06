@@ -1,14 +1,16 @@
 import { Controller, Get } from '@nestjs/common';
 import { TagService } from '../service/tag.service';
-import {ApiBearerAuth, ApiOperation, ApiTags} from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Admin } from '@/modules/auth/decorators/admin.decorator';
 
-@ApiTags('admin','标签管理')
+@ApiTags('admin', '标签管理')
 @ApiBearerAuth()
+@Admin()
 @Controller('admin/tag')
 export class TagAdminController {
   constructor(private readonly tagService: TagService) {}
 
-  @ApiOperation({ summary: '标签统计'})
+  @ApiOperation({ summary: '标签统计' })
   @Get('stats')
   async getTagsStats() {
     const data = await this.tagService.getTagsStats();

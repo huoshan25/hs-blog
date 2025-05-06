@@ -18,10 +18,12 @@ import { CreateCategoryDto } from '@/modules/category/dto/create-category.dto';
 import { FileValidationUtil } from '@/common/utils/file-validation.util';
 import { UpdateCategoryDto } from '@/modules/category/dto/update-category.dto';
 import { DeleteCategoryDto } from '@/modules/category/dto/delete-category.dto';
-import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Admin } from '@/modules/auth/decorators/admin.decorator';
 
 @ApiTags('admin', '分类模块')
 @ApiBearerAuth()
+@Admin()
 @Controller('admin/category')
 export class CategoryAdminController {
   constructor(private readonly categoryService: CategoryService) {}

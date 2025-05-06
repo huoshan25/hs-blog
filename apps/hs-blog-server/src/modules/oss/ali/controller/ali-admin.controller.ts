@@ -13,9 +13,11 @@ import { OssUploadService } from '../service/ossUpload.service';
 import { OssFileManagementService } from '../service/ossFileManagement.service';
 import { OssConfigService } from '../service/ossConfig.service';
 import { FileValidationUtil } from '@/common/utils/file-validation.util';
-import {ApiTags} from "@nestjs/swagger";
+import { ApiTags } from '@nestjs/swagger';
+import { Admin } from '@/modules/auth/decorators/admin.decorator';
 
 @ApiTags('admin', '阿里云OSS')
+@Admin()
 @Controller('admin/oss/ali')
 export class AliAdminController {
   constructor(

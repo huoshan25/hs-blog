@@ -18,7 +18,6 @@ export class AuthAdminController {
   @ApiResponseObject(LoginResponseVo)
   @ApiResponse({ status: 401, description: '认证失败' })
   async login(@Body() loginDto: LoginDto) {
-    // 调用管理员登录服务
     const result = await this.authService.adminLogin(loginDto);
     return {
       message: '登录成功',

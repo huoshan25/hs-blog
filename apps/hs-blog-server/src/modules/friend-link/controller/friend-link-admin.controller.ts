@@ -12,9 +12,11 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FriendLinkService } from '../service/friend-link.service';
 import { UpdateFriendLinkStatusDto } from '../dto/update-friend-link-status.dto';
 import { FindFriendLinksDto } from '../dto/find-friend-links.dto';
+import { Admin } from '@/modules/auth/decorators/admin.decorator';
 
 @ApiTags('admin', '友链管理')
 @Controller('admin/friend-links')
+@Admin()
 export class FriendLinkAdminController {
   constructor(private readonly friendLinkService: FriendLinkService) {}
 
