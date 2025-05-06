@@ -44,13 +44,10 @@ const rules: FormRules = {
   ]
 }
 
-const handleSubmit = () => {
-  formRef.value?.validate((errors) => {
-    if (!errors) {
-      emit('submit', formValue.value)
-      emit('update:show', false)
-    }
-  })
+const handleSubmit = async () => {
+  await formRef.value?.validate()
+  emit('submit', formValue.value)
+  emit('update:show', false)
 }
 </script>
 
@@ -61,6 +58,7 @@ const handleSubmit = () => {
       title="申请友链"
       style="max-width: 600px"
       :mask-closable="false"
+      @update:show="emit('update:show', $event)"
   >
     <n-form
         ref="formRef"

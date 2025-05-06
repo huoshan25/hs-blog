@@ -1,8 +1,10 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import FriendLinkApplySection from './components/friendLinkApplySection.vue'
   import FriendLinksGrid from './components/friendLinksGrid.vue'
   import FriendLinkApplyModal from './components/friendLinkApplyModal.vue'
+  import { useGetFriendLinks, useApplyFriendLink, type FriendLink as ApiFriendLink } from '@/api/friendLink'
+  import { useMessage } from 'naive-ui'
 
   definePageMeta({
     layout: 'default'
@@ -17,18 +19,10 @@
     category: string
   }
 
+  const message = useMessage()
   const showApplyModal = ref(false)
-
-  const friendLinks = ref<FriendLink[]>([
-    {
-      name: '火山博客',
-      avatar: '/svg/logo.svg',
-      description: '一个充满创意的技术博客',
-      url: 'https://example.com',
-      tags: ['技术', 'Web开发'],
-      category: '技术博客'
-    }
-  ])
+  const friendLinks = ref<FriendLink[]>([])
+  const loading = ref(false)
 
   const categories = ['技术博客', '生活博客', '设计博客', '其他']
   const activeCategory = ref('全部')
@@ -38,7 +32,44 @@
     return friendLinks.value.filter(friend => friend.category === activeCategory.value)
   })
 
-  const handleApplySubmit = () => {}
+  // 从API获取已批准的友链
+  const fetchFriendLinks = async () => {
+    loading.value = true
+    try {
+      const res = await useGetFriendLinks()
+      if (res.code === 200) {
+        friendLinks.value = res.data.map(item => ({
+          name: item.name,
+          avatar: item.avatar,
+          description: item.description,
+          url: item.url,
+          category: item.category,
+          tags: item.category ? [item.category] : undefined
+        }))
+      }
+    } catch (error) {
+      console.error('获取友链失败:', error)
+      message.error('获取友链数据失败，请稍后再试')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // 提交友链申请
+  const handleApplySubmit = async (formData: any) => {
+    try {
+      const res = await useApplyFriendLink(formData)
+      if (res.code === 200) {
+        message.success(res.message)
+      }
+    } catch (error) {
+      console.error('提交友链申请失败:', error)
+      message.error('提交友链申请失败，请稍后再试')
+    }
+  }
+
+  // 页面加载时获取友链数据
+  fetchFriendLinks()
 </script>
 
 <template>
@@ -80,7 +111,9 @@
       </div>
 
       <!-- 友链展示区域 -->
-      <FriendLinksGrid :friend-links="filteredFriends" />
+      <n-spin :show="loading">
+        <FriendLinksGrid :friend-links="filteredFriends" />
+      </n-spin>
 
       <!-- 申请友链区域 -->
       <FriendLinkApplySection @apply="showApplyModal = true" />
