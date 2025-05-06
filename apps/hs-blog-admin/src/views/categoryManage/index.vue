@@ -300,9 +300,9 @@ const fileList = ref<any>([])
                 <InformationCircleOutline />
               </n-icon>
               你可以在
-              <nuxt-link class="mx-[4px]" to="https://www.iconfont.cn" color-blue target="_blank">
+              <a href="https://www.iconfont.cn" class="color-blue mx-[4px]" target="_blank">
                 阿里巴巴矢量图标库
-              </nuxt-link>
+              </a>
               搜索和下载喜欢的图标。
             </div>
             <n-upload
