@@ -40,39 +40,4 @@ export class AuthConfig {
   get refreshExpiresIn(): string {
     return this.configService.get<string>('REFRESH_EXPIRES_IN') || '7d';
   }
-
-  /**
-   * 白名单路径列表
-   * 这些路径不需要任何认证就可以访问
-   */
-  get whiteList(): string[] {
-    const whiteListStr = this.configService.get<string>('AUTH_WHITE_LIST');
-    return whiteListStr ? JSON.parse(whiteListStr) : [];
-  }
-
-  /**
-   * 公开路径前缀列表
-   * 这些路径前缀下的所有路径都是公开的
-   */
-  get publicPrefixes(): string[] {
-    const prefixesStr = this.configService.get<string>('AUTH_PUBLIC_PREFIXES');
-    return prefixesStr ? JSON.parse(prefixesStr) : [];
-  }
-
-  /**
-   * 受保护路径前缀列表
-   * 这些路径前缀下的所有路径都需要认证
-   */
-  get protectedPrefixes(): string[] {
-    const prefixesStr = this.configService.get<string>('AUTH_PROTECTED_PREFIXES');
-    return prefixesStr ? JSON.parse(prefixesStr) : [];
-  }
-
-  /**
-   * 异常路径列表
-   * 这些路径会被特殊处理，不受其他规则影响
-   */
-  get exceptions(): string[] {
-    return this.configService.get<string[]>('AUTH_EXCEPTIONS') || [];
-  }
 }
