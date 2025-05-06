@@ -3,16 +3,15 @@ import {
   GitNetwork,
   PeopleSharp,
   PersonSharp,
-  SettingsSharp,
   SpeedometerOutline,
 } from '@vicons/ionicons5'
-import {type MenuOption, NIcon} from 'naive-ui'
-import type {Component} from 'vue'
-import { ref, h } from 'vue'
+import { type MenuOption, NIcon } from 'naive-ui'
+import type { Component } from 'vue'
+import { h, ref } from 'vue'
 
 // 显式定义 MenuOptionItem 类型来避免递归深度问题
 export interface MenuOptionItem extends Omit<MenuOption, 'children'> {
-  children?: MenuOptionItem[];
+  children?: MenuOptionItem[]
 }
 
 /**转换图标*/
@@ -50,11 +49,6 @@ export const useMenus = () => {
       label: '友链管理',
       key: '/linkManage',
       icon: renderIcon(PeopleSharp),
-    },
-    {
-      label: '系统设置',
-      key: '/systemSettings',
-      icon: renderIcon(SettingsSharp),
     },
   ])
 
