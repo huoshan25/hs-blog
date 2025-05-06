@@ -1,42 +1,11 @@
-/**
- * 友链状态
- */
-export enum FriendLinkStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
-}
+import type {FriendLink, SearchFriendLinkParams, UpdateStatusParams} from "@/api/friendLink/type.ts";
 
 /**
- * 友链数据接口
+ * 获取所有友链，支持搜索参数
+ * @param params 搜索参数
  */
-export interface FriendLink {
-  id: number
-  name: string
-  avatar: string
-  description: string
-  url: string
-  category: string
-  email: string
-  status: FriendLinkStatus
-  rejectReason?: string
-  createdAt: string
-  updatedAt: string
-}
-
-/**
- * 更新友链状态参数
- */
-export interface UpdateStatusParams {
-  status: FriendLinkStatus
-  rejectReason?: string
-}
-
-/**
- * 获取所有友链
- */
-export function getFriendLinks() {
-  return request.get<FriendLink[]>('/friend-links')
+export function getFriendLinks(params?: SearchFriendLinkParams) {
+  return request.get<FriendLink[]>('/friend-links', params)
 }
 
 /**
