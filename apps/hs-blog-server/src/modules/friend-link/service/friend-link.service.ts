@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { FriendLink, FriendLinkStatus } from '../entities/friend-link.entity';
 import { CreateFriendLinkDto } from '../dto/create-friend-link.dto';
 import { UpdateFriendLinkStatusDto } from '../dto/update-friend-link-status.dto';
+import { FindFriendLinksDto } from '../dto/find-friend-links.dto';
 
 @Injectable()
 export class FriendLinkService {
@@ -35,10 +36,29 @@ export class FriendLinkService {
   }
 
   /**
-   * 获取所有友链（管理员使用）
+   * 获取所有友链
+   * @param findFriendLinksDto
    */
-  async findAll(): Promise<FriendLink[]> {
+  async findAll(findFriendLinksDto?: FindFriendLinksDto) {
+    const { name, status, category } = findFriendLinksDto || {};
+    
+    // 构建查询条件
+    const whereConditions: any = {};
+    
+    if (name) {
+      whereConditions.name = Like(`%${name}%`);
+    }
+    
+    if (status) {
+      whereConditions.status = status;
+    }
+    
+    if (category) {
+      whereConditions.category = category;
+    }
+    
     return this.friendLinkRepository.find({
+      where: whereConditions,
       order: { createdAt: 'DESC' },
     });
   }
