@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -9,13 +10,46 @@ import { Repository } from 'typeorm';
 import { User } from '@/modules/user/entities/user.entity';
 import { CreateUserDto } from '@/modules/user/dto/create-user.dto';
 import { UpdateUserDto } from '@/modules/user/dto/update-user.dto';
+import { LoggerService } from '@/core/logger/logger.service';
+import { UserConfigService } from '@/modules/user/service/user-config.service';
 
 @Injectable()
-export class UserService {
+export class UserService implements OnModuleInit {
+  private readonly logger = new LoggerService().setContext(UserService.name);
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly userConfigService: UserConfigService,
   ) {}
+
+  async onModuleInit() {
+    this.createAdminUser();
+  }
+
+  /**
+   * 初始化创建管理员用户
+   */
+  async createAdminUser() {
+    const adminUser = this.userConfigService.adminUserConfig;
+
+    const existingUsername = await this.userRepository.findOne({
+      where: { userName: adminUser.userName },
+    });
+    if (existingUsername) {
+      this.logger.warn('用户名已存在');
+      return;
+    }
+
+    const existingEmail = await this.userRepository.findOne({
+      where: { email: adminUser.email },
+    });
+    if (existingEmail) {
+      this.logger.warn('邮箱已存在');
+      return;
+    }
+    return this.userRepository.save(adminUser);
+  }
 
   /**
    * 创建用户

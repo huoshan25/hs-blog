@@ -10,6 +10,7 @@ import { ProfileService } from '@/modules/user/service/profile.service';
 import { UserService } from '@/modules/user/service/user.service';
 import { Profile } from '@/modules/user/entities/profile.entity';
 import { UserAdminController } from '@/modules/user/controller/user-admin.controller';
+import {UserConfigService} from "@/modules/user/service/user-config.service";
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { UserAdminController } from '@/modules/user/controller/user-admin.contro
     forwardRef(() => AuthModule),
     DatabaseModule,
   ],
-  providers: [UserService, ProfileService],
+  providers: [UserService, ProfileService, UserConfigService],
   exports: [UserService],
   controllers: [UserBlogController, UserAdminController],
 })
