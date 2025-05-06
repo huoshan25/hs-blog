@@ -18,6 +18,7 @@ import { CategoryModule } from '@/modules/category/category.module';
 import { TagModule } from '@/modules/tag/tag.module';
 import { CommentModule } from '@/modules/comment/comment.module';
 import { AdminModule } from '@/modules/admin/admin.module';
+import { FriendLinkModule } from '@/modules/friend-link/friend-link.module';
 import { AdminGuard } from '@/modules/auth/guards/admin.guard';
 import { APP_GUARD } from '@nestjs/core';
 
@@ -40,6 +41,7 @@ import { APP_GUARD } from '@nestjs/core';
     TagModule,
     CommentModule,
     AdminModule,
+    FriendLinkModule,
   ],
   controllers: [AppController],
   providers: [
