@@ -3,14 +3,9 @@ import AppMain from './components/AppMain.vue'
 import type { MenuOption } from 'naive-ui'
 import { dateZhCN, zhCN } from 'naive-ui'
 import { useThemeOverrides } from '@/layout/useThemeOverrides.ts'
-import { useMenus } from '@/stores/useMenus.ts'
+import { useMenus, type MenuOptionItem } from '@/stores/useMenus.ts'
 import Footer from '@/layout/components/Footer.vue'
 import AppHeader from './components/AppHeader.vue'
-
-// 显式定义 MenuOptionTree 类型来避免递归深度问题
-interface MenuOptionItem extends Omit<MenuOption, 'children'> {
-  children?: MenuOptionItem[];
-}
 
 onMounted(() => {})
 
@@ -19,7 +14,7 @@ const router = useRouter()
 onMounted(() => {
   /**获取当前路由路径*/
   activeKey.value = router.currentRoute.value.path
-  renewalCrumbs(menuOptions.value as MenuOptionItem[], activeKey.value)
+  renewalCrumbs(menuOptions.value, activeKey.value)
 })
 
 /**是否反转*/
@@ -54,7 +49,7 @@ const dropdownOptions = ref<Record<number, MenuOptionItem[]>>({})
  */
 const handleUpdateMenu = (key: string, item?: MenuOption) => {
   activeKey.value = key
-  renewalCrumbs(menuOptions.value as MenuOptionItem[], key)
+  renewalCrumbs(menuOptions.value, key)
 }
 
 /**
@@ -122,11 +117,10 @@ const findDropdownOptions = (
 }
 
 /**面包屑首页数据 - 一级菜单*/
-const homeDropdownOptions: { label: any; key: string | number | undefined }[] =
-  menuOptions.value.map((option: any) => ({
-    label: option.label,
-    key: option.key,
-  }))
+const homeDropdownOptions = menuOptions.value.map((option) => ({
+  label: option.label,
+  key: option.key,
+}))
 
 /**
  * 处理面包屑点击事件
@@ -134,7 +128,7 @@ const homeDropdownOptions: { label: any; key: string | number | undefined }[] =
  */
 const handleBreadcrumbClick = (index: number) => {
   const path = breadcrumbList.value.slice(0, index + 1)
-  const menuPath = findMenuPathByBreadcrumb(path, menuOptions.value as MenuOptionItem[])
+  const menuPath = findMenuPathByBreadcrumb(path, menuOptions.value)
   if (menuPath) {
     updateMenuAndBreadcrumb(menuPath)
     router.push(menuPath)
@@ -207,7 +201,7 @@ const findFirstChildKey = (option: MenuOptionItem): string | number | null => {
  * @param key 菜单项 key
  */
 const handleDropdownSelect = (key: string) => {
-  const menuPath = findMenuPathByKey(key, menuOptions.value as MenuOptionItem[])
+  const menuPath = findMenuPathByKey(key, menuOptions.value)
   if (menuPath) {
     const firstChildKey = findFirstChildKey(menuPath)
     const navigateKey = firstChildKey !== null ? firstChildKey.toString() : key
@@ -222,8 +216,7 @@ const handleDropdownSelect = (key: string) => {
  */
 const updateMenuAndBreadcrumb = (key: string) => {
   activeKey.value = key
-  renewalCrumbs(menuOptions.value as MenuOptionItem[], key)
-
+  renewalCrumbs(menuOptions.value, key)
 }
 </script>
 
