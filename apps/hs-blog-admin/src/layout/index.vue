@@ -7,6 +7,11 @@ import { useMenus } from '@/stores/useMenus.ts'
 import Footer from '@/layout/components/Footer.vue'
 import AppHeader from './components/AppHeader.vue'
 
+// 显式定义 MenuOptionTree 类型来避免递归深度问题
+interface MenuOptionItem extends Omit<MenuOption, 'children'> {
+  children?: MenuOptionItem[];
+}
+
 onMounted(() => {})
 
 const router = useRouter()
@@ -14,7 +19,7 @@ const router = useRouter()
 onMounted(() => {
   /**获取当前路由路径*/
   activeKey.value = router.currentRoute.value.path
-  renewalCrumbs(menuOptions.value, activeKey.value)
+  renewalCrumbs(menuOptions.value as MenuOptionItem[], activeKey.value)
 })
 
 /**是否反转*/
@@ -40,7 +45,7 @@ const handleFoldMenu = () => {
 const breadcrumbList = ref<string[]>([])
 
 /**用于存储菜单树结构的扁平化数组 - 面包屑菜单*/
-const dropdownOptions = ref<Record<number, MenuOption[]>>({})
+const dropdownOptions = ref<Record<number, MenuOptionItem[]>>({})
 
 /**
  * 处理菜单项选中事件
@@ -49,7 +54,7 @@ const dropdownOptions = ref<Record<number, MenuOption[]>>({})
  */
 const handleUpdateMenu = (key: string, item?: MenuOption) => {
   activeKey.value = key
-  renewalCrumbs(menuOptions.value, key)
+  renewalCrumbs(menuOptions.value as MenuOptionItem[], key)
 }
 
 /**
@@ -57,7 +62,7 @@ const handleUpdateMenu = (key: string, item?: MenuOption) => {
  * @param menuOptions 菜单数据
  * @param key 菜单项
  */
-const renewalCrumbs = (menuOptions: MenuOption[], key: string) => {
+const renewalCrumbs = (menuOptions: MenuOptionItem[], key: string) => {
   router.push(key)
   const path = findMenuPath(menuOptions, key)
   if (path) {
@@ -73,7 +78,7 @@ const renewalCrumbs = (menuOptions: MenuOption[], key: string) => {
  * @param path - 当前路径
  * @returns 路径数组或 null
  */
-const findMenuPath = (options: MenuOption[], key: string, path: string[] = []): string[] | null => {
+const findMenuPath = (options: MenuOptionItem[], key: string, path: string[] = []): string[] | null => {
   for (const option of options) {
     const newPath = [...path, option.label as string]
     if (option.key === key) {
@@ -96,11 +101,11 @@ const findMenuPath = (options: MenuOption[], key: string, path: string[] = []): 
  * @returns 各层级的下拉菜单选项
  */
 const findDropdownOptions = (
-  options: MenuOption[],
+  options: MenuOptionItem[],
   path: string[],
-): Record<number, MenuOption[]> => {
-  const dropdowns: Record<number, MenuOption[]> = {}
-  const findOptions = (opts: MenuOption[], p: string[], depth: number) => {
+): Record<number, MenuOptionItem[]> => {
+  const dropdowns: Record<number, MenuOptionItem[]> = {}
+  const findOptions = (opts: MenuOptionItem[], p: string[], depth: number) => {
     const label = p[depth]
     for (const option of opts) {
       if (option.label === label) {
@@ -129,7 +134,7 @@ const homeDropdownOptions: { label: any; key: string | number | undefined }[] =
  */
 const handleBreadcrumbClick = (index: number) => {
   const path = breadcrumbList.value.slice(0, index + 1)
-  const menuPath = findMenuPathByBreadcrumb(path, menuOptions.value)
+  const menuPath = findMenuPathByBreadcrumb(path, menuOptions.value as MenuOptionItem[])
   if (menuPath) {
     updateMenuAndBreadcrumb(menuPath)
     router.push(menuPath)
@@ -142,7 +147,7 @@ const handleBreadcrumbClick = (index: number) => {
  * @param options 菜单项
  * @returns 菜单项路径或 null
  */
-const findMenuPathByBreadcrumb = (breadcrumbs: string[], options: MenuOption[]): string | null => {
+const findMenuPathByBreadcrumb = (breadcrumbs: string[], options: MenuOptionItem[]): string | null => {
   let currentOptions = options
   for (const breadcrumb of breadcrumbs) {
     const option = currentOptions.find((opt) => opt.label === breadcrumb)
@@ -165,7 +170,7 @@ const findMenuPathByBreadcrumb = (breadcrumbs: string[], options: MenuOption[]):
  * @param options 菜单项数组
  * @returns 菜单项或 null
  */
-const findMenuPathByKey = (key: string | number, options: MenuOption[]): MenuOption | null => {
+const findMenuPathByKey = (key: string | number, options: MenuOptionItem[]): MenuOptionItem | null => {
   for (const option of options) {
     if (option.key === key) {
       return option
@@ -185,9 +190,14 @@ const findMenuPathByKey = (key: string | number, options: MenuOption[]): MenuOpt
  * @param option 菜单项
  * @returns 子菜单项 key 或 null
  */
-const findFirstChildKey = (option: MenuOption): string | number | null => {
+const findFirstChildKey = (option: MenuOptionItem): string | number | null => {
   if (option.children && option.children.length > 0) {
-    return option.children[0].key ?? null
+    const key = option.children[0].key
+    if (key === undefined || key === null) {
+      return null
+    }
+    // 确保key是string或number类型
+    return typeof key === 'string' || typeof key === 'number' ? key : null
   }
   return null
 }
@@ -197,10 +207,10 @@ const findFirstChildKey = (option: MenuOption): string | number | null => {
  * @param key 菜单项 key
  */
 const handleDropdownSelect = (key: string) => {
-  const menuPath = findMenuPathByKey(key, menuOptions.value)
+  const menuPath = findMenuPathByKey(key, menuOptions.value as MenuOptionItem[])
   if (menuPath) {
-    const firstChildKey = findFirstChildKey(menuPath) as string
-    const navigateKey = firstChildKey || key
+    const firstChildKey = findFirstChildKey(menuPath)
+    const navigateKey = firstChildKey !== null ? firstChildKey.toString() : key
     router.push(navigateKey)
     updateMenuAndBreadcrumb(navigateKey)
   }
@@ -212,7 +222,8 @@ const handleDropdownSelect = (key: string) => {
  */
 const updateMenuAndBreadcrumb = (key: string) => {
   activeKey.value = key
-  renewalCrumbs(menuOptions.value, key)
+  renewalCrumbs(menuOptions.value as MenuOptionItem[], key)
+
 }
 </script>
 
