@@ -66,6 +66,8 @@ export interface CommentData {
   articleId: number
   userId: number
   parentId: number | null
+  replyToId?: number | null
+  replyToUser?: string | null
   createdAt: string
   updatedAt: string
   user: {
@@ -82,4 +84,6 @@ export interface CreateCommentRequest {
   content: string
   articleId: number
   parentId?: number
+  replyToId?: number
+  replyToUser?: string
 }

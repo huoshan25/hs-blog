@@ -11,8 +11,14 @@
   const { user, token, showLoginModal } = useUser()
   const commentContent = ref('')
   const mainCommentContent = ref('')
-  const replyTo = ref<{ id: number; userName: string; isTopLevel: boolean } | null>(null)
-  const activeReplyId = ref<number | null>(null)
+  const replyTo = ref<{
+    id: number // 顶级评论ID（实际提交到后端的parentId）
+    userName: string // 要回复的用户名（显示用）
+    isTopLevel: boolean // 是否是回复顶级评论
+    commentId: number // 当前回复的评论ID（用于UI显示）
+    replyToId?: number // 被回复评论的ID
+    replyToUser?: string // 被回复用户的名称
+  } | null>(null)
   const comments = ref<CommentData[]>([])
   const isSubmitting = ref(false)
   const loading = ref(true)
@@ -33,11 +39,9 @@
     })
   })
 
-  // 获取父评论用户名
-  const getParentUserName = (parentId: number | null) => {
-    if (!parentId) return null
-    const parent = comments.value.find(c => c.id === parentId)
-    return parent?.user.userName || '未知用户'
+  // 判断某个评论是否处于回复状态
+  const isReplying = (commentId: number) => {
+    return replyTo.value?.commentId === commentId
   }
 
   // 获取评论列表
@@ -107,10 +111,17 @@
 
     isSubmitting.value = true
     try {
-      const data = {
+      // 构建基础数据
+      const data: any = {
         content: commentContent.value,
         articleId: props.articleId,
         parentId: replyTo.value.id
+      }
+
+      // 如果是回复二级评论，添加额外的字段
+      if (!replyTo.value.isTopLevel) {
+        data.replyToId = replyTo.value.commentId
+        data.replyToUser = replyTo.value.userName
       }
 
       const res = await createComment(data)
@@ -118,7 +129,6 @@
         message.success('回复发布成功')
         commentContent.value = ''
         replyTo.value = null
-        activeReplyId.value = null
         await fetchComments()
       }
     } catch (error) {
@@ -129,43 +139,56 @@
     }
   }
 
-  // 打开回复框
-  const openReplyBox = (comment: CommentData, isTopLevel = true) => {
+  // 打开回复框 - 回复顶级评论
+  const openReplyBox = (comment: CommentData) => {
     if (!token.value) {
       message.warning('请先登录后再回复评论')
       return
     }
 
-    // 已经打开了当前评论的回复框，则关闭它
-    if (activeReplyId.value === comment.id) {
-      activeReplyId.value = null
-      replyTo.value = null
-      commentContent.value = ''
+    // 如果已经是回复此评论，则取消回复状态
+    if (isReplying(comment.id)) {
+      cancelReply()
       return
     }
 
+    // 设置回复状态
+    commentContent.value = ''
     replyTo.value = {
       id: comment.id,
       userName: comment.user.userName,
-      isTopLevel
+      isTopLevel: true,
+      commentId: comment.id
     }
-    activeReplyId.value = comment.id
-    commentContent.value = ''
+  }
 
-    // 等待DOM更新后聚焦到回复框
-    nextTick(() => {
-      const replyInput = document.getElementById(`reply-input-${comment.id}`)
-      if (replyInput) {
-        ;(replyInput as HTMLTextAreaElement).focus()
-      }
-    })
+  // 打开回复框 - 回复二级评论
+  const openSecondaryReplyBox = (topComment: CommentData, reply: CommentData) => {
+    if (!token.value) {
+      message.warning('请先登录后再回复评论')
+      return
+    }
+
+    // 如果已经是回复此评论，则取消回复状态
+    if (isReplying(reply.id)) {
+      cancelReply()
+      return
+    }
+
+    // 设置回复状态
+    commentContent.value = ''
+    replyTo.value = {
+      id: topComment.id, // 顶级评论ID作为parentId
+      userName: reply.user.userName, // 被回复用户的名称
+      isTopLevel: false,
+      commentId: reply.id // 实际回复的评论ID
+    }
   }
 
   // 取消回复
   const cancelReply = () => {
-    replyTo.value = null
-    activeReplyId.value = null
     commentContent.value = ''
+    replyTo.value = null
   }
 
   // 删除评论
@@ -182,18 +205,6 @@
       console.error('删除评论失败', error)
       message.error('删除评论失败，请稍后重试')
     }
-  }
-
-  // 格式化时间
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
   }
 
   // 判断当前登录用户是否是评论作者
@@ -296,24 +307,18 @@
               </div>
             </div>
 
-            <!-- 回复评论框 -->
+            <!-- 回复评论框 - 顶级评论 -->
             <div
-              v-if="activeReplyId === comment.id"
+              v-if="isReplying(comment.id)"
               class="reply-box ml-10 mt-2 mb-2 p-3 bg-gray-50 rounded-lg border border-gray-200"
             >
-              <div class="flex items-center mb-2">
-                <n-tag type="info" size="small" class="mr-2">回复</n-tag>
-                <span class="font-medium">@{{ replyTo?.userName }}</span>
-              </div>
-
               <n-input
                 show-count
                 clearable
                 v-model:value="commentContent"
                 type="textarea"
                 maxlength="1000"
-                :placeholder="`回复 ${replyTo?.userName}...`"
-                :id="`reply-input-${comment.id}`"
+                placeholder="发表你的回复..."
                 :rows="3"
                 :disabled="isSubmitting"
               />
@@ -352,11 +357,14 @@
 
                   <!-- 回复内容 -->
                   <div class="flex-grow">
-                    <div class="flex items-center">
+                    <div class="flex items-center flex-wrap">
                       <span class="font-medium text-sm">{{ reply.user.userName }}</span>
-                      <span class="text-xs text-gray-400 mx-1">回复</span>
-                      <span class="font-medium text-sm text-blue-500">{{ comment.user.userName }}</span>
-                      <span class="text-xs text-gray-500 ml-2">{{ useTimeFormat(reply.createdAt, true) }}</span>
+                      <!-- 根据replyToId字段判断是否显示"回复@谁" -->
+                      <template v-if="reply.replyToId">
+                        <span class="text-xs text-gray-400 mx-1">回复</span>
+                        <span class="font-medium text-sm text-blue-500">{{ reply.replyToUser }}</span>
+                      </template>
+                      <span class="text-xs text-gray-500 ml-2">{{ useTimeFormat(reply.createdAt) }}</span>
                     </div>
 
                     <div class="mt-1">
@@ -364,7 +372,9 @@
                     </div>
 
                     <div class="mt-2 flex">
-                      <n-button text type="primary" size="tiny" @click="openReplyBox(comment, false)">回复</n-button>
+                      <n-button text type="primary" size="tiny" @click="openSecondaryReplyBox(comment, reply)">
+                        回复
+                      </n-button>
 
                       <n-button
                         v-if="isCommentAuthor(reply)"
@@ -379,38 +389,37 @@
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- 回复评论框（二级） -->
-              <div
-                v-if="activeReplyId === comment.id && !replyTo?.isTopLevel"
-                class="reply-box mt-1 mb-2 p-3 bg-white rounded-lg border border-gray-200"
-              >
-                <div class="flex items-center mb-2">
-                  <n-tag type="info" size="small" class="mr-2">回复</n-tag>
-                  <span class="font-medium">@{{ replyTo?.userName }}</span>
-                </div>
+                <!-- 回复评论框 - 二级评论 -->
+                <div v-if="isReplying(reply.id)" class="reply-box mt-2 p-3 bg-white rounded-lg border border-gray-200">
+                  <div class="flex items-center mb-2">
+                    <n-tag type="info" size="small" class="mr-2">回复</n-tag>
+                    <span class="font-medium">@{{ replyTo?.userName }}</span>
+                  </div>
 
-                <n-input
-                  v-model:value="commentContent"
-                  type="textarea"
-                  :placeholder="`回复 ${replyTo?.userName}...`"
-                  :id="`reply-input-${comment.id}`"
-                  :rows="3"
-                  :disabled="isSubmitting"
-                />
+                  <n-input
+                    show-count
+                    clearable
+                    v-model:value="commentContent"
+                    type="textarea"
+                    maxlength="1000"
+                    :placeholder="`回复 ${replyTo?.userName}...`"
+                    :rows="3"
+                    :disabled="isSubmitting"
+                  />
 
-                <div class="flex justify-end mt-2">
-                  <n-button size="small" class="mr-2" @click="cancelReply">取消</n-button>
-                  <n-button
-                    type="primary"
-                    size="small"
-                    :loading="isSubmitting"
-                    :disabled="!commentContent.trim()"
-                    @click="submitReply"
-                  >
-                    发布回复
-                  </n-button>
+                  <div class="flex justify-end mt-2">
+                    <n-button size="small" class="mr-2" @click="cancelReply">取消</n-button>
+                    <n-button
+                      type="primary"
+                      size="small"
+                      :loading="isSubmitting"
+                      :disabled="!commentContent.trim()"
+                      @click="submitReply"
+                    >
+                      发布回复
+                    </n-button>
+                  </div>
                 </div>
               </div>
             </div>
