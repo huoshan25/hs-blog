@@ -68,6 +68,31 @@ export class Comment {
     comment: '父评论ID，用于回复功能',
   })
   parentId: number | null;
+  
+  /**
+   * 被回复的评论ID
+   * @description 如果是回复二级评论，则记录该评论的ID
+   */
+  @Column({
+    name: 'reply_to_id',
+    type: 'int',
+    nullable: true,
+    comment: '被回复的评论ID，用于二级评论的回复关系',
+  })
+  replyToId: number | null;
+  
+  /**
+   * 被回复的用户名
+   * @description
+   */
+  @Column({
+    name: 'reply_to_user',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+    comment: '被回复的用户名，用于前端显示',
+  })
+  replyToUser: string | null;
 
   /**
    * 创建时间

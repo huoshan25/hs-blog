@@ -21,4 +21,22 @@ export class CreateCommentDto {
   @IsOptional()
   @IsInt()
   parentId?: number;
+  
+  @ApiProperty({
+    description: '被回复的评论ID，主要用于二级评论的回复关系',
+    example: 2,
+    required: false
+  })
+  @IsOptional()
+  @IsInt()
+  replyToId?: number;
+  
+  @ApiProperty({
+    description: '被回复的用户名，用于前端显示',
+    example: '张三',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  replyToUser?: string;
 } 

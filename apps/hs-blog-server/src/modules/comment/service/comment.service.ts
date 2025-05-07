@@ -25,6 +25,8 @@ export class CommentService {
       articleId: createCommentDto.articleId,
       userId: user.id,
       parentId: createCommentDto.parentId || null,
+      replyToId: createCommentDto.replyToId || null,
+      replyToUser: createCommentDto.replyToUser || null,
     });
     return this.commentRepository.save(comment);
   }
