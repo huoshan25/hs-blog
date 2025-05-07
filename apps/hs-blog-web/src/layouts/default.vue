@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { dateZhCN, zhCN } from 'naive-ui'
   import { consoleLogInfo } from '~/composables/logInfo'
+  import LoginModal from '~/components/LoginModal/index.vue'
 
   /*主题色覆盖*/
   const { themeOverrides } = useThemeOverrides()
@@ -21,6 +22,7 @@
               <slot />
             </div>
             <Footer />
+            <LoginModal />
           </div>
         </n-modal-provider>
       </n-message-provider>

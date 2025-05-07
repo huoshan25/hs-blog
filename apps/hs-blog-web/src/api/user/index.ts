@@ -35,11 +35,77 @@ export interface ProfileInfoRes {
   seo: Seo;
 }
 
-export interface SaveProfileInfoReq extends ProfileInfoRes {}
+export interface LoginReq {
+  usernameOrEmail: string;
+  password: string;
+}
+
+export interface LoginRes {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  avatar: string;
+}
+
+/** 注册请求参数 */
+export interface RegisterReq {
+  /** 用户名 */
+  username: string
+  /** 邮箱 */
+  email: string
+  /** 密码 */
+  password: string
+  /** 确认密码 */
+  confirmPassword: string
+  /** 验证码 */
+  code: string
+}
+
+export interface UserInfoRes {
+  id: number;
+  username: string;
+  email: string;
+  avatar: string;
+}
+
+export interface RegisterRes {
+  accessToken: string;
+  refreshToken: string;
+}
 
 /**
  * 获取关于信息
  */
 export async function getProfileInfo() {
   return await fetchRequest.get<ProfileInfoRes>("/user/personal-profile-info");
+}
+
+/** 获取用户信息 */
+export async function getUserInfo() {
+  return await fetchRequest.get<UserInfoRes>('/user/profile');
+}
+
+/** 登录 */
+export async function login(params: LoginReq) {
+  return await fetchRequest.post<LoginRes>('/auth/login', params);
+}
+
+/** 获取邮箱验证码 */
+export async function getEmailCode(params: { email: string }) {
+  return await fetchRequest.post("/auth/send-code", params);
+}
+
+/** 注册 */
+export async function register(params: RegisterReq) {
+  return await fetchRequest.post<RegisterRes>("/auth/register", params);
+}
+
+/** 刷新token令牌 */
+export async function getRefreshToken(params: { refreshToken: string }) {
+  return await fetchRequest.post<LoginRes>('/user/refresh-token', params);
 }

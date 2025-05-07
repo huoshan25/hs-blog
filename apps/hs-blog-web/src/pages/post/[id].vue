@@ -5,6 +5,7 @@
   import { HttpStatus } from '~/enums/httpStatus'
   import type { ArticleDetails } from '~/api/post/type'
   import authorInfo from './components/authorInfo.vue'
+  import CommentSection from './components/CommentSection.vue'
 
   definePageMeta({
     layout: 'default'
@@ -67,6 +68,9 @@
           </div>
         </template>
       </client-only>
+      
+      <!-- 添加评论区组件 -->
+      <comment-section :article-id="Number(route.params.id)" />
     </div>
 
     <!-- 移动端音频播放器 -->

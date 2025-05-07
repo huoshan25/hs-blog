@@ -1,5 +1,5 @@
 import { useStorage } from "@vueuse/core";
-import type { AnalyzeCodeReq, ArticleDetails } from "~/api/post/type";
+import type { AnalyzeCodeReq, ArticleDetails, CommentData, CreateCommentRequest } from "~/api/post/type";
 
 /**
  * 文章详情
@@ -84,5 +84,26 @@ export async function generateLongAudio(params: { content: string; articleUUID: 
 /*文章浏览量+1*/
 export async function addArticleViewCount(params: { id: number }) {
   return await fetchRequest.get("/article/view-count", params);
+}
+
+/**
+ * 获取文章评论列表
+ */
+export async function getArticleComments(articleId: number) {
+  return await fetchRequest.get<CommentData[]>(`/comments/article/${articleId}`);
+}
+
+/**
+ * 发布评论
+ */
+export async function createComment(data: CreateCommentRequest) {
+  return await fetchRequest.post<CommentData>("/comments", data);
+}
+
+/**
+ * 删除评论
+ */
+export async function deleteComment(commentId: number) {
+  return await fetchRequest.delete<void>(`/comments/${commentId}`);
 }
 

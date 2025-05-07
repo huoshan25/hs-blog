@@ -56,3 +56,30 @@ export interface ArticleDetails {
   /*文章浏览量*/
   view_count: number
 }
+
+/**
+ * 评论数据类型
+ */
+export interface CommentData {
+  id: number
+  content: string
+  articleId: number
+  userId: number
+  parentId: number | null
+  createdAt: string
+  updatedAt: string
+  user: {
+    id: number
+    username: string
+    avatar: string | null
+  }
+}
+
+/**
+ * 创建评论请求
+ */
+export interface CreateCommentRequest {
+  content: string
+  articleId: number
+  parentId?: number
+}
