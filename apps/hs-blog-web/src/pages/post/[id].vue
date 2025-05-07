@@ -52,25 +52,29 @@
 
 <template>
   <div class="flex justify-center">
-    <div class="mt-[15px] bg-white py-[25px] w-full max-w-[900px] flex flex-col whitespace-normal rounded-2xl">
-      <h1 class="flex text-[28px] font-600 whitespace-normal m-0 px-[15px]">{{ articleData.data.title }}</h1>
-      <author-info :articleData="articleData.data" class="px-[15px]" />
-      <markdown-renderer :markdown="articleData.data.content" />
-      <client-only>
-        <!--许可证-->
-        <div class="flex justify-center px-[15px]">
-          <license />
-        </div>
-        <template #fallback>
-          <div class="p-[15px]">
-            <Skeleton text width="50%" />
-            <Skeleton text width="100%" />
+    <div>
+      <div class="mt-[15px] bg-white py-[25px] w-full max-w-[900px] flex flex-col whitespace-normal rounded-2xl">
+        <h1 class="flex text-[28px] font-600 whitespace-normal m-0 px-[15px]">{{ articleData.data.title }}</h1>
+        <author-info :articleData="articleData.data" class="px-[15px]" />
+        <markdown-renderer :markdown="articleData.data.content" />
+        <client-only>
+          <!--许可证-->
+          <div class="flex justify-center px-[15px]">
+            <license />
           </div>
-        </template>
-      </client-only>
-      
+          <template #fallback>
+            <div class="p-[15px]">
+              <Skeleton text width="50%" />
+              <Skeleton text width="100%" />
+            </div>
+          </template>
+        </client-only>
+      </div>
+
       <!-- 添加评论区组件 -->
-      <comment-section :article-id="Number(route.params.id)" />
+      <client-only>
+        <comment-section class="bg-white rounded-2xl mt-[20px] pb-[20px]" :article-id="Number(route.params.id)" />
+      </client-only>
     </div>
 
     <!-- 移动端音频播放器 -->

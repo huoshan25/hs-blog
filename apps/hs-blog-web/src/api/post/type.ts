@@ -70,7 +70,7 @@ export interface CommentData {
   updatedAt: string
   user: {
     id: number
-    username: string
+    userName: string
     avatar: string | null
   }
 }

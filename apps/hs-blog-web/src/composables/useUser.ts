@@ -4,7 +4,7 @@ import { HttpStatus } from '~/enums/httpStatus'
 
 export interface UserInfo {
   id: number
-  username: string
+  userName: string
   avatar: string | null
   email: string
 }
