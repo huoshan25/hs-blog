@@ -170,8 +170,8 @@ onMounted(() => {
               <!-- 用户头像 -->
               <div class="flex-shrink-0 mr-3">
                 <n-avatar
-                  :src="comment.user.avatar || '/images/default-avatar.png'"
-                  fallback-src="/images/default-avatar.png"
+                  :src="comment.user.avatar || '/img/default-avatar.png'"
+                  fallback-src="/img/default-avatar.png"
                   round
                 />
               </div>
