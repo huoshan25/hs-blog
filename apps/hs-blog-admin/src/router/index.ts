@@ -28,10 +28,16 @@ const router = createRouter({
           meta: { requiresAuth: true, title: '分类管理' }
         },
         {
+          path: 'commentManage',
+          name: 'commentManage',
+          component: () => import('@/views/commentManage/index.vue'),
+          meta: { requiresAuth: true, title: '评论管理' }
+        },
+        {
           path: 'profileManage',
           name: 'profileManage',
           component: () => import('@/views/profileManage/index.vue'),
-          meta: { requiresAuth: true, title: '个人管理' }
+          meta: { requiresAuth: true, title: '关于管理' }
         },
         {
           path: 'linkManage',

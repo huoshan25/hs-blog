@@ -1,4 +1,5 @@
 import {
+  ChatboxEllipsesOutline,
   CreateOutline,
   GitNetwork,
   PeopleSharp,
@@ -6,8 +7,6 @@ import {
   SpeedometerOutline,
 } from '@vicons/ionicons5'
 import { type MenuOption, NIcon } from 'naive-ui'
-import type { Component } from 'vue'
-import { h, ref } from 'vue'
 
 // 显式定义 MenuOptionItem 类型来避免递归深度问题
 export interface MenuOptionItem extends Omit<MenuOption, 'children'> {
@@ -39,6 +38,11 @@ export const useMenus = () => {
       label: '分类管理',
       key: '/categoryManage',
       icon: renderIcon(GitNetwork),
+    },
+    {
+      label: '评论管理',
+      key: '/commentManage',
+      icon: renderIcon(ChatboxEllipsesOutline),
     },
     {
       label: '关于管理',

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {ConflictException, Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { FriendLink, FriendLinkStatus } from '../entities/friend-link.entity';
@@ -110,6 +110,11 @@ export class FriendLinkService {
     const count = await this.friendLinkRepository.count({
       where: { url },
     });
+
+    if (count) {
+      throw new ConflictException('该网站已申请过友链，请勿重复提交');
+    }
+
     return count > 0;
   }
 } 
