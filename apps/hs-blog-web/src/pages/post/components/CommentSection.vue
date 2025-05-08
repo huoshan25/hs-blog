@@ -3,6 +3,7 @@
   import type { CommentData } from '~/api/post/type'
   import { useUser } from '~/composables/useUser'
   import { useTimeFormat } from '~/composables/useTimeFormat'
+  import { HttpStatus } from '~/enums/httpStatus'
 
   const props = defineProps<{
     articleId: number
@@ -39,12 +40,15 @@
     })
   })
 
-  // 判断某个评论是否处于回复状态
+  /**
+   * 判断某个评论是否处于回复状态
+   * @param commentId 评论ID
+   */
   const isReplying = (commentId: number) => {
     return replyTo.value?.commentId === commentId
   }
 
-  // 获取评论列表
+  /**获取评论列表*/
   const fetchComments = async () => {
     loading.value = true
     try {
@@ -59,7 +63,7 @@
     }
   }
 
-  // 提交主评论
+  /**提交主评论*/
   const submitComment = async () => {
     if (!token.value) {
       message.warning('请先登录后再发表评论')
@@ -73,13 +77,13 @@
 
     isSubmitting.value = true
     try {
-      const data = {
+      const params = {
         content: mainCommentContent.value,
         articleId: props.articleId
       }
 
-      const res = await createComment(data)
-      if (res.code === 200 || res.code === 201) {
+      const res = await createComment(params)
+      if (res.code === HttpStatus.OK) {
         message.success('评论发布成功')
         mainCommentContent.value = ''
         await fetchComments()
@@ -92,7 +96,7 @@
     }
   }
 
-  // 提交回复
+  /**提交回复*/
   const submitReply = async () => {
     if (!token.value) {
       message.warning('请先登录后再回复评论')
@@ -111,8 +115,7 @@
 
     isSubmitting.value = true
     try {
-      // 构建基础数据
-      const data: any = {
+      const params: any = {
         content: commentContent.value,
         articleId: props.articleId,
         parentId: replyTo.value.id
@@ -120,12 +123,12 @@
 
       // 如果是回复二级评论，添加额外的字段
       if (!replyTo.value.isTopLevel) {
-        data.replyToId = replyTo.value.commentId
-        data.replyToUser = replyTo.value.userName
+        params.replyToId = replyTo.value.commentId
+        params.replyToUser = replyTo.value.userName
       }
 
-      const res = await createComment(data)
-      if (res.code === 200 || res.code === 201) {
+      const res = await createComment(params)
+      if (res.code === HttpStatus.OK) {
         message.success('回复发布成功')
         commentContent.value = ''
         replyTo.value = null
@@ -139,20 +142,21 @@
     }
   }
 
-  // 打开回复框 - 回复顶级评论
+  /**
+   * 打开回复框 - 回复顶级评论
+   * @param comment 评论
+   */
   const openReplyBox = (comment: CommentData) => {
     if (!token.value) {
       message.warning('请先登录后再回复评论')
       return
     }
 
-    // 如果已经是回复此评论，则取消回复状态
     if (isReplying(comment.id)) {
       cancelReply()
       return
     }
 
-    // 设置回复状态
     commentContent.value = ''
     replyTo.value = {
       id: comment.id,
@@ -162,7 +166,11 @@
     }
   }
 
-  // 打开回复框 - 回复二级评论
+  /**
+   * 打开回复框 - 回复二级评论
+   * @param topComment 顶级评论
+   * @param reply 二级评论
+   */
   const openSecondaryReplyBox = (topComment: CommentData, reply: CommentData) => {
     if (!token.value) {
       message.warning('请先登录后再回复评论')
@@ -175,7 +183,6 @@
       return
     }
 
-    // 设置回复状态
     commentContent.value = ''
     replyTo.value = {
       id: topComment.id, // 顶级评论ID作为parentId
@@ -185,29 +192,32 @@
     }
   }
 
-  // 取消回复
+  /**取消回复*/
   const cancelReply = () => {
     commentContent.value = ''
     replyTo.value = null
   }
 
-  // 删除评论
+  /**
+   * 删除评论
+   * @param id 评论ID
+   */
   const handleDeleteComment = async (id: number) => {
     if (!token.value) {
       return
     }
 
-    try {
-      await deleteComment(id)
-      message.success('评论删除成功')
-      await fetchComments()
-    } catch (error) {
-      console.error('删除评论失败', error)
-      message.error('删除评论失败，请稍后重试')
+    const res = await deleteComment(id)
+    if (res.code === HttpStatus.OK) {
+      message.success(res.message)
     }
+    await fetchComments()
   }
 
-  // 判断当前登录用户是否是评论作者
+  /**
+   * 判断当前登录用户是否是评论作者
+   * @param comment 评论
+   */
   const isCommentAuthor = (comment: CommentData) => {
     return !!token.value && user.value?.id === comment.userId
   }
@@ -218,7 +228,7 @@
 </script>
 
 <template>
-  <div class="comment-section p-[15px]">
+  <div class="custom-border-1px-solid-#f0f0f0 p-[15px]">
     <h2 class="text-xl font-semibold mb-4">评论 {{ comments.length }}</h2>
 
     <!-- 主评论输入框 -->
@@ -258,7 +268,7 @@
         <template v-if="structuredComments.length > 0">
           <!-- 顶级评论 -->
           <div v-for="comment in structuredComments" :key="comment.id" class="comment-item mb-4">
-            <div class="comment-main p-4 bg-white rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+            <div class="hover:border-[#e5e7eb] p-4 bg-white rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
               <div class="flex items-start">
                 <!-- 用户头像 -->
                 <div class="flex-shrink-0 mr-3">
@@ -433,11 +443,6 @@
 </template>
 
 <style scoped lang="scss">
-  .comment-section {
-    border-top: 1px solid #f0f0f0;
-    padding-top: 20px;
-  }
-
   .comment-item {
     transition: all 0.3s ease;
   }
@@ -448,12 +453,6 @@
     &:hover {
       background-color: #f7f7f7;
       border-left-color: #d1d5db;
-    }
-  }
-
-  .comment-main {
-    &:hover {
-      border-color: #e5e7eb;
     }
   }
 

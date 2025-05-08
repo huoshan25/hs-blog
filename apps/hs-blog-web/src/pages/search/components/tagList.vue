@@ -28,7 +28,7 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col bg-white w-[100%] min-h-[100vh]">
-    <div class="flex p-[20px] custom-border-bottom-1px_solid_#E4E6EB7F hover:bg-#F7F8FA cursor-pointer" v-for="tag in tagsList" :key="tag.id">
+    <div class="flex p-[20px] custom-border-bottom-1px-solid-#E4E6EB7F hover:bg-#F7F8FA cursor-pointer" v-for="tag in tagsList" :key="tag.id">
       <img class="w-[40px] h-[40px]" src="~/assets/images/tag.png" alt="标签图片">
       <div class="flex flex-1 flex-col ml-[10px]">
         <div v-html="tag.name"></div>
