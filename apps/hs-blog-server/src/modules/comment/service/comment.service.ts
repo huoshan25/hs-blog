@@ -65,6 +65,20 @@ export class CommentService {
       throw new UnauthorizedException('无权删除该评论');
     }
 
+    // 如果是顶级评论（没有parentId），则找出所有子评论一并删除
+    if (comment.parentId === null) {
+      // 查找该评论下的所有回复评论
+      const childComments = await this.commentRepository.find({
+        where: { parentId: comment.id },
+      });
+      
+      // 先删除所有子评论
+      if (childComments.length > 0) {
+        await this.commentRepository.remove(childComments);
+      }
+    }
+
+    // 删除当前评论
     await this.commentRepository.remove(comment);
   }
 
@@ -115,6 +129,20 @@ export class CommentService {
       throw new NotFoundException('评论不存在');
     }
     
+    // 如果是顶级评论（没有parentId），则找出所有子评论一并删除
+    if (comment.parentId === null) {
+      // 查找该评论下的所有回复评论
+      const childComments = await this.commentRepository.find({
+        where: { parentId: comment.id },
+      });
+      
+      // 先删除所有子评论
+      if (childComments.length > 0) {
+        await this.commentRepository.remove(childComments);
+      }
+    }
+    
+    // 删除当前评论
     await this.commentRepository.remove(comment);
   }
 } 
