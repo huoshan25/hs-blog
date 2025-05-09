@@ -44,6 +44,8 @@
     // 将回复评论组织到对应的父评论下
     return topLevelComments.map(comment => {
       const replies = comments.value.filter(c => c.parentId === comment.id)
+        // 回复也按照时间正序排列
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
       return {
         ...comment,
         replies
