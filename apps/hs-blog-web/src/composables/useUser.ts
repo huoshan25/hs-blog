@@ -1,13 +1,6 @@
 import { useStorage } from '@vueuse/core'
-import { login, register } from '@/api/user'
+import {getUserInfo, login, register, type UserInfoRes} from '@/api/user'
 import { HttpStatus } from '~/enums/httpStatus'
-
-export interface UserInfo {
-  id: number
-  userName: string
-  avatar: string | null
-  email: string
-}
 
 export interface LoginReq {
   usernameOrEmail: string
@@ -25,7 +18,7 @@ export interface RegisterReq {
 
 export const useUser = () => {
   /** 用户信息 */
-  const user = useStorage<UserInfo | null>('user', () => null)
+  const userInfo = useStorage<UserInfoRes | null>('user', () => null)
   /** 访问令牌 */
   const token = useStorage<string>('token', () => '')
   /** 刷新token */
@@ -34,8 +27,8 @@ export const useUser = () => {
   const loginModalVisible = useState<boolean>('loginModalVisible', () => false)
 
   /** 设置用户信息 */
-  const setUser = (userInfo: UserInfo) => {
-    user.value = userInfo
+  const setUser = (user: UserInfoRes) => {
+    userInfo.value = user
   }
 
   /**
@@ -50,7 +43,7 @@ export const useUser = () => {
 
   /** 清除用户信息 */
   const clearUser = () => {
-    user.value = null
+    userInfo.value = null
     token.value = ''
   }
 
@@ -75,6 +68,14 @@ export const useUser = () => {
     return false
   }
 
+  /**获取用户信息*/
+  const fetchUserInfo = async () => {
+    const res = await getUserInfo()
+    if (res.code === HttpStatus.OK) {
+      setUser(res.data)
+    }
+  }
+
   /**注册*/
   const fetchRegister = async (registerData: RegisterReq) => {
     const res = await register(registerData)
@@ -87,7 +88,7 @@ export const useUser = () => {
   }
 
   return {
-    user,
+    userInfo,
     token,
     loginModalVisible,
 
@@ -97,6 +98,7 @@ export const useUser = () => {
     showLoginModal,
     hideLoginModal,
     fetchLogin,
-    fetchRegister
+    fetchRegister,
+    fetchUserInfo
   }
 }

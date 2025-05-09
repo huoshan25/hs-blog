@@ -2,24 +2,35 @@
   import { createComment, deleteComment, getArticleComments } from '~/api/post'
   import type { CommentData } from '~/api/post/type'
   import { useUser } from '~/composables/useUser'
-  import { useTimeFormat } from '~/composables/useTimeFormat'
   import { HttpStatus } from '~/enums/httpStatus'
+  import { formatRelativeTime } from '~/utils/formatRelativeTime'
+  import { ChatboxEllipsesOutline, TrashOutline } from '@vicons/ionicons5'
+  import { renderIcon } from '~/utils/renderIcon'
+  import Ellipsis from '~/components/Icon/Ellipsis.vue'
+
+  onMounted(() => {
+    fetchUserInfo()
+    fetchComments()
+  })
+
+  // 定义明确的回复状态接口
+  interface ReplyState {
+    parentCommentId: number // 父评论ID（提交到后端的parentId）
+    targetUserName: string // 被回复用户名
+    isReplyingToComment: boolean // 是否回复的是评论（而非回复）
+    targetId: number // 目标ID（用于UI显示）
+    replyToId?: number // 被回复内容的ID（用于数据关联）
+    replyToUser?: string // 被回复用户名（用于显示）
+  }
 
   const props = defineProps<{
     articleId: number
   }>()
 
-  const { user, token, showLoginModal } = useUser()
+  const { userInfo, token, showLoginModal, fetchUserInfo } = useUser()
   const commentContent = ref('')
   const mainCommentContent = ref('')
-  const replyTo = ref<{
-    id: number // 顶级评论ID（实际提交到后端的parentId）
-    userName: string // 要回复的用户名（显示用）
-    isTopLevel: boolean // 是否是回复顶级评论
-    commentId: number // 当前回复的评论ID（用于UI显示）
-    replyToId?: number // 被回复评论的ID
-    replyToUser?: string // 被回复用户的名称
-  } | null>(null)
+  const replyState = ref<ReplyState | null>(null)
   const comments = ref<CommentData[]>([])
   const isSubmitting = ref(false)
   const loading = ref(true)
@@ -45,7 +56,7 @@
    * @param commentId 评论ID
    */
   const isReplying = (commentId: number) => {
-    return replyTo.value?.commentId === commentId
+    return replyState.value?.targetId === commentId
   }
 
   /**获取评论列表*/
@@ -108,30 +119,31 @@
       return
     }
 
-    if (!replyTo.value) {
+    if (!replyState.value) {
       message.warning('回复目标不存在')
       return
     }
 
     isSubmitting.value = true
     try {
+      // 构建基础数据
       const params: any = {
         content: commentContent.value,
         articleId: props.articleId,
-        parentId: replyTo.value.id
+        parentId: replyState.value.parentCommentId
       }
 
-      // 如果是回复二级评论，添加额外的字段
-      if (!replyTo.value.isTopLevel) {
-        params.replyToId = replyTo.value.commentId
-        params.replyToUser = replyTo.value.userName
+      // 如果回复的是二级评论，添加关联信息
+      if (!replyState.value.isReplyingToComment) {
+        params.replyToId = replyState.value.targetId
+        params.replyToUser = replyState.value.targetUserName
       }
 
       const res = await createComment(params)
       if (res.code === HttpStatus.OK) {
         message.success('回复发布成功')
         commentContent.value = ''
-        replyTo.value = null
+        replyState.value = null
         await fetchComments()
       }
     } catch (error) {
@@ -143,59 +155,36 @@
   }
 
   /**
-   * 打开回复框 - 回复顶级评论
+   * 处理回复评论
    * @param comment 评论
+   * @param isComment 是否是评论
    */
-  const openReplyBox = (comment: CommentData) => {
-    if (!token.value) {
-      message.warning('请先登录后再回复评论')
-      return
-    }
-
-    if (isReplying(comment.id)) {
-      cancelReply()
-      return
-    }
-
-    commentContent.value = ''
-    replyTo.value = {
-      id: comment.id,
-      userName: comment.user.userName,
-      isTopLevel: true,
-      commentId: comment.id
-    }
-  }
-
-  /**
-   * 打开回复框 - 回复二级评论
-   * @param topComment 顶级评论
-   * @param reply 二级评论
-   */
-  const openSecondaryReplyBox = (topComment: CommentData, reply: CommentData) => {
+  const handleReply = (comment: CommentData, isComment = true) => {
     if (!token.value) {
       message.warning('请先登录后再回复评论')
       return
     }
 
     // 如果已经是回复此评论，则取消回复状态
-    if (isReplying(reply.id)) {
+    if (isReplying(comment.id)) {
       cancelReply()
       return
     }
 
+    // 设置回复状态
     commentContent.value = ''
-    replyTo.value = {
-      id: topComment.id, // 顶级评论ID作为parentId
-      userName: reply.user.userName, // 被回复用户的名称
-      isTopLevel: false,
-      commentId: reply.id // 实际回复的评论ID
+    replyState.value = {
+      parentCommentId: isComment ? comment.id : (comment.parentId as number),
+      targetUserName: comment.user.userName,
+      isReplyingToComment: isComment,
+      targetId: comment.id
     }
   }
 
   /**取消回复*/
   const cancelReply = () => {
     commentContent.value = ''
-    replyTo.value = null
+    replyState.value = null
   }
 
   /**
@@ -219,12 +208,26 @@
    * @param comment 评论
    */
   const isCommentAuthor = (comment: CommentData) => {
-    return !!token.value && user.value?.id === comment.userId
+    return !!token.value && userInfo.value?.id === comment.userId
   }
 
-  onMounted(() => {
-    fetchComments()
-  })
+  const handleCommentOptions = (key: string | number) => {}
+
+  const getCommentOptions = (comment: CommentData) => {
+    return [
+      {
+        show: isCommentAuthor(comment),
+        label: '删除',
+        key: 'delete',
+        icon: renderIcon(TrashOutline),
+        props: {
+          onClick: () => {
+            handleDeleteComment(comment.id)
+          }
+        }
+      }
+    ]
+  }
 </script>
 
 <template>
@@ -268,7 +271,9 @@
         <template v-if="structuredComments.length > 0">
           <!-- 顶级评论 -->
           <div v-for="comment in structuredComments" :key="comment.id" class="comment-item mb-4">
-            <div class="hover:border-[#e5e7eb] p-4 bg-white rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+            <div
+              class="hover:border-[#e5e7eb] p-4 bg-white rounded-lg border border-gray-100 hover:shadow-sm transition-shadow"
+            >
               <div class="flex items-start">
                 <!-- 用户头像 -->
                 <div class="flex-shrink-0 mr-3">
@@ -284,34 +289,28 @@
                 <div class="flex-grow">
                   <div class="flex items-center">
                     <span class="font-semibold text-[15px]">{{ comment.user.userName }}</span>
-                    <span class="text-xs text-gray-500 ml-2">{{ useTimeFormat(comment.createdAt) }}</span>
                   </div>
 
-                  <div class="mt-2">
-                    <p class="whitespace-pre-wrap break-words text-gray-800">{{ comment.content }}</p>
-                  </div>
+                  <div class="whitespace-pre-wrap break-words text-gray-800 mt-2">{{ comment.content }}</div>
 
-                  <div class="mt-3 flex">
-                    <n-button text type="primary" size="small" @click="openReplyBox(comment)">
-                      <template #icon>
-                        <div class="i-carbon-reply text-sm mr-1"></div>
-                      </template>
-                      回复
-                    </n-button>
+                  <div class="flex mt-2 items-center justify-between">
+                    <div class="flex items-center gap-x-[10px]">
+                      <div class="text-xs text-gray-500 mr-[5px]">{{ formatRelativeTime(comment.createdAt) }}</div>
 
-                    <n-button
-                      v-if="isCommentAuthor(comment)"
-                      text
-                      type="error"
-                      size="small"
-                      class="ml-4"
-                      @click="handleDeleteComment(comment.id)"
-                    >
-                      <template #icon>
-                        <div class="i-carbon-trash-can text-sm mr-1"></div>
-                      </template>
-                      删除
-                    </n-button>
+                      <n-button text color="#6B7280FF" size="small" @click="handleReply(comment)">
+                        <template #icon>
+                          <n-icon>
+                            <ChatboxEllipsesOutline />
+                          </n-icon>
+                        </template>
+                        <!-- 该条评论下的评论条数  -->
+                        <span class="text-xs">{{ comment.replies.length > 0 ? comment.replies.length : '评论' }}</span>
+                      </n-button>
+                    </div>
+
+                    <n-dropdown trigger="hover" @select="handleCommentOptions" :options="getCommentOptions(comment)">
+                      <Ellipsis class="cursor-pointer" />
+                    </n-dropdown>
                   </div>
                 </div>
               </div>
@@ -374,46 +373,43 @@
                         <span class="text-xs text-gray-400 mx-1">回复</span>
                         <span class="font-medium text-sm text-blue-500">{{ reply.replyToUser }}</span>
                       </template>
-                      <span class="text-xs text-gray-500 ml-2">{{ useTimeFormat(reply.createdAt) }}</span>
                     </div>
 
                     <div class="mt-1">
                       <p class="text-sm whitespace-pre-wrap break-words text-gray-700">{{ reply.content }}</p>
                     </div>
 
-                    <div class="mt-2 flex">
-                      <n-button text type="primary" size="tiny" @click="openSecondaryReplyBox(comment, reply)">
-                        回复
-                      </n-button>
+                    <div class="mt-2 flex justify-between">
+                      <div class="flex items-center gap-x-[10px]">
+                        <div class="text-xs text-gray-500 mr-[5px]">{{ formatRelativeTime(reply.createdAt) }}</div>
 
-                      <n-button
-                        v-if="isCommentAuthor(reply)"
-                        text
-                        type="error"
-                        size="tiny"
-                        class="ml-3"
-                        @click="handleDeleteComment(reply.id)"
-                      >
-                        删除
-                      </n-button>
+                        <n-button text color="#6B7280FF" size="tiny" @click="handleReply(reply, false)">
+                          <template #icon>
+                            <n-icon>
+                              <ChatboxEllipsesOutline />
+                            </n-icon>
+                          </template>
+                          <span class="text-xs">回复</span>
+                        </n-button>
+                      </div>
+
+
+                      <n-dropdown trigger="hover" @select="handleCommentOptions" :options="getCommentOptions(reply)">
+                        <Ellipsis class="cursor-pointer" />
+                      </n-dropdown>
                     </div>
                   </div>
                 </div>
 
                 <!-- 回复评论框 - 二级评论 -->
                 <div v-if="isReplying(reply.id)" class="reply-box mt-2 p-3 bg-white rounded-lg border border-gray-200">
-                  <div class="flex items-center mb-2">
-                    <n-tag type="info" size="small" class="mr-2">回复</n-tag>
-                    <span class="font-medium">@{{ replyTo?.userName }}</span>
-                  </div>
-
                   <n-input
                     show-count
                     clearable
                     v-model:value="commentContent"
                     type="textarea"
                     maxlength="1000"
-                    :placeholder="`回复 ${replyTo?.userName}...`"
+                    :placeholder="`回复 ${replyState?.targetUserName}...`"
                     :rows="3"
                     :disabled="isSubmitting"
                   />
