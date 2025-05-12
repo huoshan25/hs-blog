@@ -259,11 +259,8 @@ export class ArticleService {
         return new NotFoundException('文章不存在');
       }
 
-      console.log(foundArticles,'foundArticles')
-
       const { category_id, articleTags, user, ...rest } = foundArticles;
 
-      console.log(user,'user')
       // 提取标签信息
       const tags = articleTags.map(articleTag => ({
         id: articleTag.tag.id,
