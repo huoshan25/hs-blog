@@ -55,6 +55,8 @@ export interface ArticleDetails {
   update_time: string
   /*文章浏览量*/
   view_count: number
+  /*文章作者ID*/
+  userId: number
 }
 
 /**

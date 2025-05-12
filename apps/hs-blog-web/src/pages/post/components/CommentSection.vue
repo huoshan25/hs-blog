@@ -25,6 +25,7 @@
 
   const props = defineProps<{
     articleId: number
+    articleAuthorId: number
   }>()
 
   const { userInfo, token, showLoginModal, fetchUserInfo } = useUser()
@@ -213,6 +214,14 @@
     return !!token.value && userInfo.value?.id === comment.userId
   }
 
+  /**
+   * 判断评论用户是否是文章作者
+   * @param comment 评论
+   */
+  const isArticleAuthor = (comment: CommentData) => {
+    return !!props.articleAuthorId && props.articleAuthorId === comment.userId
+  }
+
   const handleCommentOptions = (key: string | number) => {}
 
   const getCommentOptions = (comment: CommentData) => {
@@ -291,6 +300,9 @@
                 <div class="flex-grow">
                   <div class="flex items-center">
                     <span class="font-semibold text-[15px]">{{ comment.user.userName }}</span>
+                    <n-tag class="ml-2" :bordered="false" type="info" size="small" v-show="isArticleAuthor(comment)">
+                      作者
+                    </n-tag>
                   </div>
 
                   <div class="whitespace-pre-wrap break-words text-gray-800 mt-2">{{ comment.content }}</div>
@@ -370,6 +382,9 @@
                   <div class="flex-grow">
                     <div class="flex items-center flex-wrap">
                       <span class="font-medium text-sm">{{ reply.user.userName }}</span>
+                      <n-tag class="ml-2" :bordered="false" type="info" size="small" v-show="isArticleAuthor(reply)">
+                        作者
+                      </n-tag>
                       <!-- 根据replyToId字段判断是否显示"回复@谁" -->
                       <template v-if="reply.replyToId">
                         <span class="text-xs text-gray-400 mx-1">回复</span>

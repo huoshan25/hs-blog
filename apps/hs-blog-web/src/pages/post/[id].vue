@@ -73,7 +73,11 @@
 
       <!-- 添加评论区组件 -->
       <client-only>
-        <comment-section class="bg-white rounded-2xl mt-[20px] pb-[20px]" :article-id="Number(route.params.id)" />
+        <comment-section 
+          class="bg-white rounded-2xl mt-[20px] pb-[20px]" 
+          :article-id="Number(route.params.id)" 
+          :article-author-id="articleData.data.userId"
+        />
       </client-only>
     </div>
 
