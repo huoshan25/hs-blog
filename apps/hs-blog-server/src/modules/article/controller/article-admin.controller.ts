@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   ValidationPipe,
+  Request,
 } from '@nestjs/common';
 import { ArticleService } from '@/modules/article/service/article.service';
 import { FindArticlesDto } from '@/modules/article/dto/find-articles.dto';
@@ -26,8 +27,6 @@ import { Admin } from '@/modules/auth/decorators/admin.decorator';
 @Controller('admin/article')
 export class ArticleAdminController {
   constructor(private readonly articleService: ArticleService) {}
-
-
 
   @ApiOperation({ summary: '更新文章状态' })
   @Put('status')
@@ -80,9 +79,11 @@ export class ArticleAdminController {
 
   @Post()
   @ApiOperation({ summary: '创建文章' })
-  async createArticle(@Body() article: CreateArticleDto) {
+  async createArticle(@Body() article: CreateArticleDto, @Request() req) {
     try {
-      const result = await this.articleService.createArticle(article);
+      const userId = req.user.id;
+
+      const result = await this.articleService.createArticle(article, userId);
 
       if (result instanceof Error) {
         return {

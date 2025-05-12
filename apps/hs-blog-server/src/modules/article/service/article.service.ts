@@ -115,8 +115,9 @@ export class ArticleService {
   /**
    * 新增文章
    * @param article
+   * @param userId
    */
-  async createArticle(article: CreateArticleDto) {
+  async createArticle(article: CreateArticleDto, userId: number) {
     // 开始一个事务
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -125,6 +126,7 @@ export class ArticleService {
     try {
       // 使用queryRunner来执行所有数据库操作
       const newArticle = queryRunner.manager.create(Article, article);
+      newArticle.userId = userId;
 
       if (!article.category_id) {
         newArticle.category_id = null;
@@ -242,34 +244,45 @@ export class ArticleService {
    */
   async articleDetails(id: number) {
 
-    const foundArticles: Article = await this.articleRepository
-      .createQueryBuilder('article')
-      .leftJoinAndSelect('article.category_id', 'category')  // 将分类信息一起查询出来
-      .leftJoinAndSelect('article.articleTags', 'articleTags')
-      .leftJoinAndSelect('articleTags.tag', 'tag')  // 加入对标签的联接
-      .where('article.id = :id', { id })
-      .getOne()
+    try {
+      const foundArticles: Article = await this.articleRepository
+        .createQueryBuilder('article')
+        .leftJoinAndSelect('article.category_id', 'category')  // 将分类信息一起查询出来
+        .leftJoinAndSelect('article.articleTags', 'articleTags')
+        .leftJoinAndSelect('articleTags.tag', 'tag')  // 加入对标签的联接
+        .leftJoinAndSelect('article.user', 'user')  // 加入对用户的联接
+        .where('article.id = :id', { id })
+        .getOne()
 
-    if (!foundArticles) {
-      /**自定义响应*/
-      return new NotFoundException('文章不存在');
+      if (!foundArticles) {
+        /**自定义响应*/
+        return new NotFoundException('文章不存在');
+      }
+
+      console.log(foundArticles,'foundArticles')
+
+      const { category_id, articleTags, user, ...rest } = foundArticles;
+
+      console.log(user,'user')
+      // 提取标签信息
+      const tags = articleTags.map(articleTag => ({
+        id: articleTag.tag.id,
+        name: articleTag.tag.name
+      }));
+      return {
+        ...rest,
+        category_id: category_id.id,
+        category_name: category_id.name,
+        category_icon: category_id.icon,
+        tags,
+        userId: user.id, // 添加文章作者ID
+        // category_article_count: totalPublishedArticles, //当前分类的状态为ArticleStatus.PUBLISH的所有文章数量
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('查询文章详情失败');
     }
 
-    const { category_id, articleTags, ...rest } = foundArticles;
-
-    // 提取标签信息
-    const tags = articleTags.map(articleTag => ({
-      id: articleTag.tag.id,
-      name: articleTag.tag.name
-    }));
-    return {
-      ...rest,
-      category_id: category_id.id,
-      category_name: category_id.name,
-      category_icon: category_id.icon,
-      tags,
-      // category_article_count: totalPublishedArticles, //当前分类的状态为ArticleStatus.PUBLISH的所有文章数量
-    };
   }
 
   /**

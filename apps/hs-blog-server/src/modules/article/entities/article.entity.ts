@@ -5,6 +5,7 @@ import {
 } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
 import { ArticleTag } from './article-tag.entity';
+import { User } from '../../user/entities/user.entity';
 
 /**文章状态*/
 export enum ArticleStatus {
@@ -76,6 +77,17 @@ export class Article {
   @ManyToOne(() => Category, category => category.articles)
   @JoinColumn({ name: 'category_id' })
   category_id: Category;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @Column({
+    name: 'user_id',
+    nullable: true,
+    comment: '文章作者ID',
+  })
+  userId: number;
 
   @OneToMany(() => ArticleTag, articleTag => articleTag.article, {
     cascade: true, // 添加级联操作
