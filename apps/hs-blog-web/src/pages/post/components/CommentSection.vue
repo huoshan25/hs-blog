@@ -9,7 +9,6 @@
   import Ellipsis from '~/components/Icon/Ellipsis.vue'
 
   onMounted(() => {
-    fetchUserInfo()
     fetchComments()
   })
 
@@ -28,7 +27,7 @@
     articleAuthorId: number
   }>()
 
-  const { userInfo, token, showLoginModal, fetchUserInfo } = useUser()
+  const { userInfo, token, showLoginModal } = useUser()
   const commentContent = ref('')
   const mainCommentContent = ref('')
   const replyState = ref<ReplyState | null>(null)

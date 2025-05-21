@@ -11,13 +11,21 @@ const {
   searchPlaceholder,
   inputStyle,
   dropdownContent,
-  onFocusInput,
-  onBlurInput,
+  onFocusInput: originalOnFocusInput,
+  onBlurInput: originalOnBlurInput,
   handleInput,
   handleKeyUp,
   performSearch,
   selectItem
 } = useSearch(getSearchHistory, addSearchHistory);
+
+const onFocusInput = () => {
+  originalOnFocusInput();
+};
+
+const onBlurInput = () => {
+  originalOnBlurInput();
+};
 
 const handleSearch = () => {
   performSearch();

@@ -13,6 +13,8 @@ export enum SearchDimension {
   TAG = 2,
 }
 
+const { $emit } = useNuxtApp();
+
 /**
  * 搜索hook
  * @param getSearchHistory
@@ -50,6 +52,7 @@ export const useSearch = (getSearchHistory: () => string[], addSearchHistory: (i
   /**聚焦*/
   const onFocusInput = () => {
     searchPlaceholder.value = "搜索文章/标签";
+    $emit('search-focus-change', true);
 
     setTimeout(() => {
       if (window.innerWidth <= 768) {
@@ -65,6 +68,8 @@ export const useSearch = (getSearchHistory: () => string[], addSearchHistory: (i
 
   /**失焦*/
   const onBlurInput = () => {
+    $emit('search-focus-change', false);
+
     setTimeout(() => {
       searchPlaceholder.value = "搜索火山博客";
       inputStyle.value.width = "150px";

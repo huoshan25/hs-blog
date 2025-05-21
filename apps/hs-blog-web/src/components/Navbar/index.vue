@@ -1,9 +1,19 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, onUnmounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useNavigationMenu } from './hook/useNavigationMenu'
   import SearchComponent from './searchComponent.vue'
   import { ReorderFour } from '@vicons/ionicons5'
+  import { useUser } from '~/composables/useUser'
+
+  onMounted(() => {})
+
+  onUnmounted(() => {
+    $off('search-focus-change')
+  })
+
+  const { token, showLoginModal } = useUser()
+  const { $on, $off } = useNuxtApp()
 
   const router = useRouter()
 
@@ -14,11 +24,19 @@
 
   const { scrollY } = useScrollWatcher()
 
+  const isSearchFocused = ref(false)
+
+  const hasEnoughSpace = computed(() => {
+    return window.innerWidth > 768
+  })
+
+  $on('search-focus-change', (focused: boolean) => {
+    isSearchFocused.value = focused
+  })
+
   const isNavbarVisible = computed(() => {
     return scrollY.value === 0
   })
-
-  onMounted(() => {})
 
   const dropdownOptions = computed(() => {
     return getMenuOptions.value.map(item => ({
@@ -63,7 +81,16 @@
         </ClientOnly>
       </div>
       <div class="flex items-center">
-        <SearchComponent />
+        <ClientOnly>
+          <div class="search-wrapper">
+            <SearchComponent />
+            <div class="right-elements" :class="{ hidden: isSearchFocused && !hasEnoughSpace }">
+              <n-button v-if="!token" @click="showLoginModal" class="ml-[10px]" type="primary" size="small">
+                登录
+              </n-button>
+            </div>
+          </div>
+        </ClientOnly>
       </div>
     </div>
   </header>
@@ -71,4 +98,26 @@
 
 <style scoped lang="scss">
   @import url(./style.scss);
+
+  .search-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  .right-elements {
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .right-elements.hidden {
+    opacity: 0;
+    transform: translateX(20px);
+    pointer-events: none;
+    width: 0;
+    margin-left: 0;
+  }
 </style>

@@ -16,7 +16,7 @@
 
 ### 前置要求
 
-- Node.js v20+
+- Node.js v20
 - pnpm v8+
 
 ### 安装依赖
