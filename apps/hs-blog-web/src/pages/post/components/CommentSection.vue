@@ -3,7 +3,7 @@
   import type { CommentData, CreateCommentRequest } from '~/api/post/type'
   import { useUser } from '~/composables/useUser'
   import { HttpStatus } from '~/enums/httpStatus'
-  import { TrashOutline } from '@vicons/ionicons5'
+  import { TrashOutline, ChatboxEllipsesOutline } from '@vicons/ionicons5'
   import { renderIcon } from '~/utils/renderIcon'
 
   onMounted(() => {
@@ -318,7 +318,7 @@
                     <div class="flex items-center gap-x-[10px]">
                       <div class="text-xs text-gray-500 mr-[5px]">{{ formatRelativeTime(comment.createdAt) }}</div>
 
-                      <n-button text color="#6B7280FF" size="small" @click="handleReply(comment)">
+                      <n-button text color="#6B7280FF" size="tiny" @click="handleReply(comment)">
                         <template #icon>
                           <n-icon>
                             <ChatboxEllipsesOutline />
@@ -330,7 +330,7 @@
                     </div>
 
                     <n-dropdown trigger="hover" :options="getCommentOptions(comment)">
-                      <Ellipsis class="cursor-pointer" />
+                      <IconEllipsis class="cursor-pointer" />
                     </n-dropdown>
                   </div>
                 </div>
@@ -418,7 +418,7 @@
                       </div>
 
                       <n-dropdown trigger="hover" :options="getCommentOptions(reply)">
-                        <Ellipsis class="cursor-pointer" />
+                        <IconEllipsis class="cursor-pointer" />
                       </n-dropdown>
                     </div>
                   </div>
