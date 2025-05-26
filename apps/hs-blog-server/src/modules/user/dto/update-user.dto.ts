@@ -5,7 +5,7 @@ export class UpdateUserDto {
   @ApiProperty({ description: '用户名', example: 'johndoe', required: false })
   @IsString({ message: '用户名必须是字符串' })
   @IsNotEmpty({ message: '用户名不能为空' })
-  @MinLength(2, { message: '用户名长度不能小于2位' })
+  @MinLength(1, { message: '用户名长度不能小于2位' })
   userName?: string;
 
   // @ApiProperty({ description: '邮箱地址', example: 'john@example.com', required: false })
