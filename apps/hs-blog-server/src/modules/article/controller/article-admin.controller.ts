@@ -104,7 +104,10 @@ export class ArticleAdminController {
   @ApiOperation({ summary: '获取文章详情' })
   @Get('details')
   async articleDetails(@Query('id') id: number) {
-    return await this.articleService.articleDetails(id);
+    const data = await this.articleService.articleDetails(id);
+    return {
+      data
+    }
   }
 
   @ApiOperation({ summary: '删除文章' })
