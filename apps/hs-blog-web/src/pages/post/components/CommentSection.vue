@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { createComment, deleteComment, getArticleComments } from '~/api/post'
-  import type { CommentData } from '~/api/post/type'
+  import type { CommentData, CreateCommentRequest } from '~/api/post/type'
   import { useUser } from '~/composables/useUser'
   import { HttpStatus } from '~/enums/httpStatus'
   import { formatRelativeTime } from '~/utils/formatRelativeTime'
@@ -10,16 +10,26 @@
 
   onMounted(() => {
     fetchComments()
+    fetchUserInfo()
+    console.log(JSON.stringify(userInfo.value), 'userInfo')
   })
 
-  // 定义明确的回复状态接口
+  /**
+   * 回复状态
+   */
   interface ReplyState {
-    parentCommentId: number // 父评论ID（提交到后端的parentId）
-    targetUserName: string // 被回复用户名
-    isReplyingToComment: boolean // 是否回复的是评论（而非回复）
-    targetId: number // 目标ID（用于UI显示）
-    replyToId?: number // 被回复内容的ID（用于数据关联）
-    replyToUser?: string // 被回复用户名（用于显示）
+    /**父评论ID（提交到后端的parentId）*/
+    parentCommentId: number
+    /**被回复用户名*/
+    targetUserName: string
+    /**是否回复的是评论（而非回复）*/
+    isReplyingToComment: boolean
+    /**目标ID（用于UI显示）*/
+    targetId: number
+    /**被回复内容的ID（用于数据关联）*/
+    replyToId?: number
+    /**被回复用户名（用于显示）*/
+    replyToUser?: string
   }
 
   const props = defineProps<{
@@ -27,7 +37,7 @@
     articleAuthorId: number
   }>()
 
-  const { userInfo, token, showLoginModal } = useUser()
+  const { userInfo, token, showLoginModal, fetchUserInfo } = useUser()
   const commentContent = ref('')
   const mainCommentContent = ref('')
   const replyState = ref<ReplyState | null>(null)
@@ -36,14 +46,18 @@
   const loading = ref(true)
   const message = useMessage()
 
-  // 结构化评论数据，将回复评论嵌套在父评论下
+  /**
+   * 评论列表
+   * @description 结构化评论数据，将回复评论嵌套在父评论下
+   */
   const structuredComments = computed(() => {
-    // 顶级评论
+    /**顶级评论*/
     const topLevelComments = comments.value.filter(c => !c.parentId)
 
     // 将回复评论组织到对应的父评论下
     return topLevelComments.map(comment => {
-      const replies = comments.value.filter(c => c.parentId === comment.id)
+      const replies = comments.value
+        .filter(c => c.parentId === comment.id)
         // 回复也按照时间正序排列
         .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
       return {
@@ -128,8 +142,7 @@
 
     isSubmitting.value = true
     try {
-      // 构建基础数据
-      const params: any = {
+      const params: CreateCommentRequest = {
         content: commentContent.value,
         articleId: props.articleId,
         parentId: replyState.value.parentCommentId
@@ -210,6 +223,7 @@
    * @param comment 评论
    */
   const isCommentAuthor = (comment: CommentData) => {
+    console.log(userInfo.value?.id,'userInfo.value?.id')
     return !!token.value && userInfo.value?.id === comment.userId
   }
 
@@ -220,8 +234,6 @@
   const isArticleAuthor = (comment: CommentData) => {
     return !!props.articleAuthorId && props.articleAuthorId === comment.userId
   }
-
-  const handleCommentOptions = (key: string | number) => {}
 
   const getCommentOptions = (comment: CommentData) => {
     return [
@@ -321,7 +333,7 @@
                       </n-button>
                     </div>
 
-                    <n-dropdown trigger="hover" @select="handleCommentOptions" :options="getCommentOptions(comment)">
+                    <n-dropdown trigger="hover" :options="getCommentOptions(comment)">
                       <Ellipsis class="cursor-pointer" />
                     </n-dropdown>
                   </div>
@@ -409,8 +421,7 @@
                         </n-button>
                       </div>
 
-
-                      <n-dropdown trigger="hover" @select="handleCommentOptions" :options="getCommentOptions(reply)">
+                      <n-dropdown trigger="hover" :options="getCommentOptions(reply)">
                         <Ellipsis class="cursor-pointer" />
                       </n-dropdown>
                     </div>

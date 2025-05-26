@@ -109,8 +109,8 @@ class FetchApi {
     throw new Error(data?.message || response.statusText || '未知错误')
   }
 
-  async get<T>(url: string, params?: SearchParameters) {
-    return this.fetch<HttpRes<T>>(url, { method: 'get', params })
+  async get<T>(url: string, params?: SearchParameters, options?: any) {
+    return this.fetch<HttpRes<T>>(url, { method: 'get', params, ...options })
   }
 
   async post<T>(url: string, body?: SearchParameters) {

@@ -18,7 +18,7 @@ export interface RegisterReq {
 
 export const useUser = () => {
   /** 用户信息 */
-  const userInfo = useStorage<UserInfoRes | null>('user', () => null)
+  const userInfo = useStorage<UserInfoRes>('user', {} as UserInfoRes)
   /** 访问令牌 */
   const token = useStorage<string>('token', () => '')
   /** 刷新token */
@@ -57,23 +57,26 @@ export const useUser = () => {
     loginModalVisible.value = false
   }
 
+  /**获取用户信息*/
+  const fetchUserInfo = async (accessToken?: string) => {
+    const res = await getUserInfo(accessToken)
+    if (res.code === HttpStatus.OK) {
+      setUser(res.data)
+    }
+  }
+
   /**登录*/
   const fetchLogin = async (loginData: LoginReq) => {
     const res = await login(loginData)
     if (res.code === HttpStatus.OK) {
-      setToken(res.data.accessToken, res.data.refreshToken)
+      const accessToken = res.data.accessToken
+      const refreshToken = res.data.refreshToken
+      setToken(accessToken, refreshToken)
       hideLoginModal()
+      await fetchUserInfo(accessToken)
       return true
     }
     return false
-  }
-
-  /**获取用户信息*/
-  const fetchUserInfo = async () => {
-    const res = await getUserInfo()
-    if (res.code === HttpStatus.OK) {
-      setUser(res.data)
-    }
   }
 
   /**注册*/

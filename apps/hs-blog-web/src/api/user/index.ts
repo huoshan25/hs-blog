@@ -86,8 +86,15 @@ export async function getProfileInfo() {
 }
 
 /** 获取用户信息 */
-export async function getUserInfo() {
-  return await fetchRequest.get<UserInfoRes>('/user/profile');
+export async function getUserInfo(accessToken?: string) {
+  const {token} = useUser()
+  const options: any = {};
+
+  options.headers = {
+    Authorization: `Bearer ${accessToken || token.value}`
+  };
+  
+  return await fetchRequest.get<UserInfoRes>('/user/profile', undefined, options);
 }
 
 /** 登录 */
