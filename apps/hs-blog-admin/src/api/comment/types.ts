@@ -1,5 +1,3 @@
-import type { ResponseData } from '../types'
-
 /**
  * 评论信息
  */
@@ -31,16 +29,12 @@ export interface CommentQueryParams {
 /**
  * 评论列表响应
  */
-export interface CommentListResponse extends ResponseData {
-  data: {
-    items: Comment[]
-    total: number
-  }
+export interface CommentListResponse {
+  items: Comment[]
+  total: number
 }
 
 /**
  * 评论删除响应
  */
-export interface DeleteCommentResponse extends ResponseData {
-  data: null
-} 
+export interface DeleteCommentResponse {}
