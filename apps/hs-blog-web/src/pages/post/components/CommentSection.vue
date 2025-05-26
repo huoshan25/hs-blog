@@ -3,15 +3,11 @@
   import type { CommentData, CreateCommentRequest } from '~/api/post/type'
   import { useUser } from '~/composables/useUser'
   import { HttpStatus } from '~/enums/httpStatus'
-  import { formatRelativeTime } from '~/utils/formatRelativeTime'
-  import { ChatboxEllipsesOutline, TrashOutline } from '@vicons/ionicons5'
+  import { TrashOutline } from '@vicons/ionicons5'
   import { renderIcon } from '~/utils/renderIcon'
-  import Ellipsis from '~/components/Icon/Ellipsis.vue'
 
   onMounted(() => {
     fetchComments()
-    fetchUserInfo()
-    console.log(JSON.stringify(userInfo.value), 'userInfo')
   })
 
   /**
@@ -37,7 +33,7 @@
     articleAuthorId: number
   }>()
 
-  const { userInfo, token, showLoginModal, fetchUserInfo } = useUser()
+  const { userInfo, token, showLoginModal } = useUser()
   const commentContent = ref('')
   const mainCommentContent = ref('')
   const replyState = ref<ReplyState | null>(null)
