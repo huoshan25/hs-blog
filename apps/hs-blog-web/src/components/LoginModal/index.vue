@@ -180,7 +180,7 @@
     preset="card"
     transform-origin="center"
     class="login-modal"
-    style="width: 360px; max-width: 90vw"
+    style="width: 460px; max-width: 95vw"
     :mask-closable="false"
   >
     <!-- Logo区域 -->
@@ -272,90 +272,92 @@
         </template>
 
         <!-- 注册表单 -->
-        <template v-else class="flex">
-          <n-form-item label="用户名" path="username">
-            <n-input v-model:value="registerForm.username" placeholder="请输入用户名" clearable class="rounded-lg">
-              <template #prefix>
-                <n-icon>
-                  <user-icon />
-                </n-icon>
-              </template>
-            </n-input>
-          </n-form-item>
+        <template v-else>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+            <n-form-item label="用户名" path="username">
+              <n-input v-model:value="registerForm.username" placeholder="请输入用户名" clearable class="rounded-lg">
+                <template #prefix>
+                  <n-icon>
+                    <user-icon />
+                  </n-icon>
+                </template>
+              </n-input>
+            </n-form-item>
+            
+            <n-form-item label="邮箱" path="email">
+              <n-input v-model:value="registerForm.email" placeholder="请输入邮箱" clearable class="rounded-lg">
+                <template #prefix>
+                  <n-icon>
+                    <email-icon />
+                  </n-icon>
+                </template>
+              </n-input>
+            </n-form-item>
 
-          <n-form-item label="密码" path="password">
-            <n-input
-              v-model:value="registerForm.password"
-              type="password"
-              placeholder="请输入密码"
-              clearable
-              show-password-on="click"
-              class="rounded-lg"
-            >
-              <template #prefix>
-                <n-icon>
-                  <the-lock-icon />
-                </n-icon>
-              </template>
-            </n-input>
-          </n-form-item>
+            <n-form-item label="密码" path="password">
+              <n-input
+                v-model:value="registerForm.password"
+                type="password"
+                placeholder="请输入密码"
+                clearable
+                show-password-on="click"
+                class="rounded-lg"
+              >
+                <template #prefix>
+                  <n-icon>
+                    <the-lock-icon />
+                  </n-icon>
+                </template>
+              </n-input>
+            </n-form-item>
 
-          <n-form-item label="确认密码" path="confirmPassword">
-            <n-input
-              v-model:value="registerForm.confirmPassword"
-              type="password"
-              placeholder="请确认密码"
-              clearable
-              show-password-on="click"
-              class="rounded-lg"
-            >
-              <template #prefix>
-                <n-icon>
-                  <the-lock-icon />
-                </n-icon>
-              </template>
-            </n-input>
-          </n-form-item>
+            <n-form-item label="确认密码" path="confirmPassword">
+              <n-input
+                v-model:value="registerForm.confirmPassword"
+                type="password"
+                placeholder="请确认密码"
+                clearable
+                show-password-on="click"
+                class="rounded-lg"
+              >
+                <template #prefix>
+                  <n-icon>
+                    <the-lock-icon />
+                  </n-icon>
+                </template>
+              </n-input>
+            </n-form-item>
 
-          <n-form-item label="邮箱" path="email">
-            <n-input v-model:value="registerForm.email" placeholder="请输入邮箱" clearable class="rounded-lg">
-              <template #prefix>
-                <n-icon>
-                  <email-icon />
-                </n-icon>
-              </template>
-            </n-input>
-          </n-form-item>
+            <n-form-item label="验证码" path="code" class="col-span-2">
+              <n-grid :cols="24" :x-gap="8">
+                <n-grid-item :span="15">
+                  <n-input v-model:value="registerForm.code" placeholder="请输入验证码" clearable class="rounded-lg">
+                    <template #prefix>
+                      <n-icon>
+                        <the-lock-icon />
+                      </n-icon>
+                    </template>
+                  </n-input>
+                </n-grid-item>
+                <n-grid-item :span="9">
+                  <n-button
+                    type="primary"
+                    :disabled="isButtonDisabled"
+                    @click="sendCode"
+                    class="h-10 code-button w-full rounded-lg"
+                  >
+                    {{ buttonText }}
+                  </n-button>
+                </n-grid-item>
+              </n-grid>
+            </n-form-item>
 
-          <n-form-item label="验证码" path="code">
-            <n-grid :cols="24" :x-gap="8">
-              <n-grid-item :span="15">
-                <n-input v-model:value="registerForm.code" placeholder="请输入验证码" clearable class="rounded-lg">
-                  <template #prefix>
-                    <n-icon>
-                      <the-lock-icon />
-                    </n-icon>
-                  </template>
-                </n-input>
-              </n-grid-item>
-              <n-grid-item :span="9">
-                <n-button
-                  type="primary"
-                  :disabled="isButtonDisabled"
-                  @click="sendCode"
-                  class="h-10 code-button w-full rounded-lg"
-                >
-                  {{ buttonText }}
-                </n-button>
-              </n-grid-item>
-            </n-grid>
-          </n-form-item>
+            <n-form-item path="agreeTerms" class="mb-1 col-span-2">
+              <agreement-checkbox v-model:checked="registerForm.agreeTerms" />
+            </n-form-item>
+          </div>
 
-          <n-form-item path="agreeTerms">
-            <agreement-checkbox v-model:checked="registerForm.agreeTerms" />
-          </n-form-item>
-
-          <n-button type="primary" block @click="handleRegister" :loading="false" class="h-11 rounded-lg login-button">
+          <n-button type="primary" block @click="handleRegister" :loading="false" class="h-11 rounded-lg login-button mt-2">
             注册
           </n-button>
         </template>
@@ -419,9 +421,34 @@
     background: linear-gradient(to right, #3b82f6, #6366f1);
   }
 
+  /* 更精简的表单样式 */
+  :deep(.n-form-item) {
+    margin-bottom: 8px;
+  }
+
   :deep(.n-form-item-label) {
-    padding-left: 4px;
-    font-size: 14px;
+    padding: 0 0 2px 4px;
+    font-size: 13px;
+    height: 24px;
+    line-height: 24px;
+  }
+
+  :deep(.n-form-item-feedback-wrapper) {
+    min-height: 16px;
+  }
+
+  :deep(.n-input) {
+    height: 38px;
+  }
+
+  .login-modal:deep(.n-card) {
+    padding: 20px 24px;
+  }
+
+  /* 调整模态框高度 */
+  .login-modal:deep(.n-modal) {
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   :deep(.n-modal-mask) {
