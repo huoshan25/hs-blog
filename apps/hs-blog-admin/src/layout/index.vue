@@ -17,6 +17,15 @@ onMounted(() => {
   renewalCrumbs(menuOptions.value, activeKey.value)
 })
 
+/**监听路由变化，更新菜单高亮状态*/
+watch(
+  () => router.currentRoute.value.path,
+  (newPath) => {
+    activeKey.value = newPath
+    renewalCrumbs(menuOptions.value, newPath)
+  }
+)
+
 /**是否反转*/
 const inverted = ref(true)
 
