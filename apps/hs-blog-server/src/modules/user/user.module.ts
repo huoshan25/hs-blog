@@ -10,18 +10,23 @@ import { ProfileService } from '@/modules/user/service/profile.service';
 import { UserService } from '@/modules/user/service/user.service';
 import { Profile } from '@/modules/user/entities/profile.entity';
 import { UserAdminController } from '@/modules/user/controller/user-admin.controller';
-import {UserConfigService} from "@/modules/user/service/user-config.service";
+import { UserConfigService } from "@/modules/user/service/user-config.service";
+import { UserBio } from '@/modules/user/entities/user-bio.entity';
+import { UserBioService } from '@/modules/user/service/user-bio.service';
+import { UserBioAdminController } from '@/modules/user/controller/user-bio-admin.controller';
+import { OssModule } from '@/modules/oss/oss.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Profile]),
+    TypeOrmModule.forFeature([User, Profile, UserBio]),
     RedisModule,
     EmailModule,
     forwardRef(() => AuthModule),
     DatabaseModule,
+    OssModule,
   ],
-  providers: [UserService, ProfileService, UserConfigService],
-  exports: [UserService],
-  controllers: [UserBlogController, UserAdminController],
+  providers: [UserService, ProfileService, UserConfigService, UserBioService],
+  exports: [UserService, UserBioService],
+  controllers: [UserBlogController, UserAdminController, UserBioAdminController],
 })
 export class UserModule {}
