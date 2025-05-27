@@ -48,7 +48,15 @@ export class UserService implements OnModuleInit {
       this.logger.warn('邮箱已存在');
       return;
     }
-    return this.userRepository.save(adminUser);
+    
+    const hashedPassword = await this.hashPassword(adminUser.password);
+    
+    const adminUserToSave = {
+      ...adminUser,
+      password: hashedPassword
+    };
+    
+    return this.userRepository.save(adminUserToSave);
   }
 
   /**
