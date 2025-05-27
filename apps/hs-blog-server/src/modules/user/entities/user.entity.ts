@@ -1,26 +1,20 @@
-import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn,} from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { UserRole } from '@/enum/user-role.enum';
 
-/**
- * 用户实体
- * @description 用户信息表，存储用户的基本信息、认证信息等
- */
 @Entity('users')
 export class User {
-  /**
-   * 用户ID
-   * @description 自增主键
-   */
   @PrimaryGeneratedColumn({
     type: 'int',
     comment: '用户ID，自增主键',
   })
   id: number;
 
-  /**
-   * 用户名
-   * @description 用户登录和显示的用户名，唯一
-   */
   @Column({
     name: 'user_name',
     unique: true,
@@ -29,10 +23,6 @@ export class User {
   })
   userName: string;
 
-  /**
-   * 邮箱
-   * @description 用户邮箱地址，用于登录和接收通知，唯一
-   */
   @Column({
     unique: true,
     length: 100,
@@ -40,10 +30,6 @@ export class User {
   })
   email: string;
 
-  /**
-   * 密码
-   * @description 加密后的用户密码，默认不返回
-   */
   @Column({
     select: false,
     length: 100,
@@ -51,10 +37,6 @@ export class User {
   })
   password: string;
 
-  /**
-   * 头像
-   * @description 用户头像URL，可选
-   */
   @Column({
     nullable: true,
     length: 255,
@@ -62,10 +44,6 @@ export class User {
   })
   avatar: string;
 
-  /**
-   * 个人简介
-   * @description 用户的个人简介，可选
-   */
   @Column({
     nullable: true,
     length: 500,
@@ -73,32 +51,20 @@ export class User {
   })
   bio: string;
 
-  /**
-   * 用户角色
-   * @description 用户角色，admin: 管理员，user: 普通用户，默认为普通用户
-   */
   @Column({
-    type: 'enum',
-    enum: UserRole,
+    type: 'varchar',
     default: UserRole.USER,
+    length: 10,
     comment: '用户角色，admin: 管理员，user: 普通用户',
   })
   role: UserRole;
 
-  /**
-   * 创建时间
-   * @description 用户账号创建的时间戳
-   */
   @CreateDateColumn({
     name: 'created_at',
     comment: '创建时间',
   })
   createdAt: Date;
 
-  /**
-   * 更新时间
-   * @description 用户信息最后更新的时间戳
-   */
   @UpdateDateColumn({
     name: 'updated_at',
     comment: '更新时间',
