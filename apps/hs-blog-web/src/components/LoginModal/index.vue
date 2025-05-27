@@ -197,8 +197,8 @@
     v-model:show="loginModalVisible"
     preset="card"
     transform-origin="center"
-    class="login-modal"
-    style="width: 460px; max-width: 95vw"
+    class="login-modal transition-all duration-300 ease-in-out"
+    :style="{ width: activeTab === 'login' ? '400px' : '520px' }"
     :mask-closable="false"
   >
     <!-- Logo区域 -->
