@@ -25,6 +25,8 @@ export const useUser = () => {
   const refreshToken = useStorage<string>('refreshToken', () => '')
   /** 登录模态框状态 */
   const loginModalVisible = useState<boolean>('loginModalVisible', () => false)
+  /**是否登录*/
+  const isLogin = computed<boolean>(() => !!token.value && !!userInfo.value)
 
   /** 设置用户信息 */
   const setUser = (user: UserInfoRes) => {
@@ -94,6 +96,7 @@ export const useUser = () => {
     userInfo,
     token,
     loginModalVisible,
+    isLogin,
 
     setUser,
     setToken,

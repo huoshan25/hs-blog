@@ -12,7 +12,7 @@
     $off('search-focus-change')
   })
 
-  const { token, showLoginModal } = useUser()
+  const { isLogin, showLoginModal } = useUser()
   const { $on, $off } = useNuxtApp()
 
   const router = useRouter()
@@ -85,7 +85,7 @@
           <div class="search-wrapper">
             <SearchComponent />
             <div class="right-elements" :class="{ hidden: isSearchFocused && !hasEnoughSpace }">
-              <n-button v-if="!token" @click="showLoginModal" class="ml-[10px]" type="primary" size="small">
+              <n-button v-if="!isLogin" @click="showLoginModal" class="ml-[10px]" type="primary" size="small">
                 登录
               </n-button>
             </div>
