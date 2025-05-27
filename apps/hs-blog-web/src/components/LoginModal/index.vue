@@ -9,7 +9,13 @@
   import EmailIcon from '~/components/Icon/EmailIcon.vue'
   import UserIcon from '~/components/Icon/UserIcon.vue'
 
-  const { loginModalVisible, hideLoginModal, fetchLogin, fetchRegister } = useUser()
+  const { 
+    loginModalVisible, 
+    hideLoginModal, 
+    fetchLogin, 
+    fetchRegister, 
+    getRememberedUser 
+  } = useUser()
 
   const router = useRouter()
 
@@ -22,6 +28,9 @@
     usernameOrEmail: '',
     password: ''
   })
+
+  /** 单独管理"记住我"状态 */
+  const rememberMe = ref(false)
 
   /** 切换标签页 */
   const switchTab = (tab: string) => {
@@ -100,11 +109,12 @@
     ]
   }
 
+  /** 登录处理 */
   const handleLogin = () => {
     formRef.value?.validate(async errors => {
       if (errors) return
 
-      const success = await fetchLogin(loginForm)
+      const success = await fetchLogin(loginForm, rememberMe.value)
       if (success) {
         message.success('登录成功')
         resetLoginForm()
@@ -172,6 +182,14 @@
       resetRegisterForm()
     }
   }
+
+  onMounted(() => {
+    const rememberedUser = getRememberedUser()
+    if (rememberedUser) {
+      loginForm.usernameOrEmail = rememberedUser
+      rememberMe.value = true
+    }
+  })
 </script>
 
 <template>
@@ -262,7 +280,7 @@
           </n-form-item>
 
           <div class="flex justify-between items-center mb-4">
-            <n-checkbox>记住我</n-checkbox>
+            <n-checkbox v-model:checked="rememberMe">记住我</n-checkbox>
             <n-button text type="primary" size="small">忘记密码？</n-button>
           </div>
 

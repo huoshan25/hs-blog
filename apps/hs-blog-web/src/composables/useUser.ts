@@ -27,6 +27,8 @@ export const useUser = () => {
   const loginModalVisible = useState<boolean>('loginModalVisible', () => false)
   /**是否登录*/
   const isLogin = computed<boolean>(() => !!token.value && !!userInfo.value)
+  /** 记住的用户名/邮箱 */
+  const rememberedUser = useStorage<string>('rememberUser', '')
 
   /** 设置用户信息 */
   const setUser = (user: UserInfoRes) => {
@@ -67,14 +69,38 @@ export const useUser = () => {
     }
   }
 
+  /**
+   * 记住用户名/邮箱
+   * @param username 要记住的用户名/邮箱
+   * @param remember 是否记住
+   */
+  const rememberUser = (username: string, remember: boolean) => {
+    if (remember) {
+      rememberedUser.value = username
+    } else {
+      rememberedUser.value = ''
+    }
+  }
+  
+  /**
+   * 获取记住的用户名/邮箱
+   * @returns 记住的用户名/邮箱
+   */
+  const getRememberedUser = (): string => {
+    return rememberedUser.value
+  }
+
   /**登录*/
-  const fetchLogin = async (loginData: LoginReq) => {
+  const fetchLogin = async (loginData: LoginReq, remember: boolean = false) => {
     const res = await login(loginData)
     if (res.code === HttpStatus.OK) {
       const accessToken = res.data.accessToken
       const refreshToken = res.data.refreshToken
       setToken(accessToken, refreshToken)
       hideLoginModal()
+    
+      rememberUser(loginData.usernameOrEmail, remember)
+      
       await fetchUserInfo(accessToken)
       return true
     }
@@ -105,6 +131,8 @@ export const useUser = () => {
     hideLoginModal,
     fetchLogin,
     fetchRegister,
-    fetchUserInfo
+    fetchUserInfo,
+    rememberUser,
+    getRememberedUser
   }
 }
