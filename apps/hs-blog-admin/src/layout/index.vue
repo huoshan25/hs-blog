@@ -5,7 +5,7 @@ import { dateZhCN, zhCN } from 'naive-ui'
 import { useThemeOverrides } from '@/layout/useThemeOverrides.ts'
 import { useMenus, type MenuOptionItem } from '@/stores/useMenus.ts'
 import Footer from '@/layout/components/Footer.vue'
-import AppHeader from './components/AppHeader.vue'
+import Index from './components/AppHeader/index.vue'
 
 onMounted(() => {})
 
@@ -293,7 +293,7 @@ const updateMenuAndBreadcrumb = (key: string) => {
                       </n-breadcrumb-item>
                     </n-breadcrumb>
                   </div>
-                  <AppHeader/>
+                  <Index/>
                 </div>
                 <main class="content">
                   <n-card class="radius-[16px]">

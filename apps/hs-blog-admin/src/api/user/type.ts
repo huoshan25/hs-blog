@@ -22,3 +22,20 @@ export interface loginReqRes {
 export interface registerReq extends loginReq{
   confirmPassword: string
 }
+
+export interface putUserBioReq {
+  name: string;
+  avatar: string;
+  bgImg: string;
+  description?: string;
+}
+
+export interface UserBioRes {
+  id: number;
+  name: string;
+  avatar: string;
+  bgImg: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}

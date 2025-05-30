@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { LogOutOutline, NotificationsOutline, SettingsOutline } from '@vicons/ionicons5'
 import { NIcon, useDialog, useMessage } from 'naive-ui'
-import type { Component } from 'vue'
+import userBioDialog from './userBioDialog.vue'
 
 const router = useRouter()
 const { userInfo, clearUserInfo } = useUser()
@@ -18,7 +18,6 @@ const handleLogout = () => {
     onPositiveClick: () => {
       clearUserInfo()
       router.push('/login')
-      message.success('已安全退出系统')
     },
   })
 }
@@ -29,6 +28,11 @@ const menuOptions = computed(() => [
     key: 'settings',
     label: '个人设置',
     icon: renderIcon(SettingsOutline),
+    props: {
+      onClick: () => {
+        userBioDialogShow.value = true
+      },
+    },
   },
   {
     key: 'divider',
@@ -38,16 +42,13 @@ const menuOptions = computed(() => [
     key: 'logout',
     label: '退出登录',
     icon: renderIcon(LogOutOutline),
+    props: {
+      onClick: () => {
+        handleLogout()
+      },
+    },
   },
 ])
-
-const handleSelect = (key: string) => {
-  if (key === 'logout') {
-    handleLogout()
-  } else if (key === 'settings') {
-    router.push('/profileManage')
-  }
-}
 
 /**转换图标*/
 function renderIcon(icon: Component) {
@@ -69,6 +70,8 @@ const avatarColor = computed(() => {
   const charCode = userInitial.value.charCodeAt(0)
   return colors[charCode % colors.length]
 })
+
+const userBioDialogShow = ref(false)
 </script>
 
 <template>
@@ -83,7 +86,7 @@ const avatarColor = computed(() => {
     </n-badge>
 
     <!-- 用户菜单 -->
-    <n-dropdown trigger="click" :options="menuOptions" @select="handleSelect">
+    <n-dropdown trigger="click" :options="menuOptions">
       <div class="user-dropdown">
         <n-avatar round :style="{ backgroundColor: avatarColor }" :size="38">
           {{ userInitial }}
@@ -95,6 +98,15 @@ const avatarColor = computed(() => {
       </div>
     </n-dropdown>
   </div>
+
+  <n-modal
+    title="个人信息卡片设置"
+    v-model:show="userBioDialogShow"
+    preset="dialog"
+    style="width: 600px"
+  >
+    <userBioDialog v-if="userBioDialogShow" v-model="userBioDialogShow" />
+  </n-modal>
 </template>
 
 <style scoped lang="scss">
@@ -148,10 +160,5 @@ const avatarColor = computed(() => {
       line-height: 1;
     }
   }
-}
-
-// 适应暗黑模式
-:deep(.n-dropdown-menu) {
-  max-width: none !important;
 }
 </style>
