@@ -1,7 +1,6 @@
 <script setup lang="ts">
-  import { getUserInfo } from '~/api/home'
-  import { HttpStatus } from '~/enums/httpStatus'
   import { getTagsList } from '~/api/tag'
+  import { getUserBio } from '~/api/user'
 
   const props = defineProps({
     categoryList: {
@@ -12,36 +11,26 @@
     }
   })
 
-  /**个人模块信息*/
-  let personal = reactive<any>({})
-  const { data: userInfo } = await useAsyncData('userInfo', () => getUserInfo())
-  if (userInfo.value?.code === HttpStatus.OK) {
-    personal = userInfo.value.data
-  }
+  const { data: userInfo } = useAsyncData('userInfo', () => getUserBio())
 
-  const { data: tagsData } = await useAsyncData('tags', () => getTagsList())
-  if (tagsData.value?.code === HttpStatus.OK) {
-    personal.tagTotal = tagsData.value.data.tag_total
-    personal.articlesTotal = tagsData.value.data.article_total
-  }
-  const test = personal?.articlesTotal
+  const { data: tagsData } = useAsyncData('tags', () => getTagsList())
 </script>
 
 <template>
   <div class="personal">
     <div class="personal-contents">
-      <div class="top-backgroundImage" :style="{ backgroundImage: `url(${personal?.avatarBackgroundImage})` }"></div>
+      <div class="top-backgroundImage" :style="{ backgroundImage: `url(${userInfo?.data.bgImg})` }"></div>
       <div class="personal-introduced">
         <nuxt-img class="personal-introduced-avatar" src="img/avatar.jpg" alt="avatar" width="65px" height="65px" />
       </div>
-      <div class="personal-introduced-name">{{ personal?.name }}</div>
-      <div class="personal-introduced-description">{{ personal?.description }}</div>
+      <div class="personal-introduced-name">{{ userInfo?.data.name }}</div>
+      <div class="personal-introduced-description">{{ userInfo?.data.description }}</div>
     </div>
     <div class="personal-bottom">
       <div class="personal-bottom-item">
         <div class="text-center c-#212529 font-600 text-[16px]">文章</div>
         <div class="text-center c-#212529">
-          <number-animation :from="0" :to="personal?.articlesTotal" />
+          <number-animation :from="0" :to="tagsData?.data.article_total" />
         </div>
       </div>
       <div class="personal-bottom-item">
@@ -53,7 +42,7 @@
       <div class="personal-bottom-item">
         <div class="text-center c-#212529 font-600 text-[16px]">标签</div>
         <div class="text-center">
-          <number-animation :from="0" :to="personal?.tagTotal" />
+          <number-animation :from="0" :to="tagsData?.data.tag_total" />
         </div>
       </div>
     </div>
@@ -61,7 +50,6 @@
 </template>
 
 <style scoped lang="scss">
-  //个人模块
   .personal {
     background-color: white;
     border-radius: 6px;

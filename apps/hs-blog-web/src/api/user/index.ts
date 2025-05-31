@@ -78,6 +78,16 @@ export interface RegisterRes {
   refreshToken: string;
 }
 
+export interface UserBioRes {
+  id: number;
+  name: string;
+  avatar: string;
+  bgImg: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /**
  * 获取关于信息
  */
@@ -115,4 +125,9 @@ export async function register(params: RegisterReq) {
 /** 刷新token令牌 */
 export async function getRefreshToken(params: { refreshToken: string }) {
   return await fetchRequest.post<LoginRes>('/user/refresh-token', params);
+}
+
+/**获取用户卡片信息*/
+export async function getUserBio() {
+  return await fetchRequest.get<UserBioRes>('/user/bio')
 }

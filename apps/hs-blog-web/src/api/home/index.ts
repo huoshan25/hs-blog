@@ -9,14 +9,6 @@ export async function getArticleQuerySelect(params?: any) {
 }
 
 /**
- * 用户信息
- * @param params
- */
-export async function getUserInfo(params?: any) {
-  return await fetchRequest.get<any>("/user", params);
-}
-
-/**
  * 文章查询
  * @param params
  */
