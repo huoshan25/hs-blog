@@ -14,6 +14,8 @@ import { UpdateUserDto } from '@/modules/user/dto/update-user.dto';
 import { ProfileService } from '@/modules/user/service/profile.service';
 import { UserService } from '@/modules/user/service/user.service';
 import { Public } from '@/modules/auth/decorators/public.decorator';
+import {UserBioVo} from "@/modules/user/vo/user-bio.vo";
+import {UserBioService} from "@/modules/user/service/user-bio.service";
 
 @ApiTags('blog', '用户')
 @Controller('blog/user')
@@ -22,6 +24,7 @@ export class UserBlogController {
   constructor(
     private readonly userService: UserService,
     private readonly profileService: ProfileService,
+    private readonly userBioService: UserBioService
   ) {}
 
   @Get('profile')
@@ -70,24 +73,16 @@ export class UserBlogController {
     };
   }
 
-  /**
-   * 个人模块信息
-   */
-  @Get()
+  @ApiOperation({ summary: '获取用户卡片信息' })
+  @Get('bio')
   @Public()
-  async getUserInfo() {
-    const data = {
-      name: 'volcano',
-      avatar: '/img/avatar.jpg',
-      avatarBackgroundImage:
-        'https://hs-blog.oss-cn-beijing.aliyuncs.com/user/PixPin_2024-10-18_10-32-30.png',
-      description: '“风很温柔 花很浪漫 你很特别 我很喜欢”',
-      articlesTotal: 0,
-      categoriesTotal: 0,
-      tagTotal: 0,
-    };
+  @ApiResponseObject(UserBioVo)
+  @TransformToVo(UserBioVo)
+  async getBio() {
+    const result = await this.userBioService.getBio();
     return {
-      data,
+      message: '获取成功',
+      data: result,
     };
   }
 }
