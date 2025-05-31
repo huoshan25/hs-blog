@@ -187,7 +187,7 @@
             <div v-else class="entry-list" @click="goDetails(item)">
               <div class="lex justify-between w-full">
                 <div class="flex items-center">
-                  <nuxt-img src="/svg/outsideChain.svg" size="20" class="mr-[3px]" format="webp" />
+                  <nuxt-img src="/svg/outsideChain.svg" size="20px" class="mr-[3px]" format="webp" />
                   <n-ellipsis class="font-700 font-size-[17px] line-heigth-[24px] w-full mb-[3px]" :tooltip="false">
                     {{ item.title }}
                   </n-ellipsis>
