@@ -14,6 +14,7 @@ import { randomInt } from 'crypto';
 import { AuthConfig } from './auth.config';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 import { UserService } from '@/modules/user/service/user.service';
+import {EmailConfigService} from "@/modules/email/service/email-config.service";
 
 @Injectable()
 export class AuthService {
@@ -28,6 +29,7 @@ export class AuthService {
     private readonly authConfig: AuthConfig,
     private readonly userService: UserService,
     private readonly emailVerificationService: EmailVerificationService,
+    private readonly emailConfigService: EmailConfigService,
   ) {}
 
   /**
@@ -149,7 +151,7 @@ export class AuthService {
       // 发送验证码邮件
       await this.emailService.sendEmail({
         to: email,
-        subject: 'Sky Hub 验证码',
+        subject: `${this.emailConfigService.appName} 验证码`,
         template: 'validate.code',
         context: {
           code,
@@ -254,7 +256,7 @@ export class AuthService {
       // 发送欢迎邮件
       await this.emailService.sendEmail({
         to: user.email,
-        subject: '欢迎加入 Sky Hub',
+        subject: `欢迎加入 ${this.emailConfigService.appName}`,
         template: 'register.success',
         context: {
           username: user.userName,

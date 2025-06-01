@@ -1,103 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>欢迎加入 Sky Hub</title>
+    <title>欢迎加入<%= appName %></title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 30px;
-            margin-top: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo {
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .title {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 16px;
-        }
-        .welcome {
-            color: #3498db;
-            font-size: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .content {
-            margin: 20px 0;
-            color: #666;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            color: #999;
-            font-size: 12px;
-        }
-        .button {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #3498db;
-            text-decoration: none;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 30px;
+        margin-top: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .logo {
+        max-width: 150px;
+        height: auto;
+        margin-bottom: 20px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .title {
+        color: #e74c3c;
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        color: #7f8c8d;
+        font-size: 16px;
+      }
+      .welcome {
+        color: #e74c3c;
+        font-size: 20px;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .content {
+        margin: 20px 0;
+        color: #666;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        color: #999;
+        font-size: 12px;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #e74c3c;
+        text-decoration: none;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <img src="<%= appLogoUrl %>" alt="Sky Hub Logo" class="logo">
-            <div class="title">欢迎加入 Sky Hub</div>
-            <div class="subtitle">SkyHub社区</div>
-        </div>
-        
-        <div class="welcome">欢迎您，<%= username %>！</div>
-        
-        <div class="content">
-            <p>感谢您加入 Sky Hub 社区！我们很高兴能成为您光遇旅程的一部分。</p>
-            <p>在这里，您可以：</p>
-            <ul>
-                <li>分享您的光遇故事和经历</li>
-                <li>结识志同道合的朋友</li>
-                <li>参与社区活动和讨论</li>
-                <li>获取最新的光遇资讯</li>
-            </ul>
-        </div>
-        
-        <div style="text-align: center;">
-            <a href="<%= appUrl %>" class="button" style="color: white; font-weight: bold;">开始您的光遇之旅</a>
-        </div>
-
-        <div class="footer">
-            <p>此邮件由系统自动发送，请勿回复。</p>
-            <p>© <%= new Date().getFullYear() %> Sky Hub. All rights reserved.</p>
-        </div>
+<div class="container">
+    <div class="header">
+        <img src="<%= appLogoUrl %>" alt="<%= appName %> Logo" class="logo">
+        <div class="title">欢迎加入<%= appName %></div>
+        <div class="subtitle">分享思想，激发灵感</div>
     </div>
+
+    <div class="welcome">欢迎您，<%= username %>！</div>
+
+    <div class="content">
+        <p>感谢您加入<%= appName %>！很高兴能与您分享知识和见解。</p>
+        <p>在这里，您可以：</p>
+        <ul>
+            <li>阅读各类精彩文章和观点</li>
+            <li>分享您的想法和创作</li>
+            <li>参与话题讨论和互动</li>
+            <li>获取各领域的新鲜资讯</li>
+        </ul>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="<%= appUrl %>" class="button" style="color: white; font-weight: bold;">开始您的博客之旅</a>
+    </div>
+
+    <div class="footer">
+        <p>此邮件由系统自动发送，请勿回复。</p>
+        <p>© <%= new Date().getFullYear() %> <%= appName %>. All rights reserved.</p>
+    </div>
+</div>
 </body>
 </html>

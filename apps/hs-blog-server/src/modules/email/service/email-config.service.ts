@@ -14,9 +14,9 @@ export class EmailConfigService {
       secure: this.configService.get('MAIL_SECURE'),
       user: this.configService.get('MAIL_USER'),
       pass: this.configService.get('MAIL_PASSWORD'),
-      appName: this.configService.get('APP_NAME', 'Sky Hub'),
+      appName: this.configService.get('APP_NAME', '火山博客'),
       appUrl: this.configService.get('APP_URL', 'http://localhost:3000'),
-      appDescription: this.configService.get('APP_DESCRIPTION', '光遇社区平台'),
+      appDescription: this.configService.get('APP_DESCRIPTION', '火山个人博客'),
       appLogoUrl: this.configService.get(
         'APP_LOGO_URL',
         'http://localhost:3000/static/images/logo.png',

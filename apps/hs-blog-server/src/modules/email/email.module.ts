@@ -19,6 +19,6 @@ import { Module } from '@nestjs/common';
   ],
   controllers: [],
   providers: [EmailService, EmailConfigService, EmailProcessor, LoggerService, EmailVerificationService],
-  exports: [EmailService, EmailVerificationService],
+  exports: [EmailService, EmailVerificationService, EmailConfigService],
 })
 export class EmailModule {}
