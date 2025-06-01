@@ -68,7 +68,7 @@ export interface RegisterReq {
 
 export interface UserInfoRes {
   id: number;
-  username: string;
+  userName: string;
   email: string;
   avatar: string;
 }
