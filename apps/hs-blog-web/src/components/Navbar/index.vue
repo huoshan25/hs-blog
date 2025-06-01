@@ -1,9 +1,8 @@
 <script setup lang="ts">
-  import { computed, onMounted, onUnmounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useNavigationMenu } from './hook/useNavigationMenu'
   import SearchComponent from './searchComponent.vue'
-  import { ReorderFour } from '@vicons/ionicons5'
+  import { PersonOutline, ReorderFour } from '@vicons/ionicons5'
   import { useUser } from '~/composables/useUser'
 
   onMounted(() => {})
@@ -12,7 +11,7 @@
     $off('search-focus-change')
   })
 
-  const { isLogin, showLoginModal } = useUser()
+  const { isLogin, showLoginModal, userInfo, clearUser } = useUser()
   const { $on, $off } = useNuxtApp()
 
   const router = useRouter()
@@ -54,6 +53,12 @@
   const handleSelect = (key: string) => {
     navigateTo(key)
   }
+
+  const userInfoDialogShow = ref(true)
+
+  const logout = () => {
+    clearUser()
+  }
 </script>
 
 <template>
@@ -84,11 +89,70 @@
         <ClientOnly>
           <div class="search-wrapper">
             <SearchComponent />
-            <div class="right-elements" :class="{ hidden: isSearchFocused && !hasEnoughSpace }">
-              <n-button v-if="!isLogin" @click="showLoginModal" class="ml-[10px]" type="primary" size="small">
-                登录
-              </n-button>
+            <div v-if="!isLogin" class="right-elements" :class="{ hidden: isSearchFocused && !hasEnoughSpace }">
+              <n-button @click="showLoginModal" class="ml-[10px]" type="primary" size="small">登录</n-button>
             </div>
+            <n-popover placement="bottom-end" trigger="click" v-else v-model="userInfoDialogShow">
+              <template #trigger>
+                <nuxt-img
+                  :src="userInfo?.avatar"
+                  class="w-[36px] h-[36px] radius-[50%] pl-[8px] cursor-pointer"
+                  alt="avatar"
+                />
+              </template>
+              <div class="py-[10px]">
+                <div class="flex flex-col w-[224px] custom-border-bottom-1px-solid-#e4e6eb80 pb-[12px]">
+                  <div class="flex mb-[16px]">
+                    <nuxt-img
+                      :src="userInfo?.avatar"
+                      class="w-[48px] h-[48px] radius-[50%] pl-[8px] cursor-pointer mr-[12px]"
+                      alt="avatar"
+                    />
+                    <div class="c-#252933 text-[16px]">{{ userInfo?.userName }}</div>
+                  </div>
+
+                  <div class="bg-#EDF4FF c-#1e80ff px-[8px] pt-[6px] pb-[8px] radius-[4px]">
+                    <div class="mb-[3px] flex justify-between">
+                      <div class="text-[12px]">
+                        火友等级
+                        <span class="font-600">HY.8</span>
+                      </div>
+                      <div>561 / 2000</div>
+                    </div>
+
+                    <n-progress
+                      :height="5"
+                      color="#1E80FF"
+                      type="line"
+                      :show-indicator="false"
+                      status="success"
+                      :percentage="20"
+                    />
+                  </div>
+                </div>
+
+                <div class="custom-border-bottom-1px-solid-#e4e6eb80 py-[10px]">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div class="flex items-center hover:bg-#F7F8FA cursor-pointer radius-[5px]">
+                      <n-icon class="m-[8px]" size="20">
+                        <PersonOutline />
+                      </n-icon>
+                      <div class="text-[14px] c-#252933">我的主页</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-[12px] justify-between flex">
+                  <div class="text-[12px] c-#8a919f hover:c-#1e80ff cursor-pointer">我的设置</div>
+                  <n-popconfirm @positive-click="logout">
+                    <template #trigger>
+                      <div class="text-[12px] c-#8a919f hover:c-#1e80ff cursor-pointer">退出登录</div>
+                    </template>
+                    是否确认退出登录？
+                  </n-popconfirm>
+                </div>
+              </div>
+            </n-popover>
           </div>
         </ClientOnly>
       </div>
