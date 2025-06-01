@@ -97,11 +97,9 @@ export const useUser = () => {
       const accessToken = res.data.accessToken
       const refreshToken = res.data.refreshToken
       setToken(accessToken, refreshToken)
-      hideLoginModal()
-    
       rememberUser(loginData.usernameOrEmail, remember)
-      
       await fetchUserInfo(accessToken)
+      hideLoginModal()
       return true
     }
     return false
