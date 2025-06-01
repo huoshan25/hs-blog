@@ -3,13 +3,14 @@
   import { consoleLogInfo } from '~/composables/logInfo'
   import LoginModal from '~/components/LoginModal/index.vue'
 
-  /*主题色覆盖*/
-  const { themeOverrides } = useThemeOverrides()
-
   onMounted(() => {
     consoleLogInfo()
   })
 
+  /*主题色覆盖*/
+  const { themeOverrides } = useThemeOverrides()
+
+  const { loginModalVisible } = useUser()
 </script>
 <template>
   <n-config-provider :theme-overrides="themeOverrides" :locale="zhCN" :date-locale="dateZhCN">
@@ -22,7 +23,7 @@
               <slot />
             </div>
             <Footer />
-            <LoginModal />
+            <LoginModal v-if="loginModalVisible" />
           </div>
         </n-modal-provider>
       </n-message-provider>
