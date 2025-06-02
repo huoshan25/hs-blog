@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Put } from '@nestjs/common';
+import {Body, Controller, Get, Put, Query} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -33,6 +33,17 @@ export class UserBlogController {
   @TransformToVo(userVo)
   async getProfile(@CurrentUser() user: User) {
     const result = await this.userService.getUserStats(user.id);
+    return {
+      message: '获取成功',
+      data: result,
+    };
+  }
+
+  @Get('info')
+  @ApiOperation({ summary: '查询用户信息' })
+  @Public()
+  async getUserInfo(@Query('id') id: number) {
+    const result = await this.userService.findById(id);
     return {
       message: '获取成功',
       data: result,

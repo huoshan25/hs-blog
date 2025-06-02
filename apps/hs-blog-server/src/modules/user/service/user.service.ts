@@ -200,8 +200,7 @@ export class UserService implements OnModuleInit {
    * @returns 用户的统计信息和基本信息
    */
   async getUserStats(userId: number) {
-    const [user] = await Promise.all([this.findById(userId)]);
-
+    const user = await this.findById(userId)
     return {
       ...user,
     };
