@@ -4,8 +4,14 @@
   import SearchComponent from './searchComponent.vue'
   import { PersonOutline, ReorderFour } from '@vicons/ionicons5'
   import { useUser } from '~/composables/useUser'
+  import { getCurrentUserLevelInfo } from "~/api/user";
+  import {HttpStatus} from "~/enums/httpStatus";
 
-  onMounted(() => {})
+  onMounted(() => {
+    if (isLogin.value) {
+      fetchUserLevelInfo()
+    }
+  })
 
   onUnmounted(() => {
     $off('search-focus-change')
@@ -54,10 +60,31 @@
     navigateTo(key)
   }
 
-  const userInfoDialogShow = ref(true)
+  const userInfoDialogShow = ref(false)
 
   const logout = () => {
     clearUser()
+  }
+
+  /** 用户等级信息 */
+  const userLevel = ref({
+    level: 'HY.1',
+    points: 0,
+    nextLevelPoints: 0,
+    percentage: 0
+  })
+
+  /**获取用户等级信息*/
+  const fetchUserLevelInfo = async () => {
+    const res = await getCurrentUserLevelInfo()
+    if (res.code === HttpStatus.OK) {
+      userLevel.value = {
+        level: res.data.currentLevel,
+        points: res.data.points,
+        nextLevelPoints: res.data.nextLevelPoints,
+        percentage: res.data.percentage
+      }
+    }
   }
 </script>
 
@@ -92,7 +119,7 @@
             <div v-if="!isLogin" class="right-elements" :class="{ hidden: isSearchFocused && !hasEnoughSpace }">
               <n-button @click="showLoginModal" class="ml-[10px]" type="primary" size="small">登录</n-button>
             </div>
-            <n-popover placement="bottom-end" trigger="click" v-else v-model="userInfoDialogShow">
+            <n-popover placement="bottom-end" trigger="click" v-else v-model:show="userInfoDialogShow">
               <template #trigger>
                 <nuxt-img
                   :src="userInfo?.avatar"
@@ -115,9 +142,9 @@
                     <div class="mb-[3px] flex justify-between">
                       <div class="text-[12px]">
                         火友等级
-                        <span class="font-600">HY.8</span>
+                        <span class="font-600">{{ userLevel.level }}</span>
                       </div>
-                      <div>561 / 2000</div>
+                      <div>{{ userLevel.points }} / {{ userLevel.nextLevelPoints }}</div>
                     </div>
 
                     <n-progress
@@ -126,21 +153,21 @@
                       type="line"
                       :show-indicator="false"
                       status="success"
-                      :percentage="20"
+                      :percentage="userLevel.percentage"
                     />
                   </div>
                 </div>
 
-                <div class="custom-border-bottom-1px-solid-#e4e6eb80 py-[10px]">
-                  <div class="grid grid-cols-2 gap-2">
-                    <div class="flex items-center hover:bg-#F7F8FA cursor-pointer radius-[5px]">
-                      <n-icon class="m-[8px]" size="20">
-                        <PersonOutline />
-                      </n-icon>
-                      <div class="text-[14px] c-#252933">我的主页</div>
-                    </div>
-                  </div>
-                </div>
+<!--                <div class="custom-border-bottom-1px-solid-#e4e6eb80 py-[10px]">-->
+<!--                  <div class="grid grid-cols-2 gap-2">-->
+<!--                    <div class="flex items-center hover:bg-#F7F8FA cursor-pointer radius-[5px]">-->
+<!--                      <n-icon class="m-[8px]" size="20">-->
+<!--                        <PersonOutline />-->
+<!--                      </n-icon>-->
+<!--                      <div class="text-[14px] c-#252933">我的主页</div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
 
                 <div class="mt-[12px] justify-between flex">
                   <div class="text-[12px] c-#8a919f hover:c-#1e80ff cursor-pointer">我的设置</div>

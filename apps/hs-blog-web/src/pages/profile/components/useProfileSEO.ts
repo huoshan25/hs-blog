@@ -1,4 +1,5 @@
-import type { Seo } from "~/api/user";
+import type {Seo} from "~/api/user/type";
+
 
 export const useProfileSEO = (seo: Seo) => {
   const config = useRuntimeConfig();

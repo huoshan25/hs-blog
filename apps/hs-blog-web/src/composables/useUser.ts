@@ -1,6 +1,7 @@
 import { useStorage } from '@vueuse/core'
-import {getUserInfo, login, register, type UserInfoRes} from '@/api/user'
+import { getUserInfo, login, register } from '@/api/user'
 import { HttpStatus } from '~/enums/httpStatus'
+import type { UserInfoRes } from '~/api/user/type'
 
 export interface LoginReq {
   usernameOrEmail: string
@@ -81,7 +82,7 @@ export const useUser = () => {
       rememberedUser.value = ''
     }
   }
-  
+
   /**
    * 获取记住的用户名/邮箱
    * @returns 记住的用户名/邮箱
