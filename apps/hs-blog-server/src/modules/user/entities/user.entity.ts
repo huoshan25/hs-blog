@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { UserRole } from '@/enum/user-role.enum';
+import { UserLevel } from '@/enum/user-level.enum';
 
 @Entity('users')
 export class User {
@@ -58,6 +59,21 @@ export class User {
     comment: '用户角色，admin: 管理员，user: 普通用户',
   })
   role: UserRole;
+
+  @Column({
+    type: 'varchar',
+    default: UserLevel.HY_1,
+    length: 10,
+    comment: '用户等级，从HY.1到HY.10',
+  })
+  level: UserLevel;
+
+  @Column({
+    type: 'int',
+    default: 0,
+    comment: '用户积分',
+  })
+  points: number;
 
   @CreateDateColumn({
     name: 'created_at',

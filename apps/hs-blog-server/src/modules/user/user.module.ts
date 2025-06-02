@@ -14,6 +14,7 @@ import { UserConfigService } from '@/modules/user/service/user-config.service';
 import { UserBio } from '@/modules/user/entities/user-bio.entity';
 import { UserBioService } from '@/modules/user/service/user-bio.service';
 import { OssModule } from '@/modules/oss/oss.module';
+import { UserLevelService } from '@/modules/user/service/user-level.service';
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import { OssModule } from '@/modules/oss/oss.module';
     DatabaseModule,
     OssModule,
   ],
-  providers: [UserService, ProfileService, UserConfigService, UserBioService],
-  exports: [UserService, UserBioService],
+  providers: [UserService, ProfileService, UserConfigService, UserBioService, UserLevelService],
+  exports: [UserService, UserBioService, UserLevelService],
   controllers: [UserBlogController, UserAdminController],
 })
 export class UserModule {}

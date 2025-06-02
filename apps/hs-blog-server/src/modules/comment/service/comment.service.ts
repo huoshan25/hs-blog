@@ -5,12 +5,24 @@ import { Comment } from '../entities/comment.entity';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { User } from '@/modules/user/entities/user.entity';
 import { CommentQueryDto } from '../dto/comment-query.dto';
+import { UserLevelService } from '@/modules/user/service/user-level.service';
+
+/**
+ * 定义评论积分规则
+ */
+const COMMENT_POINTS = {
+  /**创建评论获得10积分*/
+  CREATE_COMMENT: 10,
+  /**回复评论获得5积分*/
+  REPLY_COMMENT: 5,
+};
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    private readonly userLevelService: UserLevelService,
   ) {}
 
   /**
@@ -28,7 +40,20 @@ export class CommentService {
       replyToId: createCommentDto.replyToId || null,
       replyToUser: createCommentDto.replyToUser || null,
     });
-    return this.commentRepository.save(comment);
+    
+    // 保存评论
+    const savedComment = await this.commentRepository.save(comment);
+    
+    // 根据评论类型增加用户积分
+    if (comment.parentId || comment.replyToId) {
+      // 如果是回复评论，增加回复积分
+      await this.userLevelService.addUserPoints(user.id, COMMENT_POINTS.REPLY_COMMENT);
+    } else {
+      // 如果是新评论，增加评论积分
+      await this.userLevelService.addUserPoints(user.id, COMMENT_POINTS.CREATE_COMMENT);
+    }
+    
+    return savedComment;
   }
 
   /**

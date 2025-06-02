@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Put, Query} from '@nestjs/common';
+import { Body, Controller, Get, Put, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -14,8 +14,9 @@ import { UpdateUserDto } from '@/modules/user/dto/update-user.dto';
 import { ProfileService } from '@/modules/user/service/profile.service';
 import { UserService } from '@/modules/user/service/user.service';
 import { Public } from '@/modules/auth/decorators/public.decorator';
-import {UserBioVo} from "@/modules/user/vo/user-bio.vo";
-import {UserBioService} from "@/modules/user/service/user-bio.service";
+import { UserBioVo } from '@/modules/user/vo/user-bio.vo';
+import { UserBioService } from '@/modules/user/service/user-bio.service';
+import { UserLevelService } from '@/modules/user/service/user-level.service';
 
 @ApiTags('blog', '用户')
 @Controller('blog/user')
@@ -24,7 +25,8 @@ export class UserBlogController {
   constructor(
     private readonly userService: UserService,
     private readonly profileService: ProfileService,
-    private readonly userBioService: UserBioService
+    private readonly userBioService: UserBioService,
+    private readonly userLevelService: UserLevelService,
   ) {}
 
   @Get('profile')
@@ -94,6 +96,23 @@ export class UserBlogController {
     return {
       message: '获取成功',
       data: result,
+    };
+  }
+
+  @ApiOperation({ summary: '获取当前用户的等级信息' })
+  @Get('level/me')
+  async getCurrentUserLevelInfo(@CurrentUser() user: User) {
+    const levelInfo = await this.userLevelService.getUserLevelInfo(user.id);
+    return {
+      data: {
+        level: levelInfo.level,
+        points: levelInfo.points,
+        currentPoints: levelInfo.progress.currentPoints,
+        nextLevelPoints: levelInfo.progress.nextLevelPoints,
+        percentage: levelInfo.progress.percentage,
+        currentLevel: levelInfo.progress.currentLevel,
+        nextLevel: levelInfo.progress.nextLevel,
+      },
     };
   }
 }

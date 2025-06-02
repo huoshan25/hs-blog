@@ -1,16 +1,30 @@
-import {Body, Controller, Delete, Get, Post, Put} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from '@/modules/user/service/profile.service';
 import { UpdateProfileDto } from '@/modules/user/dto/profile.dto';
 import { ApiResponseObject } from '@/common/decorators/api-response.decorator';
-import {userAdminVo, userVo} from '@/modules/user/vo/user.vo';
+import { userAdminVo } from '@/modules/user/vo/user.vo';
 import { TransformToVo } from '@/common/decorators/transform-to-vo.decorator';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { User } from '@/modules/user/entities/user.entity';
 import { UserService } from '@/modules/user/service/user.service';
-import {UserBioService} from "@/modules/user/service/user-bio.service";
-import {CreateUserBioDto, UpdateUserBioDto} from "@/modules/user/dto/user-bio.dto";
-import {UserBioVo} from "@/modules/user/vo/user-bio.vo";
+import { UserBioService } from '@/modules/user/service/user-bio.service';
+import {
+  CreateUserBioDto,
+  UpdateUserBioDto,
+} from '@/modules/user/dto/user-bio.dto';
+import { UserBioVo } from '@/modules/user/vo/user-bio.vo';
+import { AddUserPointsDto } from '@/modules/user/dto/user-level.dto';
+import { UserLevelService } from '@/modules/user/service/user-level.service';
 
 @ApiTags('admin', '用户模块')
 @ApiBearerAuth()
@@ -19,7 +33,8 @@ export class UserAdminController {
   constructor(
     private readonly profileService: ProfileService,
     private readonly userService: UserService,
-    private readonly userBioService: UserBioService
+    private readonly userBioService: UserBioService,
+    private readonly userLevelService: UserLevelService,
   ) {}
 
   @ApiOperation({ summary: '获取个人介绍' })
@@ -86,6 +101,44 @@ export class UserAdminController {
     await this.userBioService.remove();
     return {
       message: '删除成功',
+    };
+  }
+
+  @ApiOperation({ summary: '获取指定用户的等级信息' })
+  @Get(':userId')
+  async getUserLevelInfo(@Param('userId', ParseIntPipe) userId: number) {
+    const levelInfo = await this.userLevelService.getUserLevelInfo(userId);
+    return {
+      data: {
+        level: levelInfo.level,
+        points: levelInfo.points,
+        currentPoints: levelInfo.progress.currentPoints,
+        nextLevelPoints: levelInfo.progress.nextLevelPoints,
+        percentage: levelInfo.progress.percentage,
+        currentLevel: levelInfo.progress.currentLevel,
+        nextLevel: levelInfo.progress.nextLevel,
+      },
+    };
+  }
+
+  @ApiOperation({ summary: '管理员增加用户积分' })
+  @Post(':userId/points')
+  async addUserPoints(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() addUserPointsDto: AddUserPointsDto,
+  ) {
+    await this.userLevelService.addUserPoints(userId, addUserPointsDto.points);
+    const levelInfo = await this.userLevelService.getUserLevelInfo(userId);
+    return {
+      data: {
+        level: levelInfo.level,
+        points: levelInfo.points,
+        currentPoints: levelInfo.progress.currentPoints,
+        nextLevelPoints: levelInfo.progress.nextLevelPoints,
+        percentage: levelInfo.progress.percentage,
+        currentLevel: levelInfo.progress.currentLevel,
+        nextLevel: levelInfo.progress.nextLevel,
+      },
     };
   }
 }
