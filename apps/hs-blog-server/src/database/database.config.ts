@@ -31,6 +31,8 @@ export class DatabaseConfig {
       retryDelay: this.configService.get('DB_RETRY_DELAY', this.DEFAULT_RETRY_DELAY),
       extra: {
         connectionTimeout: 60000,
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci'
       },
     };
   }
