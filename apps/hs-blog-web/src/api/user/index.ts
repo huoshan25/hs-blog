@@ -71,6 +71,7 @@ export interface UserInfoRes {
   userName: string;
   email: string;
   avatar: string;
+  createdAt: string;
 }
 
 export interface RegisterRes {
@@ -130,4 +131,9 @@ export async function getRefreshToken(params: { refreshToken: string }) {
 /**获取用户卡片信息*/
 export async function getUserBio() {
   return await fetchRequest.get<UserBioRes>('/user/bio')
+}
+
+/**获取用户信息*/
+export async function getUser(params : { id: string }) {
+  return await fetchRequest.get<UserInfoRes>('/user/info', params)
 }
