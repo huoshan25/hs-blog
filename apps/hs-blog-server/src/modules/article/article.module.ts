@@ -11,17 +11,19 @@ import { ArticleAdminController } from '@/modules/article/controller/article-adm
 import { ArticleBlogController } from '@/modules/article/controller/article-blog.controller';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { UserModule } from '@/modules/user/user.module';
+import { ArticleLike } from './entities/article-like.entity';
+import { ArticleLikeService } from './service/article-like.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Article, Category, ArticleTag]),
+    TypeOrmModule.forFeature([Article, Category, ArticleTag, ArticleLike]),
     forwardRef(() => TagModule),
     OssModule,
     AuthModule,
     UserModule,
   ],
   controllers: [ArticleAdminController, ArticleBlogController],
-  providers: [ArticleService, Logger, ArticleContentService],
+  providers: [ArticleService, Logger, ArticleContentService, ArticleLikeService],
   exports: [TypeOrmModule, ArticleContentService],
 })
 export class ArticleModule {}

@@ -399,8 +399,9 @@ export class ArticleService {
   /**
    * 前台文章列表查询服务
    * @param cursorDto 游标查询参数
+   * @param currentUserId
    */
-  async findPublicArticles(cursorDto: CursorArticlesDto) {
+  async findPublicArticles(cursorDto: CursorArticlesDto, currentUserId?: number) {
     const {
       cursor,
       limit = 10,
@@ -424,6 +425,7 @@ export class ArticleService {
         'article.type',
         'article.link_url',
         'article.view_count',
+        'article.like_count',
         'category.id',
         'category.name',
         'articleTags.id',
@@ -473,6 +475,7 @@ export class ArticleService {
       hasMore
     };
   }
+
 
   /**
    * 文章TTS

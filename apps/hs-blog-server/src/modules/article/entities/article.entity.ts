@@ -6,6 +6,7 @@ import {
 import { Category } from '../../category/entities/category.entity';
 import { ArticleTag } from './article-tag.entity';
 import { User } from '../../user/entities/user.entity';
+import { ArticleLike } from './article-like.entity';
 
 /**文章状态*/
 export enum ArticleStatus {
@@ -142,4 +143,15 @@ export class Article {
     comment: '文章浏览数'
   })
   view_count: number;
+
+  @Column({
+    type: 'int',
+    unsigned: true,
+    default: 0,
+    comment: '文章点赞数'
+  })
+  like_count: number;
+
+  @OneToMany(() => ArticleLike, articleLike => articleLike.article)
+  likes: ArticleLike[];
 }
