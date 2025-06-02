@@ -21,19 +21,59 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * @param context 执行上下文
    * @returns 是否需要认证
    */
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     // 检查是否有 @Public 装饰器
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    // 如果是公开的路由，直接放行
-    if (isPublic) {
-      return true;
+    // 无论是否是公开路由，都尝试验证token
+    try {
+      // 调用父类的canActivate方法尝试验证token
+      await super.canActivate(context);
+    } catch (error) {
+      // 如果是公开路由，即使验证失败也放行
+      if (isPublic) {
+        return true;
+      }
+      // 如果不是公开路由，则抛出异常
+      throw error;
     }
 
-    // 其他情况需要认证
-    return super.canActivate(context);
+    // 验证成功或者是公开路由，放行
+    return true;
+  }
+
+  /**
+   * 处理请求
+   * 即使是公开路由，如果提供了有效的 token，也会解析出用户信息
+   * @param err 错误
+   * @param user 用户
+   * @param info 信息
+   * @param context 上下文
+   * @returns 用户
+   */
+  handleRequest(err, user, info, context: ExecutionContext) {
+    const request = context.switchToHttp().getRequest();
+    
+    // 检查是否有 @Public 装饰器
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    // 如果是公开路由且验证失败，不抛出异常
+    if (isPublic) {
+      if (user) {
+        // 有用户信息就设置
+        request.user = user;
+      }
+      // 即使没有用户信息也放行
+      return user;
+    }
+    
+    // 非公开路由，调用父类处理
+    return super.handleRequest(err, user, info, context);
   }
 }
