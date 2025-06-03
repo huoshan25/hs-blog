@@ -19,6 +19,7 @@ import { User } from '@/modules/user/entities/user.entity';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 
 @ApiTags('blog', '文章模块')
+@ApiBearerAuth()
 @Controller('blog/article')
 export class ArticleBlogController {
   constructor(
@@ -149,6 +150,23 @@ export class ArticleBlogController {
     const result = await this.articleLikeService.getLikeStatus(
       articleId,
       user.id,
+    );
+    return {
+      data: result,
+    };
+  }
+
+  @ApiOperation({ summary: '获取用户点赞的文章列表' })
+  @Get('like/user-liked')
+  async getUserLikedArticles(
+    @CurrentUser() user: User,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    const result = await this.articleLikeService.getUserLikedArticles(
+      user.id,
+      page,
+      limit,
     );
     return {
       data: result,

@@ -104,4 +104,59 @@ export class ArticleLikeService {
       likeCount: article.like_count,
     };
   }
+
+  /**
+   * 获取用户点赞的文章列表
+   * @param userId 用户ID
+   * @param page 页码
+   * @param limit 每页条数
+   * @returns 点赞的文章列表及分页信息
+   */
+  async getUserLikedArticles(userId: number, page: number = 1, limit: number = 10) {
+    if (!userId) {
+      return {
+        items: [],
+        total: 0,
+        page,
+        limit
+      };
+    }
+    
+    // 使用左连接查询用户点赞的文章，并获取文章详情
+    const [items, total] = await this.articleLikeRepository
+      .createQueryBuilder('like')
+      .leftJoinAndSelect('like.article', 'article')
+      .leftJoinAndSelect('article.category_id', 'category')
+      .leftJoinAndSelect('article.articleTags', 'articleTags')
+      .leftJoinAndSelect('articleTags.tag', 'tag')
+      .where('like.userId = :userId', { userId })
+      .andWhere('article.status = :status', { status: 2 }) // ArticleStatus.PUBLISH
+      .orderBy('like.createdAt', 'DESC') // 按点赞时间倒序
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    const articles = items.map(like => {
+      const { article } = like;
+      const { category_id, articleTags, content, likes, ...rest } = article;
+      
+      return {
+        ...rest,
+        category_id: category_id?.id,
+        category_name: category_id?.name || '未分类',
+        tags: articleTags?.map(at => ({
+          id: at.tag.id,
+          name: at.tag.name
+        })) || [],
+        liked: true
+      };
+    });
+    
+    return {
+      items: articles,
+      total,
+      page,
+      limit
+    };
+  }
 } 
