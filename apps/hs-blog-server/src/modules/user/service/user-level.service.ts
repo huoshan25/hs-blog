@@ -78,6 +78,11 @@ export class UserLevelService {
    * @returns 更新后的用户信息
    */
   async addUserPoints(userId: number, pointsToAdd: number): Promise<User> {
+    // 验证参数
+    if (!userId || isNaN(userId)) {
+      throw new Error('无效的用户ID');
+    }
+    
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new Error('用户不存在');
@@ -103,6 +108,11 @@ export class UserLevelService {
     points: number;
     progress: ReturnType<UserLevelService['getLevelProgress']>;
   }> {
+    // 验证参数
+    if (!userId || isNaN(userId)) {
+      throw new Error('无效的用户ID');
+    }
+    
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new Error('用户不存在');

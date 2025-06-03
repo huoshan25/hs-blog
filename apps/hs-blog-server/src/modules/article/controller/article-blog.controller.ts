@@ -34,8 +34,10 @@ export class ArticleBlogController {
     @CurrentUser() user: User,
     @Query(ValidationPipe) query: CursorArticlesDto,
   ) {
+    const userId = user?.id || undefined;
+    
     const { list, cursor, hasMore } =
-      await this.articleService.findPublicArticles(query, user.id);
+      await this.articleService.findPublicArticles(query, userId);
     return {
       data: {
         list,

@@ -27,6 +27,15 @@ export class ArticleLikeService {
    * @returns 点赞结果
    */
   async toggleLike(articleId: number, user: User) {
+    // 验证参数
+    if (!articleId || isNaN(articleId)) {
+      throw new NotFoundException('无效的文章ID');
+    }
+    
+    if (!user || !user.id) {
+      throw new NotFoundException('用户未登录');
+    }
+    
     const article = await this.articleRepository.findOne({ where: { id: articleId } });
     if (!article) {
       throw new NotFoundException('文章不存在');
@@ -89,14 +98,6 @@ export class ArticleLikeService {
    * @returns 点赞状态
    */
   async getLikeStatus(articleId: number, userId: number): Promise<ArticleLikeResponseDto> {
-    // 验证参数
-    if (!articleId || isNaN(articleId)) {
-      return {
-        liked: false,
-        likeCount: 0
-      };
-    }
-    
     const article = await this.articleRepository.findOne({ where: { id: articleId } });
     if (!article) {
       throw new NotFoundException('文章不存在');
