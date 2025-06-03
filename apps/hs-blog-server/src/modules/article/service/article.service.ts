@@ -38,7 +38,6 @@ export class ArticleService {
     private oosFileManagement: OssFileManagementService,
     private dataSource: DataSource,
     private tagService: TagService,
-    private readonly logger: Logger,
 
     private articleContentService: ArticleContentService
   ) {}
@@ -399,19 +398,16 @@ export class ArticleService {
   /**
    * 前台文章列表查询服务
    * @param cursorDto 游标查询参数
-   * @param currentUserId
+   * @param currentUserId 当前用户ID，用于查询点赞状态
    */
   async findPublicArticles(cursorDto: CursorArticlesDto, currentUserId?: number) {
-    const {
-      cursor,
-      limit = 10,
-      categoryId,
-      date,
-    } = cursorDto;
+    const { cursor, limit = 10, categoryId, date } = cursorDto;
 
-    const query = this.articleRepository.createQueryBuilder('article')
+    const query = this.articleRepository
+      .createQueryBuilder('article')
       .leftJoinAndSelect('article.category_id', 'category')
       .leftJoinAndSelect('article.articleTags', 'articleTags')
+      .leftJoinAndSelect('article.likes', 'likes')
       .leftJoinAndSelect('articleTags.tag', 'tag')
       .where('article.status = :status', { status: ArticleStatus.PUBLISH })
       .orderBy('article.id', 'DESC')
@@ -431,6 +427,7 @@ export class ArticleService {
         'articleTags.id',
         'tag.id',
         'tag.name',
+        'likes'
       ]);
 
     // 游标查询
@@ -453,26 +450,29 @@ export class ArticleService {
     const hasMore = articles.length > limit;
     const items = articles.slice(0, limit);
 
-    // 获取下一页的游标
+    /**获取下一页的游标*/
     const nextCursor = hasMore ? items[items.length - 1].id : null;
 
-    const list = items.map(article => {
-      const { category_id, articleTags, ...articleData } = article;
+    const list = items.map((article) => {
+      const { category_id, articleTags, likes, ...articleData } = article;
+      const likedArticleIds = new Set(likes.map(like => like.articleId));
       return {
         ...articleData,
         category_id: category_id?.id,
         category_name: category_id?.name || '未分类',
-        tags: articleTags?.map(at => ({
-          id: at.tag.id,
-          name: at.tag.name
-        })) || []
+        tags:
+          articleTags?.map((at) => ({
+            id: at.tag.id,
+            name: at.tag.name,
+          })) || [],
+        liked: currentUserId ? likedArticleIds.has(article.id) : false
       };
     });
 
     return {
       list,
       cursor: nextCursor,
-      hasMore
+      hasMore,
     };
   }
 
