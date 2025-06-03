@@ -75,6 +75,13 @@ export class User {
   })
   points: number;
 
+  @Column({
+    nullable: true,
+    length: 50,
+    comment: '职位',
+  })
+  position: string
+
   @CreateDateColumn({
     name: 'created_at',
     comment: '创建时间',
