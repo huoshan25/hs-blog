@@ -125,9 +125,7 @@ export async function getArticleLikeStatus(articleId: number) {
 
 /**
  * 获取用户点赞的文章列表
- * @param page 页码
- * @param limit 每页条数
  */
-export async function getUserLikedArticles(page: number = 1, limit: number = 10) {
-  return await fetchRequest.get<UserLikedArticlesRes>('/article/like/user-liked', { page, limit });
+export async function getUserLikedArticles(params: { page: number, limit: number }) {
+  return await fetchRequest.get<UserLikedArticlesRes>('/article/like/user-liked', params);
 }

@@ -71,6 +71,10 @@ export interface UserInfoRes {
   userName: string;
   email: string;
   avatar: string;
+  /**等级*/
+  level: string;
+  /**职位*/
+  position: string;
   createdAt: string;
 }
 
