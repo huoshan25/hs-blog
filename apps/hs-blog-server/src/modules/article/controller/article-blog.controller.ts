@@ -98,6 +98,13 @@ export class ArticleBlogController {
   @Get('details')
   @Public()
   async articleDetails(@Query('id') id: number) {
+    if (!id || isNaN(id)) {
+      return {
+        data: null,
+        message: '无效的文章ID'
+      };
+    }
+    
     const result = await this.articleService.articleDetails(id);
     return {
       data: result,
@@ -118,6 +125,13 @@ export class ArticleBlogController {
   @Get('view-count')
   @Public()
   async viewCount(@Query('id') id: number) {
+    if (!id || isNaN(id)) {
+      return {
+        data: null,
+        message: '无效的文章ID'
+      };
+    }
+    
     const result = await this.articleService.addViewCount(id);
     return {
       data: result,
@@ -147,9 +161,20 @@ export class ArticleBlogController {
     @Query('articleId') articleId: number,
     @CurrentUser() user: User,
   ) {
+    if (!articleId || isNaN(articleId)) {
+      return {
+        data: {
+          liked: false,
+          likeCount: 0
+        }
+      };
+    }
+
+    const userId = user?.id || 0;
+    
     const result = await this.articleLikeService.getLikeStatus(
       articleId,
-      user.id,
+      userId,
     );
     return {
       data: result,
@@ -163,6 +188,17 @@ export class ArticleBlogController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
+    if (!user || !user.id) {
+      return {
+        data: {
+          items: [],
+          total: 0,
+          page,
+          limit
+        }
+      };
+    }
+    
     const result = await this.articleLikeService.getUserLikedArticles(
       user.id,
       page,

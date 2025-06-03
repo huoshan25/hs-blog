@@ -89,13 +89,21 @@ export class ArticleLikeService {
    * @returns 点赞状态
    */
   async getLikeStatus(articleId: number, userId: number): Promise<ArticleLikeResponseDto> {
+    // 验证参数
+    if (!articleId || isNaN(articleId)) {
+      return {
+        liked: false,
+        likeCount: 0
+      };
+    }
+    
     const article = await this.articleRepository.findOne({ where: { id: articleId } });
     if (!article) {
       throw new NotFoundException('文章不存在');
     }
 
     let liked = false;
-    if (userId) {
+    if (userId && !isNaN(userId)) {
       liked = await this.checkUserLiked(articleId, userId);
     }
 

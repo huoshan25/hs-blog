@@ -242,6 +242,10 @@ export class ArticleService {
    * @param id 文章id
    */
   async articleDetails(id: number) {
+    // 验证id是否有效
+    if (!id || isNaN(id)) {
+      throw new BadRequestException('无效的文章ID');
+    }
 
     try {
       const foundArticles: Article = await this.articleRepository
@@ -255,7 +259,7 @@ export class ArticleService {
 
       if (!foundArticles) {
         /**自定义响应*/
-        return new NotFoundException('文章不存在');
+        throw new NotFoundException('文章不存在');
       }
 
       const { category_id, articleTags, user, ...rest } = foundArticles;
@@ -267,18 +271,20 @@ export class ArticleService {
       }));
       return {
         ...rest,
-        category_id: category_id.id,
-        category_name: category_id.name,
-        category_icon: category_id.icon,
+        category_id: category_id?.id,
+        category_name: category_id?.name || '未分类',
+        category_icon: category_id?.icon,
         tags,
-        userId: user.id, // 添加文章作者ID
+        userId: user?.id, // 添加文章作者ID，使用可选链防止user为undefined
         // category_article_count: totalPublishedArticles, //当前分类的状态为ArticleStatus.PUBLISH的所有文章数量
       };
     } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
       console.error(error);
       throw new InternalServerErrorException('查询文章详情失败');
     }
-
   }
 
   /**
@@ -681,6 +687,11 @@ export class ArticleService {
 
   /*文章浏览量*/
   async addViewCount(articleId: number) {
+    // 验证id是否有效
+    if (!articleId || isNaN(articleId)) {
+      throw new BadRequestException('无效的文章ID');
+    }
+    
     const article = await this.articleRepository.findOne({
       where: {
         id: articleId
@@ -693,6 +704,8 @@ export class ArticleService {
 
     article.view_count += 1;
     await this.articleRepository.save(article);
+    
+    return article.view_count;
   }
 
 }
