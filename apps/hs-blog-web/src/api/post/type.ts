@@ -89,3 +89,36 @@ export interface CreateCommentRequest {
   replyToId?: number
   replyToUser?: string
 }
+
+/**
+ * 文章点赞响应
+ */
+export interface ArticleLikeRes {
+  liked: boolean;
+  likeCount: number;
+}
+
+/**
+ * 用户点赞文章列表响应
+ */
+export interface UserLikedArticlesRes {
+  items: {
+    id: number;
+    title: string;
+    description: string;
+    create_time: string;
+    update_time: string;
+    publish_time: string;
+    type: number;
+    link_url: string;
+    view_count: number;
+    like_count: number;
+    category_id: number;
+    category_name: string;
+    tags: { id: number; name: string }[];
+    liked: boolean;
+  }[];
+  total: number;
+  page: number;
+  limit: number;
+}

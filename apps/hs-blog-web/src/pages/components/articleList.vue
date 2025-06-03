@@ -1,10 +1,25 @@
 <script setup lang="ts">
-  import { EyeOutline } from '@vicons/ionicons5'
+  import { EyeOutline, ThumbsUpOutline } from '@vicons/ionicons5'
   import { getArticle } from '~/api/home'
   import type { ICategory } from '~/components/CategoryList.vue'
   import { HttpStatus } from '~/enums/httpStatus'
   import { type ArticleItem, ArticleType } from '~/api/home/type'
   import { useUrlPreview } from '~/utils/useUrlPreview'
+  import { toggleArticleLike } from '~/api/post'
+
+  onMounted(async () => {
+    if (!aliasList.value?.id) {
+      navigateTo('/')
+      return
+    }
+    await loadArticles()
+    // 添加全局滚动监听
+    window.addEventListener('scroll', handleScroll)
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+  })
 
   const props = defineProps({
     categoryList: {
@@ -31,11 +46,10 @@
 
   if (Array.isArray(props.categoryList) && props.categoryList.length > 0) {
     if (route.params.alias === '') {
-      aliasList.value = props.categoryList[0];
+      aliasList.value = props.categoryList[0]
     } else {
-      aliasList.value = props.categoryList.find((item: ICategory) => 
-        item.alias === `/${route.params.alias}`
-      ) || props.categoryList[0];
+      aliasList.value =
+        props.categoryList.find((item: ICategory) => item.alias === `/${route.params.alias}`) || props.categoryList[0]
     }
   }
 
@@ -130,19 +144,30 @@
     }
   }
 
-  onMounted(async () => {
-    if (!aliasList.value?.id) {
-      navigateTo('/')
-      return
+  const handleToggleArticleLike = async (articleId: number) => {
+    
+    try {
+      const response = await toggleArticleLike(articleId)
+      
+      if (response.code === HttpStatus.OK) {
+        const { liked, likeCount } = response.data
+        
+        // 只更新当前点赞的文章
+        const articleIndex = articles.value.findIndex(article => article.id === articleId)
+        if (articleIndex !== -1) {
+          // 使用解构和重新赋值来确保响应式更新
+          const updatedArticle = { ...articles.value[articleIndex] }
+          updatedArticle.like_count = likeCount
+          updatedArticle.liked = liked
+          
+          // 替换数组中的对象，触发响应式更新
+          articles.value.splice(articleIndex, 1, updatedArticle)
+        }
+      }
+    } catch (error) {
+      console.error('未能切换文章点赞:', error)
     }
-    await loadArticles()
-    // 添加全局滚动监听
-    window.addEventListener('scroll', handleScroll)
-  })
-
-  onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll)
-  })
+  }
 </script>
 
 <template>
@@ -165,8 +190,18 @@
                   {{ item.category_name }}
                   <n-divider vertical />
                   <div class="flex justify-center items-center">
-                    <n-icon size="15" style="margin-right: 4px" color="#8a919f" :component="EyeOutline" />
+                    <n-icon size="15" class="mr-[4px]" color="#8a919f" :component="EyeOutline" />
                     {{ item.view_count }}
+                  </div>
+                  <n-divider vertical />
+                  <div class="flex justify-center items-center hover:c-#1e80ff" :class="item.liked ? 'c-[#1e80ff]' : 'c-#8a919f'">
+                    <n-icon
+                      size="15"
+                      class="mr-[4px]"
+                      @click.stop="handleToggleArticleLike(item.id)"
+                      :component="ThumbsUpOutline"
+                    />
+                    {{ item.like_count }}
                   </div>
                 </div>
                 <div class="entry-list-bottom-right">

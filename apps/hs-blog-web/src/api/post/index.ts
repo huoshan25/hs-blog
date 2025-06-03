@@ -1,5 +1,5 @@
 import { useStorage } from "@vueuse/core";
-import type { AnalyzeCodeReq, ArticleDetails, CommentData, CreateCommentRequest } from "~/api/post/type";
+import type {AnalyzeCodeReq, ArticleDetails, ArticleLikeRes, CommentData, CreateCommentRequest, UserLikedArticlesRes} from "~/api/post/type";
 
 /**
  * 文章详情
@@ -107,3 +107,27 @@ export async function deleteComment(commentId: number) {
   return await fetchRequest.delete<void>(`/comments/${commentId}`);
 }
 
+/**
+ * 点赞或取消点赞文章
+ * @param articleId 文章ID
+ */
+export async function toggleArticleLike(articleId: number) {
+  return await fetchRequest.post<ArticleLikeRes>('/article/like/toggle', { articleId });
+}
+
+/**
+ * 获取文章点赞状态（登录用户）
+ * @param articleId 文章ID
+ */
+export async function getArticleLikeStatus(articleId: number) {
+  return await fetchRequest.get<ArticleLikeRes>(`/article/like/status`, { articleId });
+}
+
+/**
+ * 获取用户点赞的文章列表
+ * @param page 页码
+ * @param limit 每页条数
+ */
+export async function getUserLikedArticles(page: number = 1, limit: number = 10) {
+  return await fetchRequest.get<UserLikedArticlesRes>('/article/like/user-liked', { page, limit });
+}

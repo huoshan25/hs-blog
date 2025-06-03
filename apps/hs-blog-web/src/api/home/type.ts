@@ -13,12 +13,15 @@ export interface ArticleItem {
   tags: { id: number; name: string }[];
   create_time: string;
   update_time: string;
-  /*文章类型*/
+  /**文章类型*/
   type: ArticleType;
   /*转载文章url*/
   link_url: string;
-  /*文章浏览量*/
+  /**文章浏览量*/
   view_count: number;
+  /**点赞数量*/
+  like_count: number;
+  liked: boolean;
 }
 
 export interface ArticleRes {
