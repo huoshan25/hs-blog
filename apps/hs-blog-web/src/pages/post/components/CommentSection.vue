@@ -219,7 +219,6 @@
    * @param comment 评论
    */
   const isCommentAuthor = (comment: CommentData) => {
-    console.log(userInfo.value?.id,'userInfo.value?.id')
     return !!token.value && userInfo.value?.id === comment.userId
   }
 
