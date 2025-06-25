@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseInterceptors,
   ValidationPipe,
@@ -99,7 +100,7 @@ export class CategoryAdminController {
 
   @ApiOperation({ summary: '删除分类' })
   @Delete()
-  async delete(@Body(ValidationPipe) deleteCategory: DeleteCategoryDto) {
+  async delete(@Query(ValidationPipe) deleteCategory: DeleteCategoryDto) {
     await this.categoryService.deleteCategory(deleteCategory);
     return { message: '删除成功' };
   }

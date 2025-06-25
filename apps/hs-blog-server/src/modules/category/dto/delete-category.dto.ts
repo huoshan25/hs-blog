@@ -1,7 +1,7 @@
-import { IsArray, IsNumber } from 'class-validator';
+import { IsArray, IsNumberString } from 'class-validator';
 
 export class DeleteCategoryDto {
   @IsArray()
-  @IsNumber({}, { each: true })
-  ids: number[];
+  @IsNumberString({}, { each: true })
+  ids: string[];
 }
