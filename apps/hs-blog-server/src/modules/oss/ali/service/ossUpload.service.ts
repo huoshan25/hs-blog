@@ -4,6 +4,20 @@ import { Readable } from 'stream';
 import { format } from 'date-fns';
 import { OssConfigService } from './ossConfig.service';
 
+/**
+ * 文件上传选项接口
+ */
+export interface FileUploadOptions {
+  /** 文件存储的目录路径，如 'avatar', 'article/123' 等 */
+  directory: string;
+  /** 自定义文件名（可选），不提供则自动生成 */
+  customFileName?: string;
+  /** 是否返回完整URL（默认false，只返回OSS结果） */
+  returnFullUrl?: boolean;
+  /** 文件名前缀（可选） */
+  prefix?: string;
+}
+
 @Injectable()
 export class OssUploadService {
   private ossClient: OSS;
@@ -13,7 +27,39 @@ export class OssUploadService {
   constructor(private ossConfigService: OssConfigService) {
     this.ossClient = this.ossConfigService.createOssClient();
     this.ossEndpoint = this.ossConfigService.getOssEndpoint();
-    this.ossBucket = this.ossConfigService.getOssBucket();
+    this.ossBucket = this.ossConfigService.getOssBucket();322
+  }
+
+  /**
+   * 通用文件上传方法
+   * @param file 要上传的文件
+   * @param options 上传选项
+   */
+  async uploadFileGeneric(file: Express.Multer.File, options: FileUploadOptions) {
+    const stream = Readable.from(file.buffer);
+
+    let fileName: string;
+    if (options.customFileName) {
+      fileName = options.customFileName;
+    } else {
+      const fileExtension = file.originalname.split('.').pop();
+      const timestamp = format(new Date(), 'yyyy-MMdd-HHmmss');
+      const prefix = options.prefix ? `${options.prefix}-` : '';
+      fileName = `${prefix}${timestamp}.${fileExtension}`;
+    }
+
+    const objectName = `${options.directory}/${fileName}`;
+
+    const result = await this.ossClient.putStream(objectName, stream);
+
+    if (options.returnFullUrl) {
+      return {
+        ...result,
+        url: `http://${this.ossEndpoint}/${objectName}`
+      };
+    }
+    
+    return result;
   }
 
   /**
@@ -88,5 +134,14 @@ export class OssUploadService {
     return {
       ...result,
     };
+  }
+
+  /**
+   * 获取文件的完整URL
+   * @param objectName OSS对象名称
+   * @returns 完整的访问URL
+   */
+  getFileUrl(objectName: string): string {
+    return `http://${this.ossBucket}.${this.ossEndpoint}/${objectName}`;
   }
 }

@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -17,6 +18,9 @@ import { Public } from '@/modules/auth/decorators/public.decorator';
 import { UserBioVo } from '@/modules/user/vo/user-bio.vo';
 import { UserBioService } from '@/modules/user/service/user-bio.service';
 import { UserLevelService } from '@/modules/user/service/user-level.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { OssUploadService } from '@/modules/oss/ali/service/ossUpload.service';
+import { UpdateUserPasswordDto } from '@/modules/user/dto/update-user-password.dto';
 
 @ApiTags('blog', '用户')
 @Controller('blog/user')
@@ -27,6 +31,7 @@ export class UserBlogController {
     private readonly profileService: ProfileService,
     private readonly userBioService: UserBioService,
     private readonly userLevelService: UserLevelService,
+    private readonly ossUploadService: OssUploadService,
   ) {}
 
   @Get('profile')
@@ -113,6 +118,57 @@ export class UserBlogController {
         currentLevel: levelInfo.progress.currentLevel,
         nextLevel: levelInfo.progress.nextLevel,
       },
+    };
+  }
+
+  @Post('avatar')
+  @ApiOperation({ summary: '更新用户头像' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  async updateAvatar(
+    @CurrentUser() user: User,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      return {
+        code: 400,
+        message: '没有上传文件',
+      };
+    }
+
+    try {
+      const result = await this.ossUploadService.uploadFileGeneric(file, {
+        directory: `avatar/${user.id}`,
+        returnFullUrl: true,
+      });
+      //@ts-ignore
+      const avatar = result.url;
+      await this.userService.updateAvatar(user.id, avatar);
+      return {
+        message: '头像更新成功',
+        data: {
+          avatar
+        },
+      };
+    } catch (error) {
+      console.error('[头像上传] 错误:', error);
+      return {
+        code: 500,
+        message: '上传头像失败',
+        error: error.message,
+      };
+    }
+  }
+
+  @Put('password')
+  @ApiOperation({ summary: '更新用户密码' })
+  async updatePassword(
+    @CurrentUser() user: User,
+    @Body() passwordDto: UpdateUserPasswordDto,
+  ) {
+    await this.userService.updatePassword(user.id, passwordDto);
+    return {
+      message: '密码更新成功',
     };
   }
 }

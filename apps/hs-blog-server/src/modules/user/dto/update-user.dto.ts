@@ -35,4 +35,10 @@ export class UpdateUserDto {
   @IsString()
   @MaxLength(500)
   bio?: string;
+
+  @ApiProperty({ description: '职位', example: '前端工程师', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  position?: string;
 }

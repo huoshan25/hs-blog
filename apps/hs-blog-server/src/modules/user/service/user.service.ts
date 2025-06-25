@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   OnModuleInit,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -12,6 +13,7 @@ import { CreateUserDto } from '@/modules/user/dto/create-user.dto';
 import { UpdateUserDto } from '@/modules/user/dto/update-user.dto';
 import { LoggerService } from '@/core/logger/logger.service';
 import { UserConfigService } from '@/modules/user/service/user-config.service';
+import { UpdateUserPasswordDto } from '../dto/update-user-password.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit {
@@ -142,12 +144,6 @@ export class UserService implements OnModuleInit {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findById(id);
 
-    // // 如果要更新密码，需要加密
-    // if (updateUserDto.password) {
-    //   updateUserDto.password = await this.hashPassword(updateUserDto.password);
-    // }
-
-    // 如果要更新用户名，检查是否已存在
     if (updateUserDto.userName && updateUserDto.userName !== user.userName) {
       const existingUsername = await this.userRepository.findOne({
         where: { userName: updateUserDto.userName },
@@ -157,19 +153,11 @@ export class UserService implements OnModuleInit {
       }
     }
 
-    // 如果要更新邮箱，检查是否已存在
-    // if (updateUserDto.email && updateUserDto.email !== user.email) {
-    //   const existingEmail = await this.userRepository.findOne({
-    //     where: { email: updateUserDto.email },
-    //   });
-    //   if (existingEmail) {
-    //     throw new ConflictException('邮箱已被注册');
-    //   }
-    // }
+    await this.userRepository.update(id, updateUserDto);
 
-    Object.assign(user, updateUserDto);
-    return this.userRepository.save(user);
+    return this.findById(id);
   }
+
 
   /**
    * 验证密码
@@ -217,5 +205,57 @@ export class UserService implements OnModuleInit {
       where: { email },
     });
     return user;
+  }
+
+  /**
+   * 更新用户头像
+   * @param userId 用户ID
+   * @param avatarUrl 头像URL
+   * @returns 更新后的用户信息
+   */
+  async updateAvatar(userId: number, avatarUrl: string): Promise<User> {
+    const user = await this.findById(userId);
+    user.avatar = avatarUrl;
+    return this.userRepository.save(user);
+  }
+
+  /**
+   * 更新用户密码
+   * @param userId 用户ID
+   * @param passwordDto 密码更新DTO
+   * @returns 更新后的用户信息
+   */
+  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto): Promise<User> {
+    // 获取用户信息，包括密码
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.id = :id', { id: userId })
+      .getOne();
+
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    // 验证旧密码
+    const isPasswordValid = await this.validatePassword(
+      passwordDto.oldPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('旧密码不正确');
+    }
+
+    // 验证新密码与确认密码是否一致
+    if (passwordDto.newPassword !== passwordDto.confirmPassword) {
+      throw new ConflictException('新密码与确认密码不一致');
+    }
+
+    // 加密新密码
+    const hashedPassword = await this.hashPassword(passwordDto.newPassword);
+    user.password = hashedPassword;
+
+    return this.userRepository.save(user);
   }
 }
