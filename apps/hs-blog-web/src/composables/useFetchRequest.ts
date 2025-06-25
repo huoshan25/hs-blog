@@ -134,16 +134,16 @@ class FetchApi {
     return this.fetch<HttpRes<T>>(url, { method: 'get', params, ...options })
   }
 
-  async post<T>(url: string, body?: SearchParameters) {
-    return this.fetch<HttpRes<T>>(url, { method: 'post', body })
+  async post<T>(url: string, body?: any, options?: any) {
+    return this.fetch<HttpRes<T>>(url, { method: 'post', body, ...options })
   }
 
-  async put<T>(url: string, body?: SearchParameters) {
-    return this.fetch<HttpRes<T>>(url, { method: 'put', body })
+  async put<T>(url: string, body?: any, options?: any) {
+    return this.fetch<HttpRes<T>>(url, { method: 'put', body, ...options })
   }
 
-  async delete<T>(url: string, body?: SearchParameters) {
-    return this.fetch<HttpRes<T>>(url, { method: 'delete', body })
+  async delete<T>(url: string, body?: SearchParameters, options?: any) {
+    return this.fetch<HttpRes<T>>(url, { method: 'delete', body, ...options })
   }
 }
 

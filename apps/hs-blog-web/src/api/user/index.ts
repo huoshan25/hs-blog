@@ -53,3 +53,37 @@ export async function getUser(params: { id: string }) {
 export async function getCurrentUserLevelInfo() {
   return await fetchRequest.get<UserLevelRes>('/user/level/me')
 }
+
+/**
+ * 更新用户头像
+ * @param formData 包含头像文件的表单数据
+ */
+export async function updateUserAvatar(formData: FormData) {
+  const options = {
+  }
+  return await fetchRequest.post<any>('/user/avatar', formData, options)
+}
+
+/**
+ * 修改用户密码
+ * @param params 密码修改参数
+ */
+export async function updatePassword(params: {
+  oldPassword: string
+  newPassword: string
+  confirmPassword: string
+}) {
+  return await fetchRequest.put('/user/password', params)
+}
+
+/**
+ * 更新用户基本信息
+ * @param params 用户信息参数
+ */
+export async function updateUserInfo(params: {
+  userName?: string
+  email?: string
+  position?: string
+}) {
+  return await fetchRequest.put('/user/profile', params)
+}

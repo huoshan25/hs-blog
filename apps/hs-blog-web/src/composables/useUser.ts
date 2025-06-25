@@ -1,5 +1,5 @@
 import { useStorage } from '@vueuse/core'
-import { getUserInfo, login, register } from '@/api/user'
+import { getUserInfo, login, register, updateUserAvatar as apiUpdateUserAvatar } from '@/api/user'
 import { HttpStatus } from '~/enums/httpStatus'
 import type { UserInfoRes } from '~/api/user/type'
 
@@ -50,6 +50,7 @@ export const useUser = () => {
   const clearUser = () => {
     userInfo.value = null
     token.value = ''
+    refreshToken.value = ''
   }
 
   /** 显示登录框 */
@@ -117,6 +118,25 @@ export const useUser = () => {
     return false
   }
 
+  /**
+   * 更新用户头像
+   * @param formData 包含头像文件的表单数据
+   * @returns 头像URL或null
+   */
+  const updateUserAvatar = async (formData: FormData) => {
+    try {
+      const res = await apiUpdateUserAvatar(formData)
+      if (res.code === HttpStatus.OK) {
+        userInfo.value.avatar = res.data.avatar
+        return res
+      }
+      return null
+    } catch (error) {
+      console.error('更新头像失败', error)
+      return null
+    }
+  }
+
   return {
     userInfo,
     token,
@@ -132,6 +152,7 @@ export const useUser = () => {
     fetchRegister,
     fetchUserInfo,
     rememberUser,
-    getRememberedUser
+    getRememberedUser,
+    updateUserAvatar
   }
 }

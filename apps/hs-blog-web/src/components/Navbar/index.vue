@@ -6,6 +6,7 @@
   import { useUser } from '~/composables/useUser'
   import { getCurrentUserLevelInfo } from "~/api/user";
   import {HttpStatus} from "~/enums/httpStatus";
+  import UserSettings from '~/components/UserSettings/index.vue'
 
   onMounted(() => {
     if (isLogin.value) {
@@ -61,6 +62,7 @@
   }
 
   const userInfoDialogShow = ref(false)
+  const userSettingsShow = ref(false)
 
   const logout = () => {
     clearUser()
@@ -85,6 +87,11 @@
         percentage: res.data.percentage
       }
     }
+  }
+
+  /**用户设置弹窗*/
+  const openUserSettings = () => {
+    userSettingsShow.value = true
   }
 </script>
 
@@ -122,8 +129,8 @@
             <n-popover placement="bottom-end" trigger="click" v-else v-model:show="userInfoDialogShow">
               <template #trigger>
                 <nuxt-img
-                  :src="userInfo?.avatar"
-                  class="w-[36px] h-[36px] radius-[50%] pl-[8px] cursor-pointer"
+                  :src="userInfo?.avatar || '/img/default-avatar.png'"
+                  class="w-[36px] h-[36px] radius-[50%] ml-[8px] cursor-pointer"
                   alt="avatar"
                 />
               </template>
@@ -131,8 +138,8 @@
                 <div class="flex flex-col w-[224px] custom-border-bottom-1px-solid-#e4e6eb80 pb-[12px]">
                   <div class="flex mb-[16px]">
                     <nuxt-img
-                      :src="userInfo?.avatar"
-                      class="w-[48px] h-[48px] radius-[50%] pl-[8px] cursor-pointer mr-[12px]"
+                      :src="userInfo?.avatar || '/img/default-avatar.png'"
+                      class="w-[48px] h-[48px] radius-[50%] cursor-pointer mr-[12px]"
                       alt="avatar"
                     />
                     <div class="c-#252933 text-[16px]">{{ userInfo?.userName }}</div>
@@ -158,19 +165,8 @@
                   </div>
                 </div>
 
-<!--                <div class="custom-border-bottom-1px-solid-#e4e6eb80 py-[10px]">-->
-<!--                  <div class="grid grid-cols-2 gap-2">-->
-<!--                    <div class="flex items-center hover:bg-#F7F8FA cursor-pointer radius-[5px]">-->
-<!--                      <n-icon class="m-[8px]" size="20">-->
-<!--                        <PersonOutline />-->
-<!--                      </n-icon>-->
-<!--                      <div class="text-[14px] c-#252933">我的主页</div>-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                </div>-->
-
                 <div class="mt-[12px] justify-between flex">
-                  <div class="text-[12px] c-#8a919f hover:c-#1e80ff cursor-pointer">我的设置</div>
+                  <div class="text-[12px] c-#8a919f hover:c-#1e80ff cursor-pointer" @click="openUserSettings">我的设置</div>
                   <n-popconfirm @positive-click="logout">
                     <template #trigger>
                       <div class="text-[12px] c-#8a919f hover:c-#1e80ff cursor-pointer">退出登录</div>
@@ -185,6 +181,9 @@
       </div>
     </div>
   </header>
+  
+  <!-- 用户设置弹窗 -->
+  <UserSettings v-model:show="userSettingsShow" />
 </template>
 
 <style scoped lang="scss">
