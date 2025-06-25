@@ -75,9 +75,25 @@ export class OssFileManagementService {
    */
   async deleteFile(objectKey: string) {
     try {
-      return await this.ossClient.delete(objectKey);
+      return await this.ossClient.delete(this.getRelativePath(objectKey));
     } catch (error) {
       throw new HttpException('删除文件失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  /**
+   * 获取OSS相对路径
+   * @param fullPath
+   */
+  getRelativePath(fullPath: string) {
+    const ossEndpoint = `http://${this.ossConfigService.getOssEndpoint()}`;
+    const url = new URL(fullPath);
+    const endpointUrl = new URL(ossEndpoint);
+
+    if (url.host !== endpointUrl.host) {
+      throw new Error('Invalid OSS host');
+    }
+
+    return url.pathname
   }
 }
