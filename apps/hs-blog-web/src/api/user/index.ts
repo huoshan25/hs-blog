@@ -34,7 +34,7 @@ export async function register(params: RegisterReq) {
 
 /** 刷新token令牌 */
 export async function getRefreshToken(params: { refreshToken: string }) {
-  return await fetchRequest.post<LoginRes>('/user/refresh-token', params)
+  return await fetchRequest.post<LoginRes>('/auth/refresh-token', params)
 }
 
 /**获取用户卡片信息*/
