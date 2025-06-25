@@ -35,6 +35,7 @@
     "sass": "^1.80.7",
     "unocss": "66.1.0-beta.13",
     "unplugin-auto-import": "0.17.8",
-    "unplugin-vue-components": "0.25.2"
+    "unplugin-vue-components": "0.25.2",
+    "vue-tsc": "^2.2.8"
   }
 }

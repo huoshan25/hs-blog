@@ -85,11 +85,15 @@ export default defineNuxtConfig({
 
   srcDir: 'src/',
 
+  // build: {
+  //   transpile: ['naive-ui']
+  // },
+
   vite: {
     ssr: {
       // https://github.com/histoire-dev/histoire/issues/488
       // 避免 SSR 期间引入这些客户端专用的包
-      // noExternal: ['naive-ui', 'vueuc', '@css-render/vue3-ssr', '@juggle/resize-observer']
+      noExternal: ['naive-ui']
     },
     css: {
       preprocessorOptions: {
