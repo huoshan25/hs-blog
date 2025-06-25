@@ -21,6 +21,7 @@ import { UserLevelService } from '@/modules/user/service/user-level.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { OssUploadService } from '@/modules/oss/ali/service/ossUpload.service';
 import { UpdateUserPasswordDto } from '@/modules/user/dto/update-user-password.dto';
+import { OssFileManagementService } from '@/modules/oss/ali/service/ossFileManagement.service';
 
 @ApiTags('blog', '用户')
 @Controller('blog/user')
@@ -32,6 +33,7 @@ export class UserBlogController {
     private readonly userBioService: UserBioService,
     private readonly userLevelService: UserLevelService,
     private readonly ossUploadService: OssUploadService,
+    private readonly ossFileManagementService: OssFileManagementService,
   ) {}
 
   @Get('profile')
@@ -137,13 +139,21 @@ export class UserBlogController {
     }
 
     try {
+      const currentUser = await this.userService.findById(user.id);
+      const oldAvatarUrl = currentUser.avatar;
+      
       const result = await this.ossUploadService.uploadFileGeneric(file, {
         directory: `avatar/${user.id}`,
         returnFullUrl: true,
       });
       //@ts-ignore
       const avatar = result.url;
-      await this.userService.updateAvatar(user.id, avatar);
+      if(result.res.status === 200 ) {
+        await this.userService.updateAvatar(user.id, avatar);
+        if (oldAvatarUrl) {
+          await this.ossFileManagementService.deleteFile(oldAvatarUrl);
+        }
+      }
       return {
         message: '头像更新成功',
         data: {
@@ -151,7 +161,6 @@ export class UserBlogController {
         },
       };
     } catch (error) {
-      console.error('[头像上传] 错误:', error);
       return {
         code: 500,
         message: '上传头像失败',
