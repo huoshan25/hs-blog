@@ -14,7 +14,8 @@ import { randomInt } from 'crypto';
 import { AuthConfig } from './auth.config';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 import { UserService } from '@/modules/user/service/user.service';
-import {EmailConfigService} from "@/modules/email/service/email-config.service";
+import { EmailConfigService } from "@/modules/email/service/email-config.service";
+import { TokenExpiredException } from '@/common/exceptions/token-expired.exception';
 
 @Injectable()
 export class AuthService {
@@ -94,7 +95,7 @@ export class AuthService {
       });
     } catch (error) {
       this.logger.error('令牌验证失败:', error);
-      throw new UnauthorizedException('令牌无效或已过期');
+      throw new TokenExpiredException('令牌无效或已过期');
     }
   }
 
@@ -120,7 +121,7 @@ export class AuthService {
       return this.generateToken(newPayload);
     } catch (error) {
       this.logger.error('刷新令牌失败:', error);
-      throw new UnauthorizedException('刷新令牌无效或已过期');
+      throw new TokenExpiredException('刷新令牌无效或已过期');
     }
   }
 

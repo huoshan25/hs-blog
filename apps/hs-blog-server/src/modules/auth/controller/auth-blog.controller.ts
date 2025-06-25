@@ -74,7 +74,7 @@ export class AuthBlogController {
   }
 
   @Public()
-  @Post('refresh')
+  @Post('refresh-token')
   @ApiOperation({ summary: '刷新访问令牌' })
   @ApiResponseObject(LoginResponseDto)
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {

@@ -24,8 +24,13 @@ export class HttpExceptionFilterInterceptors implements ExceptionFilter {
       const status = exception.getStatus();
       const exceptionResponse = exception.getResponse() as Record<string, any>;
 
+      // 优先使用异常中的自定义code，如果没有则使用HTTP状态码
+      const errorCode = (typeof exceptionResponse === 'object' && exceptionResponse.code !== undefined)
+        ? exceptionResponse.code
+        : status;
+
       const errorResponse: ApiResponseInterfaces = {
-        code: status,
+        code: errorCode,
         message:
           typeof exceptionResponse === 'string'
             ? exceptionResponse

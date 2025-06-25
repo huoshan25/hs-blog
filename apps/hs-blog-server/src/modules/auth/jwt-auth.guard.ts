@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from './decorators/public.decorator';
+import { TokenExpiredException } from '@/common/exceptions/token-expired.exception';
 
 /**
  * JWT 认证守卫
@@ -37,7 +38,13 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       if (isPublic) {
         return true;
       }
-      // 如果不是公开路由，则抛出异常
+      
+      // 如果是token过期相关错误，抛出自定义异常
+      if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
+        throw new TokenExpiredException();
+      }
+      
+      // 其他错误直接抛出
       throw error;
     }
 
@@ -73,7 +80,23 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return user;
     }
     
-    // 非公开路由，调用父类处理
-    return super.handleRequest(err, user, info, context);
+    // 处理JWT相关错误
+    if (info instanceof Error) {
+      if (info.name === 'TokenExpiredError' || info.name === 'JsonWebTokenError') {
+        throw new TokenExpiredException();
+      }
+    }
+    
+    // 有错误但不是JWT错误
+    if (err) {
+      throw err;
+    }
+    
+    // 没有用户信息
+    if (!user) {
+      throw new TokenExpiredException();
+    }
+    
+    return user;
   }
 }

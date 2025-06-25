@@ -1,9 +1,10 @@
 import {LoggerService} from '@/core/logger/logger.service';
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {PassportStrategy} from '@nestjs/passport';
 import {ExtractJwt, Strategy} from 'passport-jwt';
 import {UserService} from '@/modules/user/service/user.service';
+import { TokenExpiredException } from '@/common/exceptions/token-expired.exception';
 
 /**
  * JWT 策略
@@ -32,19 +33,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * 3, 这个方法的返回值会被 Passport 自动设置为 request.user
    * @param payload JWT 令牌负载
    * @returns 用户信息
-   * @throws UnauthorizedException 当用户不存在或令牌无效时
+   * @throws TokenExpiredException 当用户不存在或令牌无效时
    */
   async validate(payload: { sub: number; username: string; email: string }) {
     try {
       const user = await this.userService.findById(payload.sub);
       if (!user) {
         this.logger.warn(`用户不存在: ${payload.sub}`);
-        throw new UnauthorizedException('用户不存在');
+        throw new TokenExpiredException('用户不存在');
       }
       return user;
     } catch (error) {
       this.logger.error('令牌验证失败:', error);
-      throw new UnauthorizedException('无效的令牌');
+      throw new TokenExpiredException('无效的令牌');
     }
   }
 }
