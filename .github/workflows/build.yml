@@ -17,12 +17,12 @@ jobs:
   trigger-all-workflows:
     runs-on: ubuntu-latest
     steps:
-      - name: 触发博客前台工作流
-        uses: benc-uk/workflow-dispatch@v1
-        continue-on-error: true  # 即使失败也继续执行后续步骤
-        with:
-          workflow: blog-web.yml
-          token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: 触发博客前台工作流
+#        uses: benc-uk/workflow-dispatch@v1
+#        continue-on-error: true  # 即使失败也继续执行后续步骤
+#        with:
+#          workflow: blog-web.yml
+#          token: ${{ secrets.GITHUB_TOKEN }}
           
 #      - name: 触发门户网站工作流
 #        uses: benc-uk/workflow-dispatch@v1
@@ -38,9 +38,9 @@ jobs:
 #          workflow: blog-admin.yml
 #          token: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: 触发API服务工作流
-        uses: benc-uk/workflow-dispatch@v1
-        continue-on-error: true  # 即使失败也继续执行后续步骤
-        with:
-          workflow: blog-server.yml
-          token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: 触发API服务工作流
+#        uses: benc-uk/workflow-dispatch@v1
+#        continue-on-error: true  # 即使失败也继续执行后续步骤
+#        with:
+#          workflow: blog-server.yml
+#          token: ${{ secrets.GITHUB_TOKEN }}
