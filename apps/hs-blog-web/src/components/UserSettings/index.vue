@@ -12,8 +12,6 @@ const message = useMessage()
 
 const { userInfo, clearUser, token, updateUserAvatar } = useUser()
 const { apiBaseUrl } = useRuntimeConfig().public
-console.log(apiBaseUrl,'apiBaseUrl')
-
 const uploadRef = ref<UploadInst | null>(null)
 const fileList = ref<UploadFileInfo[]>([])
 const avatarUrl = ref(userInfo.value?.avatar || '')
