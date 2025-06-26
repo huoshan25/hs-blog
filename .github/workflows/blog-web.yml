@@ -55,4 +55,4 @@ jobs:
           script: |
             cd /www/wwwroot/hs-blog-web
             pm2 delete hs-blog-web || true
-            pm2 start ecosystem.config.js --env-file .env.production --env production 
+            pm2 start ecosystem.config.cjs --env production
