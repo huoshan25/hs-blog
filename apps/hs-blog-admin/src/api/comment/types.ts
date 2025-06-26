@@ -23,7 +23,7 @@ export interface CommentQueryParams {
   page?: number
   pageSize?: number
   keyword?: string
-  articleId?: number
+  articleId?: string
 }
 
 /**

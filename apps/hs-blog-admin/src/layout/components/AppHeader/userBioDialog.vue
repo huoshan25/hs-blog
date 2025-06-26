@@ -6,6 +6,10 @@ onMounted(() => {
   getBioInfo()
 })
 
+const triggerFileInput = (id: string) => {
+  document.getElementById(id)?.click()
+}
+
 const message = useMessage()
 
 const getBioInfo = async () => {
@@ -115,7 +119,7 @@ const handleCancelEdit = () => {
 
       <n-form-item label="背景图片" path="bgImg">
         <div class="upload-container">
-          <n-button @click="() => document.getElementById('bgImageUpload')?.click()">
+          <n-button @click="() => triggerFileInput('bgImageUpload')">
             选择背景图片
           </n-button>
           <input
@@ -132,7 +136,7 @@ const handleCancelEdit = () => {
 
       <n-form-item label="头像" path="avatar">
         <div class="upload-container">
-          <n-button @click="() => document.getElementById('avatarUpload')?.click()">
+          <n-button @click="() => triggerFileInput('avatarUpload')">
             选择头像
           </n-button>
           <input

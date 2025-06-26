@@ -27,7 +27,7 @@ const pagination = reactive({
 
 const searchParams = reactive<CommentQueryParams>({
   keyword: '',
-  articleId: undefined
+  articleId: ''
 })
 
 // 获取评论列表
