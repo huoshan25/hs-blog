@@ -56,4 +56,4 @@ jobs:
             cd /www/wwwroot/hs-blog-server
             pnpm install --prod
             pm2 delete hs-blog-server || true
-            pm2 start ecosystem.config.js --env-file .env.production --env production 
+            pm2 start ecosystem.config.cjs --env production
