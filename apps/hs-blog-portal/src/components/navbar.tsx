@@ -1,13 +1,13 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
-import { IoMoon, IoSunny, IoLanguage } from 'react-icons/io5'
+import { IoLanguage, IoLogoGithub, IoMoon, IoSunny } from 'react-icons/io5'
 import { useTheme } from '@/hooks/useTheme'
 import { useAvatarStore } from '@/store/avatar'
 import Avatar from '@/components/Avatar'
 import { useState } from 'react'
 import { useLanguage } from '@/app/context/LanguageContext'
-import {useNavigationTranslation} from "@/hooks/useTranslation";
+import { useNavigationTranslation } from '@/hooks/useTranslation'
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -61,7 +61,7 @@ export default function Navbar() {
 
               <button
                 onClick={toggleTheme}
-                className="rounded-lg p-2.5 text-text hover:bg-hover focus:outline-none ml-[15px]"
+                className="rounded-lg p-2.5 text-text hover:bg-hover focus:outline-none"
               >
                 {isDark ? <IoSunny size={20} /> : <IoMoon size={20} />}
               </button>
@@ -97,6 +97,13 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
+
+              <button
+                className="flex items-center text-text hover:bg-hover p-2.5"
+                onClick={() => window.open('https://github.com/huoshan25', '_blank')}
+              >
+                <IoLogoGithub />
+              </button>
             </div>
           </div>
         </div>

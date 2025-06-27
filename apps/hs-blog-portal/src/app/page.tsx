@@ -178,28 +178,6 @@ export default function Home() {
                 width={15}
                 alt="blog_logo"
               />
-              <span className="font-[600]">|</span>
-              <Link
-                className="cursor-pointer relative group inline-block mx-1"
-                href="https://github.com/huoshan25"
-                target="_blank"
-              >
-                Github
-                <Image
-                  src="/svg/wavyLine.svg"
-                  width={50}
-                  height={5}
-                  alt="wavyLine"
-                  className="absolute bottom-[-21px] left-0 w-full group-hover:animate-wave-flow"
-                />
-              </Link>
-              <Image
-                className="h-[15px] w-auto"
-                src="svg/github.svg"
-                height={15}
-                width={15}
-                alt="blog_logo"
-              />
             </div>
           </div>
         </div>
