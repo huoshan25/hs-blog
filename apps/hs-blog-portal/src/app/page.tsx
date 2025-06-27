@@ -138,46 +138,48 @@ export default function Home() {
           </div>
 
           <div
-            className="flex text-text gap-[10px] opacity-0 animate-fade-in-up"
+            className="opacity-0 animate-fade-in-up"
             style={{animationDelay: '1.6s'}}
           >
-            <div>
-              {lang.guideLanguage[0]}
-              <Link
-                className="text-blue-500 cursor-pointer relative group inline-block mx-1"
-                href="https://hs-blog.top"
-                target="_blank"
-              >
-                {lang.guideLanguage[1]}
-                <Image
-                  src="/svg/wavyLine.svg"
-                  width={40}
-                  height={6}
-                  alt="wavyLine"
-                  className="absolute bottom-[-15.5px] left-0 w-full group-hover:animate-wave-flow"
-                />
-                <div
-                  className="absolute opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 -bottom-[160px] left-1/2 -translate-x-1/2 w-[260px] bg-white border border-gray-200 rounded-lg shadow-lg p-2 transition-all duration-200 ease-in-out">
+            <div className="flex flex-wrap items-center text-text gap-x-[10px]">
+              <div className="flex items-center flex-wrap">
+                {lang.guideLanguage[0]}
+                <Link
+                  className="text-blue-500 cursor-pointer relative group inline-block mx-1"
+                  href="https://hs-blog.top"
+                  target="_blank"
+                >
+                  {lang.guideLanguage[1]}
                   <Image
-                    src="/img/blog.png"
-                    alt="blogHomepage"
-                    width={300}
-                    height={200}
-                    quality={100}
-                    className="w-full h-auto rounded"
+                    src="/svg/wavyLine.svg"
+                    width={40}
+                    height={6}
+                    alt="wavyLine"
+                    className="absolute bottom-[-15.5px] left-0 w-full group-hover:animate-wave-flow"
                   />
-                </div>
-              </Link>
-              {lang.guideLanguage[2]}
-            </div>
-            <div className="flex items-center gap-2">
-              <Image
-                className="h-[15px] w-auto"
-                src="img/logo.svg"
-                height={15}
-                width={15}
-                alt="blog_logo"
-              />
+                  <div
+                    className="absolute opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 -bottom-[160px] left-1/2 -translate-x-1/2 w-[260px] bg-white border border-gray-200 rounded-lg shadow-lg p-2 transition-all duration-200 ease-in-out">
+                    <Image
+                      src="/img/blog.png"
+                      alt="blogHomepage"
+                      width={300}
+                      height={200}
+                      quality={100}
+                      className="w-full h-auto rounded"
+                    />
+                  </div>
+                </Link>
+                <span className="whitespace-nowrap">{lang.guideLanguage[2]}</span>
+              </div>
+              <div className="flex items-center ml-1">
+                <Image
+                  className="h-[15px] w-auto"
+                  src="img/logo.svg"
+                  height={15}
+                  width={15}
+                  alt="blog_logo"
+                />
+              </div>
             </div>
           </div>
         </div>
