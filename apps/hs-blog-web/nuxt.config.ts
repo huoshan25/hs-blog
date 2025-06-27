@@ -73,9 +73,9 @@ export default defineNuxtConfig({
 
     /**对客户端暴露的公共密钥*/
     public: {
-      apiBaseUrl: '',
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL,
       /*网站域名*/
-      siteUrl: ''
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL
     }
   },
 
@@ -85,15 +85,15 @@ export default defineNuxtConfig({
 
   srcDir: 'src/',
 
-  // build: {
-  //   transpile: ['naive-ui']
-  // },
+  build: {
+    transpile: ['naive-ui', "vueuc", 'markdown-it']
+  },
 
   vite: {
     ssr: {
       // https://github.com/histoire-dev/histoire/issues/488
       // 避免 SSR 期间引入这些客户端专用的包
-      noExternal: ['naive-ui']
+      noExternal: ['naive-ui', "vueuc", 'markdown-it','@css-render/vue3-ssr', '@juggle/resize-observer']
     },
     css: {
       preprocessorOptions: {

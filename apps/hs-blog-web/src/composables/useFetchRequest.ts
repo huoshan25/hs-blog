@@ -32,7 +32,6 @@ class FetchApi {
   private token = useStorage('token', '')
   private refreshToken = useStorage('refreshToken', '')
   private refreshPromise: Promise<void> | null = null
-  private isRefreshing = false
 
   constructor() {
     this.fetch = $fetch.create({
@@ -45,7 +44,7 @@ class FetchApi {
   private async onRequest({ options, request }: { options: any; request: any }) {
     options.params = paramsSerializer(options.params)
     const { apiBaseUrl } = useRuntimeConfig().public
-    options.baseURL = apiBaseUrl as string
+    options.baseURL = apiBaseUrl
 
     // 刷新token请求使用refreshToken
     const isRefreshTokenRequest = request === '/auth/refresh-token'
