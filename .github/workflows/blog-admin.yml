@@ -2,12 +2,12 @@ name: 管理后台构建部署
 
 on:
   push:
-    branches: [main]
+    branches: [temporarily]
     paths:
       - 'apps/hs-blog-admin/**'
       - 'packages/**'  # 共享包可能被依赖
   pull_request:
-    branches: [main]
+    branches: [temporarily]
     paths:
       - 'apps/hs-blog-admin/**'
       - 'packages/**'

@@ -2,12 +2,12 @@ name: 门户网站构建部署
 
 on:
   push:
-    branches: [main]
+    branches: [temporarily]
     paths:
       - 'apps/hs-blog-portal/**'
       - 'packages/**'  # 共享包可能被依赖
   pull_request:
-    branches: [main]
+    branches: [temporarily]
     paths:
       - 'apps/hs-blog-portal/**'
       - 'packages/**'
