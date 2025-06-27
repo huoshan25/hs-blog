@@ -14,33 +14,39 @@
 
   /**文章分类*/
   const categoryList = ref()
-
   const titleName = ref()
 
-  const { data: categoryData } = await useAsyncData('categories', () => getAllCategories(), {
-    default: () => {
-      return {
+  const { data: categoryData } = await useAsyncData(
+    'categories',
+    () => getAllCategories(),
+    {
+      default: () => ({
         code: HttpStatus.INTERNAL_SERVER_ERROR,
         data: []
-      }
+      }),
+      lazy: false
+    }
+  )
+
+  watchEffect(() => {
+    if (categoryData.value?.code === HttpStatus.OK) {
+      categoryList.value = categoryData.value.data.map((item: ICategory) => {
+        return {
+          id: item.id,
+          alias: `/${item.alias}`,
+          name: item.name,
+          icon: item.icon
+        }
+      })
+
+      titleName.value = categoryList.value?.find((item: ICategory) =>
+        item.alias === `/${route?.params?.alias}`
+      )
     }
   })
 
-  if (categoryData.value?.code === HttpStatus.OK) {
-    categoryList.value = categoryData.value.data.map((item: ICategory) => {
-      return {
-        id: item.id,
-        alias: `/${item.alias}`,
-        name: item.name,
-        icon: item.icon
-      }
-    })
-
-    titleName.value = categoryList.value?.find((item: ICategory) => item.alias === `/${route?.params?.alias}`)
-  }
-
   useHead({
-    title: titleName.value?.name || null,
+    title: computed(() => titleName.value?.name || null),
     titleTemplate: titleChunk => (titleChunk ? `${titleChunk} - 火山博客` : '火山博客')
   })
 
