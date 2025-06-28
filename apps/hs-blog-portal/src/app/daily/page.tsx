@@ -67,7 +67,7 @@ export default function Daily() {
           {persistentActivities.map((activity) => (
             <div
               key={activity.id}
-              className="flex items-center gap-3 bg-base border p-3 rounded-lg hover:shadow-md transition-shadow duration-300"
+              className="flex items-center gap-3 bg-base p-3 rounded-lg hover:shadow-md transition-shadow duration-300"
             >
               <div className="w-10 h-10 relative flex-shrink-0 rounded-full flex items-center justify-center">
                 <div className={`absolute inset-0 ${activity.color} rounded-full opacity-10`}></div>
@@ -84,7 +84,7 @@ export default function Daily() {
       </section>
 
       <div
-        className="mb-12 font-mono text-sm text-text/40 text-center opacity-0 animate-fade-in-up"
+        className="mb-12 font-mono text-sm text-text text-center opacity-0 animate-fade-in-up"
         style={{animationDelay: '0.5s'}}
       >
         {t.motto}
@@ -101,7 +101,7 @@ export default function Daily() {
               key={index}
               className="bg-base p-3 rounded-lg flex items-center gap-3"
             >
-              <div className="text-xs text-text/60 font-mono whitespace-nowrap">{note.date}</div>
+              <div className="text-xs text-text font-mono whitespace-nowrap">{note.date}</div>
               <div className="h-4 w-px bg-gray-200 dark:bg-gray-700"></div>
               <div className="text-sm text-text">{note.text}</div>
             </div>
