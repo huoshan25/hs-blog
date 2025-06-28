@@ -7,7 +7,7 @@ import { useAvatarStore } from '@/store/avatar'
 import Avatar from '@/components/Avatar'
 import { useState } from 'react'
 import { useLanguage } from '@/app/context/LanguageContext'
-import { useNavigationTranslation } from '@/hooks/useTranslation'
+import { useNavbarTranslation } from '@/hooks/useTranslation'
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -16,8 +16,8 @@ export default function Navbar() {
   const { isHome, setIsHome } = useAvatarStore()
   const [showLangMenu, setShowLangMenu] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const { locale, setLocale, t } = useLanguage()
-  const { home, daily } = useNavigationTranslation()
+  const { locale, setLocale } = useLanguage()
+  const t = useNavbarTranslation()
   const handleNavigation = async (path: string) => {
     if (pathname === path) return
 
@@ -52,7 +52,7 @@ export default function Navbar() {
                     pathname === '/' ? 'text-primary' : 'text-text hover:text-gray-400'
                   } text-[22px]`}
                 >
-                  {home}
+                  {t.home}
                 </button>
                 <button
                   onClick={() => handleNavigation('/daily')}
@@ -60,7 +60,7 @@ export default function Navbar() {
                     pathname === '/daily' ? 'text-primary' : 'text-text hover:text-gray-400'
                   } text-[22px]`}
                 >
-                  {daily}
+                  {t.daily}
                 </button>
               </div>
 
@@ -80,7 +80,7 @@ export default function Navbar() {
                 </button>
 
                 {showLangMenu && (
-                  <div className="absolute right-0 mt-2 py-2 w-24 rounded-md shadow-lg">
+                  <div className="absolute right-0 mt-2 w-24 rounded-md shadow-lg z-10">
                     <button
                       className="text-text block w-full px-4 py-2 text-left hover:bg-hover bg-base"
                       onClick={() => {
@@ -159,7 +159,7 @@ export default function Navbar() {
               </div>
 
               <button
-                className="flex items-center text-text hover:bg-hover p-2"
+                className="flex items-center hover:bg-hover p-2"
                 onClick={() => window.open('https://github.com/huoshan25', '_blank')}
               >
                 <IoLogoGithub size={18} />
@@ -178,8 +178,8 @@ export default function Navbar() {
                 className={`${
                   pathname === '/' ? 'text-primary' : 'text-text'
                 } block w-full text-left px-4 py-2 hover:bg-hover`}
-              >
-                {home}
+                              >
+                {t.home}
               </button>
               <button
                 onClick={() => {
@@ -190,7 +190,7 @@ export default function Navbar() {
                   pathname === '/daily' ? 'text-primary' : 'text-text'
                 } block w-full text-left px-4 py-2 hover:bg-hover`}
               >
-                {daily}
+                {t.daily}
               </button>
             </div>
           )}

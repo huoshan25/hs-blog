@@ -2,10 +2,10 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useHomePageTranslation } from '@/hooks/useTranslation'
+import { useHomepageTranslation } from '@/hooks/useTranslation'
 
 export default function Home() {
-  const lang = useHomePageTranslation()
+  const t = useHomepageTranslation()
   return (
     <>
       <div className="flex gap-[10px] lg:p-[50px_200px] lt-lg:p-[50px_40px]">
@@ -17,7 +17,7 @@ export default function Home() {
             style={{animationDelay: '0.2s'}}
           >
             <div className="flex items-center">
-              <span className="mr-[5px]">{lang.hello}</span>
+              <span className="mr-[5px]">{t.hello}</span>
               <Image
                 className="mb-[5px] w-[25px] h-[25px]"
                 src="/gif/Hi.gif"
@@ -31,26 +31,26 @@ export default function Home() {
             className="text-text min-h-[1.5em] mb-[10px] opacity-0 animate-fade-in-up"
             style={{animationDelay: '0.4s'}}
           >
-            {lang.introduce[0]}
+            {t.introduce[0]}
           </div>
           <div
             className="text-text min-h-[1.5em] mb-[10px] opacity-0 animate-fade-in-up"
             style={{animationDelay: '0.6s'}}
           >
-            {lang.introduce[1]}
+            {t.introduce[1]}
           </div>
           <div
             className="text-text min-h-[1.5em] mb-[10px] opacity-0 animate-fade-in-up"
             style={{animationDelay: '0.8s'}}
           >
-            {lang.introduce[2]}
+            {t.introduce[2]}
           </div>
 
           <div
             className="text-text min-h-[1.5em] mb-[10px] opacity-0 animate-fade-in-up"
             style={{animationDelay: '1s'}}
           >
-            {lang.introduce[3]}
+            {t.introduce[3]}
           </div>
           {/*技术栈*/}
           <div
@@ -134,7 +134,7 @@ export default function Home() {
             className="flex flex-col gap-[10px] mb-[10px] opacity-0 animate-fade-in-up"
             style={{animationDelay: '1.4s'}}
           >
-            <div className="text-text min-h-[1.9em]">{lang.introduce[4]}</div>
+            <div className="text-text min-h-[1.9em]">{t.introduce[4]}</div>
           </div>
 
           <div
@@ -143,13 +143,13 @@ export default function Home() {
           >
             <div className="flex flex-wrap items-center text-text gap-x-[10px]">
               <div className="flex items-center flex-wrap">
-                {lang.guideLanguage[0]}
+                {t.guideLanguage[0]}
                 <Link
                   className="text-blue-500 cursor-pointer relative group inline-block mx-1"
                   href="https://hs-blog.top"
                   target="_blank"
                 >
-                  {lang.guideLanguage[1]}
+                  {t.guideLanguage[1]}
                   <Image
                     src="/svg/wavyLine.svg"
                     width={40}
@@ -169,7 +169,7 @@ export default function Home() {
                     />
                   </div>
                 </Link>
-                <span className="whitespace-nowrap">{lang.guideLanguage[2]}</span>
+                <span className="whitespace-nowrap">{t.guideLanguage[2]}</span>
               </div>
               <div className="flex items-center ml-1">
                 <Image

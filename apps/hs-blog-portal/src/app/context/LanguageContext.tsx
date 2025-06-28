@@ -1,51 +1,50 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect } from 'react'
-import { language, Locale } from '@/app/language'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { locales, type Locale, type LocaleMessages, defaultLocale } from '@/locales'
 
 interface LanguageContextType {
   locale: Locale
   setLocale: (locale: Locale) => void
-  t: (key: string) => string
+  t: LocaleMessages
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<Locale>('zh')
+  const [locale, setLocale] = useState<Locale>(defaultLocale)
 
+  // 从localStorage读取语言设置
   useEffect(() => {
     const savedLocale = localStorage.getItem('locale') as Locale
-    if (savedLocale) {
+    if (savedLocale && locales[savedLocale]) {
       setLocale(savedLocale)
     }
   }, [])
 
+  // 保存语言设置到localStorage
   const handleSetLocale = (newLocale: Locale) => {
     setLocale(newLocale)
     localStorage.setItem('locale', newLocale)
   }
 
-  const t = (key: string) => {
-    const keys = key.split('.')
-    let value: any = language[locale]
-    for (const k of keys) {
-      value = value[k]
-    }
-    return value
+  const contextValue: LanguageContextType = {
+    locale,
+    setLocale: handleSetLocale,
+    t: locales[locale] as LocaleMessages
   }
 
   return (
-    <LanguageContext.Provider value={{ locale, setLocale: handleSetLocale, t }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   )
 }
 
-export const useLanguage = () => {
+export function useLanguage() {
   const context = useContext(LanguageContext)
   if (context === undefined) {
-    throw new Error('useLanguage必须在LanguageProvider中使用')
+    throw new Error('useLanguage must be used within a LanguageProvider')
   }
   return context
 }
