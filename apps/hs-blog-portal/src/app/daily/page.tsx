@@ -26,8 +26,8 @@ export default function Daily() {
     {
       id: 'github',
       name: 'GitHub',
-      icon: <IoLogoGithub size={24} className="text-gray-800 text-text"/>,
-      color: 'bg-gray-800'
+      icon: <IoLogoGithub size={24} className="text-gray text-text"/>,
+      color: 'bg-gray-500'
     },
     {
       id: 'duolingo',
