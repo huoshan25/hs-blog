@@ -53,6 +53,7 @@ export default function Daily() {
                 width={800}
                 height={128}
                 priority
+                unoptimized
               />
             </div>
         </div>
