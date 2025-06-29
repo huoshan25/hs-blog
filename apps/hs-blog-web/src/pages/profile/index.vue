@@ -53,6 +53,14 @@
   })
 
   useProfileSEO(personalInfo.value.data.seo)
+  
+  /**控制项目描述的展开状态*/
+  const expandedProjects = ref<Record<string, boolean>>({})
+  
+  /**切换项目描述的展开状态*/
+  const toggleExpand = (projectName: string) => {
+    expandedProjects.value[projectName] = !expandedProjects.value[projectName]
+  }
 
   const copyEmail = () => {
     if (import.meta.client && navigator.clipboard) {
@@ -142,20 +150,40 @@
       <section class="projects">
         <h2 class="section-title">个人项目</h2>
         <div class="projects-grid">
-          <n-card v-for="(project, index) in personalInfo.data.projects" :key="index" class="project-card" hoverable>
-            <template #header>
-              <div class="project-header">
-                <h3>{{ project.name }}</h3>
-                <n-button text type="primary" :href="project.link" target="_blank" tag="a">查看项目</n-button>
+          <div v-for="(project, index) in personalInfo.data.projects" :key="index" class="project-card">
+            <div class="card-inner">
+              <div class="card-header">
+                <h3 class="project-name">
+                  {{ project.name }}
+                </h3>
+                <a :href="project.link" target="_blank" class="visit-link">
+                  访问项目 →
+                </a>
               </div>
-            </template>
-            <p>{{ project.description }}</p>
-            <div class="project-tech">
-              <n-tag v-for="(tech, techIndex) in project.tech" :key="techIndex" size="small" class="tech-tag">
-                {{ tech }}
-              </n-tag>
+              
+              <div class="content-section">
+                <p class="project-description" :class="{ 'expanded': expandedProjects[project.name] }">
+                  {{ project.description }}
+                </p>
+                <div v-if="project.description.length > 100" class="expand-button" @click="toggleExpand(project.name)">
+                  {{ expandedProjects[project.name] ? '收起' : '展开全部' }}
+                </div>
+                
+                <div class="tags-wrapper">
+                  <n-tag 
+                    v-for="(tech, techIndex) in project.tech" 
+                    :key="techIndex" 
+                    size="small" 
+                    round
+                    class="tech-tag"
+                    :bordered="false"
+                  >
+                    {{ tech }}
+                  </n-tag>
+                </div>
+              </div>
             </div>
-          </n-card>
+          </div>
         </div>
       </section>
 
@@ -461,46 +489,144 @@
 
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-
-      @media (max-width: 768px) {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      
+      @media (max-width: 640px) {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 1rem;
+      }
+
+      @media (min-width: 1024px) {
+        gap: 2rem;
       }
     }
 
     .project-card {
       height: 100%;
-
-      .project-header {
+      
+      .card-inner {
+        height: 100%;
+        background: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-
-        h3 {
-          margin: 0;
-          color: #2c3e50;
-          font-size: 1.1rem;
-
-          @media (max-width: 768px) {
-            font-size: 1rem;
-          }
+        flex-direction: column;
+        
+        &:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transform: translateY(-2px);
         }
       }
+    }
 
-      .project-tech {
-        margin-top: 12px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+    .card-header {
+      padding: 1.5rem 1.5rem 0.75rem;
+      border-bottom: none;
+    }
 
-        @media (max-width: 768px) {
-          margin-top: 10px;
-          gap: 6px;
-        }
+    .project-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+      color: #1f2937;
+    }
+
+    .visit-link {
+      font-size: 0.875rem;
+      color: #6b7280;
+      text-decoration: none;
+      transition: color 0.2s ease;
+      
+      &:hover {
+        color: #3b82f6;
+      }
+    }
+
+    .content-section {
+      flex: 1;
+      padding: 0.75rem 1.5rem 1.5rem;
+      position: relative;
+      border-top: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-description {
+      font-size: 0.875rem;
+      color: #6b7280;
+      line-height: 1.6;
+      margin: 0 0 0.75rem 0;
+      word-break: break-word;
+      white-space: pre-wrap;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-height: 4.2rem;
+      transition: all 0.3s ease;
+      
+      &.expanded {
+        -webkit-line-clamp: initial;
+        max-height: none;
+      }
+    }
+    
+    .expand-button {
+      margin-top: 0.25rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.75rem;
+      color: #3b82f6;
+      cursor: pointer;
+      text-align: right;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .tags-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+
+    .tech-tag {
+      background: #f3f4f6;
+      color: #6b7280;
+      font-size: 0.75rem;
+      font-weight: 500;
+      
+      &:hover {
+        background: #e5e7eb;
+        color: #374151;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .card-header {
+        padding: 1rem 1rem 0.5rem;
+      }
+      
+      .content-section {
+        padding: 0.5rem 1rem 1rem;
+      }
+      
+      .project-name {
+        font-size: 1rem;
+      }
+      
+      .project-description {
+        font-size: 0.8rem;
+      }
+      
+      .expand-button {
+        font-size: 0.7rem;
       }
     }
   }
