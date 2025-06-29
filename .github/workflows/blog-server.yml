@@ -42,8 +42,8 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "apps/hs-blog-server/dist/*,apps/hs-blog-server/package.json,apps/hs-blog-server/ecosystem.config.js,pnpm-lock.yaml,.env.production"
-          target: "/www/wwwroot/hs-blog-server"
+          source: "apps/hs-blog-server/dist/*,apps/hs-blog-server/package.json,apps/hs-blog-server/ecosystem.config.js"
+          target: "/www/wwwroot/blog-server"
 
       - name: 部署API服务
         uses: appleboy/ssh-action@master
@@ -54,6 +54,5 @@ jobs:
           port: 22
           script: |
             cd /www/wwwroot/hs-blog-server
-            pnpm install --prod
-            pm2 delete hs-blog-server || true
+            pm2 delete hs-blog-server
             pm2 start ecosystem.config.cjs --env production
