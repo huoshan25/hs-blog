@@ -2,6 +2,7 @@
   import { dateZhCN, zhCN } from 'naive-ui'
   import { consoleLogInfo } from '~/composables/logInfo'
   import LoginModal from '~/components/LoginModal/index.vue'
+  import { Analytics } from '@vercel/analytics/nuxt'
 
   onMounted(() => {
     consoleLogInfo()
@@ -24,6 +25,7 @@
             </div>
             <Footer />
             <LoginModal v-if="loginModalVisible" />
+            <Analytics />
           </div>
         </n-modal-provider>
       </n-message-provider>
