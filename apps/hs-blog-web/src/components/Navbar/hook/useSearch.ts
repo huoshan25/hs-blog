@@ -96,7 +96,7 @@ export const useSearch = (getSearchHistory: () => string[], addSearchHistory: (i
     if (searchInput.value) {
       addSearchHistory(searchInput.value);
       await router.push({
-        path: "/blog/search",
+        path: "/search",
         query: {
           keyword: searchInput.value,
           type: SearchDimension.SYNTHESIS
