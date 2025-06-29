@@ -24,7 +24,7 @@ export class DatabaseConfig {
       password: this.configService.get('DB_PASSWORD'),
       database: this.configService.get('DB_DATABASE'),
       entities: ['dist/**/*.entity{.ts,.js}'],
-      synchronize: this.configService.get('DB_SYNC'),
+      synchronize: this.configService.get('DB_SYNC') === 'true',
       logging: this.isDevelopment ? ['error', 'warn'] : ['error', 'warn'],
       poolSize: this.configService.get('DB_POOL_SIZE', this.DEFAULT_POOL_SIZE),
       retryAttempts: this.configService.get('DB_RETRY_ATTEMPTS', this.DEFAULT_RETRY_ATTEMPTS),
