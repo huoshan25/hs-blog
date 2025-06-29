@@ -38,9 +38,9 @@ jobs:
 #          workflow: blog-admin.yml
 #          token: ${{ secrets.GITHUB_TOKEN }}
           
-#      - name: 触发API服务工作流
-#        uses: benc-uk/workflow-dispatch@v1
-#        continue-on-error: true  # 即使失败也继续执行后续步骤
-#        with:
-#          workflow: blog-server.yml
-#          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: 触发API服务工作流
+        uses: benc-uk/workflow-dispatch@v1
+        continue-on-error: true  # 即使失败也继续执行后续步骤
+        with:
+          workflow: blog-server.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
