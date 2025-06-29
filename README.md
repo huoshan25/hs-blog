@@ -6,10 +6,10 @@
 
 这是一个基于pnpm workspaces的monorepo项目，包含以下组件：
 
-- **博客前台** (`apps/hs-blog-portal`): 基于Next.js的博客门户展示界面
-- **博客前台** (`apps/hs-blog-web`): 基于Nuxt.js的博客展示界面
-- **管理后台** (`apps/hs-blog-admin`): 基于Vue.js的博客管理界面
-- **API服务** (`apps/hs-blog-server`): 基于Nest.js的后端API服务
+- **博客门户** (`apps/hs-blog-portal`): 基于Next.js的博客门户展示界面 [https://blog-portal.top](https://blog-portal.top)
+- **博客前台** (`apps/hs-blog-web`): 基于Nuxt.js的博客展示界面 [https://hs-blog.top](https://hs-blog.top)
+- **管理后台** (`apps/hs-blog-admin`): 基于Vue.js的博客管理界面 [https://hs-blog-admin.top](https://hs-blog-admin.top)
+- **API服务** (`apps/hs-blog-server`): 基于Nest.js的后端API服务 [https://hs-blog-server.top](https://hs-blog-server.top)
 - **共享组件** (`packages/web-shared`): 前端共享代码库
 
 ## 开发环境
