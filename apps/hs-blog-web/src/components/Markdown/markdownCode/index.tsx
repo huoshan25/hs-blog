@@ -18,11 +18,17 @@ export const MarkdownCode = defineComponent({
     const copyStatus = ref<'ready' | 'copied'>('ready')
 
     const copyCode = async () => {
-      await navigator.clipboard.writeText(props.code)
-      copyStatus.value = 'copied'
-      setTimeout(() => {
-        copyStatus.value = 'ready'
-      }, 2000)
+      if (import.meta.client && navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(props.code)
+          copyStatus.value = 'copied'
+          setTimeout(() => {
+            copyStatus.value = 'ready'
+          }, 2000)
+        } catch (error) {
+          console.error('复制失败:', error)
+        }
+      }
     }
 
     const toggle = () => {

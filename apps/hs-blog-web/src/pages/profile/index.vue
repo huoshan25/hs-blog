@@ -55,8 +55,10 @@
   useProfileSEO(personalInfo.value.data.seo)
 
   const copyEmail = () => {
-    navigator.clipboard.writeText('1726941245@qq.com')
-    message.success('邮箱已复制到剪贴板')
+    if (import.meta.client && navigator.clipboard) {
+      navigator.clipboard.writeText('1726941245@qq.com')
+      message.success('邮箱已复制到剪贴板')
+    }
   }
 </script>
 
