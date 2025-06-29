@@ -190,26 +190,25 @@
       <section class="contact">
         <h2 class="section-title">联系方式</h2>
         <div class="contact-links">
-          <n-button
+          <a 
             v-for="(contact, index) in personalInfo.data.contacts"
             :key="index"
-            tag="a"
-            class="contact-btn"
+            class="contact-link"
             :href="contact.link"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <template #icon>
-              <nuxt-img class="h-[22px]" :src="contact.icon" format="webp" />
-            </template>
+            <div class="contact-icon">
+              <nuxt-img :src="contact.icon" format="webp" />
+            </div>
             {{ contact.platform }}
-          </n-button>
-          <n-button @click="copyEmail" class="contact-btn">
-            <template #icon>
-              <nuxt-img class="h-[20px]" src="/svg/copy.svg" format="webp" />
-            </template>
+          </a>
+          <div class="contact-link" @click="copyEmail">
+            <div class="contact-icon">
+              <nuxt-img src="/svg/copy.svg" format="webp" />
+            </div>
             复制邮箱
-          </n-button>
+          </div>
         </div>
       </section>
     </div>
@@ -643,12 +642,51 @@
       }
     }
 
-    .contact-btn {
-      min-width: 120px;
-
+    .contact-link {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      text-decoration: none;
+      
+      &:hover {
+        border-color: #1e80ff;
+        color: #1e80ff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+      }
+      
+      .contact-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+        height: 20px;
+        width: 20px;
+        
+        img {
+          height: 100%;
+          width: 100%;
+          object-fit: contain;
+        }
+      }
+      
       @media (max-width: 768px) {
-        min-width: 110px;
-        font-size: 0.9rem;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        
+        .contact-icon {
+          height: 18px;
+          width: 18px;
+          margin-right: 6px;
+        }
       }
     }
   }
