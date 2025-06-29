@@ -39,7 +39,17 @@ export class ProfileService implements OnModuleInit {
   }
 
   async updateProfile(updateProfileDto: UpdateProfileDto) {
-    await this.profileRepository.update(1, updateProfileDto);
+    // 过滤掉 undefined 和 null 的字段
+    const filteredData = Object.fromEntries(
+      Object.entries(updateProfileDto).filter(([_, value]) => value !== undefined && value !== null)
+    );
+
+    // 如果没有有效的更新字段，直接返回当前profile
+    if (Object.keys(filteredData).length === 0) {
+      return this.getProfile();
+    }
+
+    await this.profileRepository.update(1, filteredData);
     return this.getProfile();
   }
 }
