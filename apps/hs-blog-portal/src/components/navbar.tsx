@@ -159,7 +159,7 @@ export default function Navbar() {
               </div>
 
               <button
-                className="flex items-center hover:bg-hover p-2"
+                className="flex items-center text-text hover:bg-hover p-2"
                 onClick={() => window.open('https://github.com/huoshan25', '_blank')}
               >
                 <IoLogoGithub size={18} />
