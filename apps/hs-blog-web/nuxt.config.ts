@@ -46,13 +46,21 @@ export default defineNuxtConfig({
     /*接口代理配置*/
     routeRules: {
       '/api/proxy/**': {
-        proxy: 'http://127.0.0.1:7790/api/blog/**'
+        proxy: 'https://hs-blog-server.top/api/blog/**'
       }
     },
 
     /*生成robots.txt*/
     prerender: {
       routes: ['/robots.txt']
+    }
+  },
+
+  /*谷歌分析*/
+  gtag: {
+    id: "G-EZRWZ4VQK3",
+    config: {
+      page_path: true // 自动跟踪路由变化
     }
   },
 
@@ -79,7 +87,7 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ['@unocss/nuxt', '@nuxt/image', '@vueuse/nuxt'],
+  modules: ['@unocss/nuxt', '@nuxt/image', '@vueuse/nuxt', "nuxt-gtag"],
 
   css: ['~/assets/style/default.scss'],
 
