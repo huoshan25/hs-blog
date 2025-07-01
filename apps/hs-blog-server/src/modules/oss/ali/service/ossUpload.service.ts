@@ -55,7 +55,7 @@ export class OssUploadService {
     if (options.returnFullUrl) {
       return {
         ...result,
-        url: `http://${this.ossEndpoint}/${objectName}`
+        url: `https://${this.ossEndpoint}/${objectName}`
       };
     }
     
@@ -115,7 +115,7 @@ export class OssUploadService {
     const result = await this.ossClient.putStream(objectName, stream);
     return {
       ...result,
-      url: `http://${this.ossBucket}.${this.ossEndpoint}/${objectName}`
+      url: `https://${this.ossBucket}.${this.ossEndpoint}/${objectName}`
     };
   }
 
@@ -142,6 +142,6 @@ export class OssUploadService {
    * @returns 完整的访问URL
    */
   getFileUrl(objectName: string): string {
-    return `http://${this.ossBucket}.${this.ossEndpoint}/${objectName}`;
+    return `https://${this.ossBucket}.${this.ossEndpoint}/${objectName}`;
   }
 }

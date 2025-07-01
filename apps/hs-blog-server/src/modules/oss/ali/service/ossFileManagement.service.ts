@@ -86,7 +86,7 @@ export class OssFileManagementService {
    * @param fullPath
    */
   getRelativePath(fullPath: string) {
-    const ossEndpoint = `http://${this.ossConfigService.getOssEndpoint()}`;
+    const ossEndpoint = `https://${this.ossConfigService.getOssEndpoint()}`;
     const url = new URL(fullPath);
     const endpointUrl = new URL(ossEndpoint);
 
