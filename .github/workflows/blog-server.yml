@@ -35,15 +35,17 @@ jobs:
       - name: 构建API服务
         run: pnpm build:blog-server
 
-      - name: 复制dist文件到服务器
+      - name: 复制文件到服务器
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "apps/hs-blog-server/dist/*,apps/hs-blog-server/package.json,apps/hs-blog-server/ecosystem.config.cjs"
-          target: "/www/wwwroot/blog-server"
+          source: "apps/hs-blog-server/dist,apps/hs-blog-server/package.json,apps/hs-blog-server/ecosystem.config.cjs"
+          target: "/www/wwwroot/blog-server/"
+          strip_components: 2
+          overwrite: true
 
       - name: 部署API服务
         uses: appleboy/ssh-action@master
@@ -54,5 +56,7 @@ jobs:
           port: 22
           script: |
             cd /www/wwwroot/blog-server
-            pm2 delete hs-blog-server
+            # 停止现有服务
+            pm2 delete hs-blog-server || true
+            # 启动服务
             pm2 start ecosystem.config.cjs --env production
