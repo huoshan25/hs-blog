@@ -121,7 +121,15 @@ export class EmailService implements OnModuleInit, OnModuleDestroy {
       const cwd = process.cwd();
       this.logger.debug(`当前工作目录: ${cwd}`);
 
-      const templatePath = path.join(cwd, 'src/modules/email/templates', `${templateName}.ejs`);
+      // 根据环境确定模板路径
+      let templatePath: string;
+      if (process.env.NODE_ENV === NodeEnv.Production) {
+        // 生产环境：使用编译后的 dist 目录
+        templatePath = path.join(cwd, 'dist/modules/email/templates', `${templateName}.ejs`);
+      } else {
+        // 开发环境：使用源码目录
+        templatePath = path.join(cwd, 'src/modules/email/templates', `${templateName}.ejs`);
+      }
 
       this.logger.debug(`尝试加载模板文件: ${templatePath}`);
       this.logger.debug(`模板名称: ${templateName}`);
