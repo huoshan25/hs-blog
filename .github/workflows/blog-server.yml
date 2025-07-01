@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'apps/hs-blog-server/**'
+      - '.github/workflows/blog-server.yml'
       - 'packages/**'  # 共享包可能被依赖
   pull_request:
     branches: [main]
     paths:
       - 'apps/hs-blog-server/**'
+      - '.github/workflows/blog-server.yml'
       - 'packages/**'
 
 jobs:
