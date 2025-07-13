@@ -233,9 +233,6 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <CardTitle className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-              GitHub Contributions
-            </CardTitle>
             <CardDescription className="text-base">
               <motion.span
                 key={totalContributions}
@@ -252,7 +249,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
         </CardHeader>
         <CardContent className="pb-6">
 
-          <div className="relative overflow-x-auto">
+          <div className="relative w-full">
             {/* Month labels */}
             <motion.div
               className="flex mb-3 ml-8"
