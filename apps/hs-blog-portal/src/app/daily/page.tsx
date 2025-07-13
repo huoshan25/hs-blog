@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { IoLogoGithub } from 'react-icons/io5'
 import { SiDuolingo } from 'react-icons/si'
 import { useDailyTranslation } from '@/hooks/useTranslation'
+import GitHubHeatmap from '@/components/GitHubHeatmap'
 
 export default function Daily() {
   
@@ -45,17 +46,11 @@ export default function Daily() {
         style={{animationDelay: '0.3s'}}
       >
         <div className="font-mono text-sm text-primary mb-3">$ github stats</div>
-          <div className="overflow-x-auto">
-            <div className="min-w-[640px] md:w-full">
-              <Image
-                src="https://ghchart.rshah.org/1E80FF/huoshan25"
-                alt="GitHub Contribution Graph"
-                width={800}
-                height={128}
-                priority
-                unoptimized
-              />
-            </div>
+        <div className="w-full max-w-4xl overflow-hidden">
+          <GitHubHeatmap
+            username="huoshan25"
+            year={new Date().getFullYear()}
+          />
         </div>
       </section>
 
