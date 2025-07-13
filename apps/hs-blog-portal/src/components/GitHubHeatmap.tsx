@@ -170,7 +170,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
   const weeks = getWeeksInYear(year);
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0} skipDelayDuration={0} disableHoverableContent={true}>
       <Card className={cn("w-full backdrop-blur-sm bg-card/95 border-border/50", className)}>
         <CardHeader className="pb-4">
           <motion.div
@@ -276,12 +276,12 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
                       }
 
                       return (
-                        <Tooltip key={`${weekIndex}-${dayIndex}`}>
+                        <Tooltip key={`${weekIndex}-${dayIndex}`} delayDuration={0}>
                           <TooltipTrigger asChild>
                             <motion.div
                               className={cn(
-                                "w-3 h-3 rounded-sm cursor-pointer border transition-all duration-200",
-                                "hover:scale-125 hover:z-10 relative",
+                                "w-3 h-3 rounded-sm cursor-pointer border transition-colors duration-200",
+                                "hover:border-blue-400 hover:border-2",
                                 contribution ? getLevelColor(contribution.level) : getLevelColor(0),
                                 contribution && contribution.level > 0 ? getLevelGlow(contribution.level) : ""
                               )}
@@ -291,18 +291,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
                               }}
                               initial={{ opacity: 0, scale: 0 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              transition={{
-                                delay: 0.5 + cellIndex * 0.002,
-                                duration: 0.2,
-                                type: "spring",
-                                stiffness: 300,
-                                damping: 20
-                              }}
-                              whileHover={{
-                                scale: 1.3,
-                                zIndex: 10,
-                                transition: { duration: 0.1 }
-                              }}
+
                               transition={{
                                 duration: 0.2,
                                 ease: "easeOut"

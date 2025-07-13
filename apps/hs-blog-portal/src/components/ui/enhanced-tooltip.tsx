@@ -34,14 +34,7 @@ const EnhancedTooltipContent = React.forwardRef<
       asChild
       {...props}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 5 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 5 }}
-        transition={{
-          duration: 0.1,
-          ease: "easeOut"
-        }}
+      <div
       >
         {children}
         {showArrow && (
@@ -51,7 +44,7 @@ const EnhancedTooltipContent = React.forwardRef<
             height={6} 
           />
         )}
-      </motion.div>
+      </div>
     </TooltipPrimitive.Content>
   </AnimatePresence>
 ))
