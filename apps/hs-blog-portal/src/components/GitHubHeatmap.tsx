@@ -5,7 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GitHubContribution, GitHubHeatmapProps } from '@/types/github';
 import { fetchGitHubContributions } from '@/utils/githubApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  EnhancedTooltip as Tooltip,
+  EnhancedTooltipContent as TooltipContent,
+  EnhancedTooltipProvider as TooltipProvider,
+  EnhancedTooltipTrigger as TooltipTrigger
+} from '@/components/ui/enhanced-tooltip';
 import { cn } from '@/lib/utils';
 
 const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ 
@@ -58,15 +63,26 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
     return glows[level as keyof typeof glows] || '';
   };
 
-  const getTooltipText = (contribution: GitHubContribution): string => {
-    const date = new Date(contribution.date).toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+  const getTooltipText = (contribution: GitHubContribution) => {
+    const date = new Date(contribution.date);
+    const formattedDate = date.toISOString().split('T')[0]; // 格式: 2025-07-01
     const countText = contribution.count === 1 ? 'contribution' : 'contributions';
-    return `${contribution.count} ${countText} on ${date}`;
+    return {
+      date: formattedDate,
+      count: contribution.count,
+      countText: `${contribution.count} ${countText}`,
+      level: contribution.level
+    };
+  };
+
+  const getNoContributionText = (date: Date) => {
+    const formattedDate = date.toISOString().split('T')[0]; // 格式: 2025-07-01
+    return {
+      date: formattedDate,
+      count: 0,
+      countText: 'No contributions',
+      level: 0
+    };
   };
 
   const getWeeksInYear = (year: number): Date[][] => {
@@ -208,7 +224,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
               {/* Day labels */}
               <motion.div
                 className="flex flex-col mr-3 justify-between"
-                style={{ height: '84px' }}
+                style={{ height: '98px' }}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
@@ -228,7 +244,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
 
               {/* Heatmap grid */}
               <motion.div
-                className="grid gap-1 p-2 rounded-lg bg-gradient-to-br from-background/50 to-muted/30"
+                className="grid gap-1.5 p-2 rounded-lg bg-gradient-to-br from-background/50 to-muted/30"
                 style={{
                   gridTemplateColumns: 'repeat(53, 12px)',
                   gridTemplateRows: 'repeat(7, 12px)',
@@ -287,12 +303,28 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
                                 zIndex: 10,
                                 transition: { duration: 0.1 }
                               }}
+                              transition={{
+                                duration: 0.2,
+                                ease: "easeOut"
+                              }}
                             />
                           </TooltipTrigger>
-                          <TooltipContent side="top" className="bg-popover/95 backdrop-blur-sm">
-                            <p className="font-medium">
-                              {contribution ? getTooltipText(contribution) : `No contributions on ${date.toLocaleDateString()}`}
-                            </p>
+                          <TooltipContent
+                            side="top"
+                            className="border-border/50 shadow-lg bg-popover/95 backdrop-blur-sm px-3 py-2"
+                            showArrow={false}
+                          >
+                            {(() => {
+                              const tooltipData = contribution
+                                ? getTooltipText(contribution)
+                                : getNoContributionText(date);
+
+                              return (
+                                <div className="text-xs font-medium text-foreground whitespace-nowrap">
+                                  {tooltipData.date}: {tooltipData.count} {tooltipData.count === 1 ? 'contribution' : 'contributions'}
+                                </div>
+                              );
+                            })()}
                           </TooltipContent>
                         </Tooltip>
                       );

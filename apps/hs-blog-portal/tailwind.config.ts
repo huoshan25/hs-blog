@@ -17,6 +17,10 @@ export default {
         'blink': 'blink 1s step-end infinite',
         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
         'wave-flow': 'waveFlow 1s linear infinite',
+        'slideDownAndFade': 'slideDownAndFade 150ms ease-out',
+        'slideLeftAndFade': 'slideLeftAndFade 150ms ease-out',
+        'slideUpAndFade': 'slideUpAndFade 150ms ease-out',
+        'slideRightAndFade': 'slideRightAndFade 150ms ease-out',
       },
       keyframes: {
         blink: {
@@ -38,7 +42,23 @@ export default {
           '0%': { transform: 'translateX(-10%)' },
           '50%': { transform: 'translateX(10%)' },
           '100%': { transform: 'translateX(-10%)' }
-        }
+        },
+        slideDownAndFade: {
+          from: { opacity: '0', transform: 'translateY(-2px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideLeftAndFade: {
+          from: { opacity: '0', transform: 'translateX(2px)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
+        slideUpAndFade: {
+          from: { opacity: '0', transform: 'translateY(2px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideRightAndFade: {
+          from: { opacity: '0', transform: 'translateX(-2px)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
       },
 
       colors: {
