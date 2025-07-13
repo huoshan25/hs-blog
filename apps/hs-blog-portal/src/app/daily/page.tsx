@@ -46,7 +46,7 @@ export default function Daily() {
         style={{animationDelay: '0.3s'}}
       >
         <div className="font-mono text-sm text-primary mb-3">$ github stats</div>
-        <div className="w-full max-w-4xl overflow-hidden">
+        <div className="w-full max-w-5xl overflow-hidden">
           <GitHubHeatmap
             username="huoshan25"
             year={new Date().getFullYear()}

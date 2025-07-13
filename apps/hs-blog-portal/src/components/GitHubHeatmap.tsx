@@ -87,26 +87,58 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
 
   const getWeeksInYear = (year: number): Date[][] => {
     const weeks: Date[][] = [];
-    const startDate = new Date(year, 0, 1);
-    const endDate = new Date(year, 11, 31);
 
-    // Find the first Sunday of the year or the start of the year
-    const firstDay = new Date(startDate);
-    const dayOfWeek = firstDay.getDay();
-    if (dayOfWeek !== 0) {
-      firstDay.setDate(firstDay.getDate() - dayOfWeek);
-    }
+    // 如果有贡献数据，根据数据范围确定日期范围
+    if (contributions.length > 0) {
+      const dates = contributions.map(c => new Date(c.date)).sort((a, b) => a.getTime() - b.getTime());
+      const firstContributionDate = dates[0];
+      const lastContributionDate = dates[dates.length - 1];
 
-    let currentDate = new Date(firstDay);
-
-    // Generate exactly 53 weeks to match GitHub's layout
-    for (let weekIndex = 0; weekIndex < 53; weekIndex++) {
-      const week: Date[] = [];
-      for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-        week.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
+      // 找到第一个贡献日期所在周的周日
+      const startDate = new Date(firstContributionDate);
+      const dayOfWeek = startDate.getDay();
+      if (dayOfWeek !== 0) {
+        startDate.setDate(startDate.getDate() - dayOfWeek);
       }
-      weeks.push(week);
+
+      // 找到最后一个贡献日期所在周的周六
+      const endDate = new Date(lastContributionDate);
+      const endDayOfWeek = endDate.getDay();
+      if (endDayOfWeek !== 6) {
+        endDate.setDate(endDate.getDate() + (6 - endDayOfWeek));
+      }
+
+      let currentDate = new Date(startDate);
+
+      // 生成从开始到结束的所有周
+      while (currentDate <= endDate) {
+        const week: Date[] = [];
+        for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+          week.push(new Date(currentDate));
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+        weeks.push(week);
+      }
+    } else {
+      // 如果没有贡献数据，使用当前年份的完整年份
+      const startDate = new Date(year, 0, 1);
+      const firstDay = new Date(startDate);
+      const dayOfWeek = firstDay.getDay();
+      if (dayOfWeek !== 0) {
+        firstDay.setDate(firstDay.getDate() - dayOfWeek);
+      }
+
+      let currentDate = new Date(firstDay);
+
+      // Generate exactly 53 weeks to match GitHub's layout
+      for (let weekIndex = 0; weekIndex < 53; weekIndex++) {
+        const week: Date[] = [];
+        for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+          week.push(new Date(currentDate));
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+        weeks.push(week);
+      }
     }
 
     return weeks;
@@ -117,9 +149,31 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
     return contributions.find(c => c.date === dateString) || null;
   };
 
-  const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const allMonthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  // 根据实际周数生成月份标签
+  const getMonthLabels = (weeks: Date[][]): string[] => {
+    if (weeks.length === 0) return [];
+
+    const labels: string[] = [];
+    let currentMonth = -1;
+
+    weeks.forEach((week, weekIndex) => {
+      const firstDayOfWeek = week[0];
+      const month = firstDayOfWeek.getMonth();
+
+      if (month !== currentMonth) {
+        currentMonth = month;
+        labels.push(allMonthLabels[month]);
+      } else {
+        labels.push('');
+      }
+    });
+
+    return labels;
+  };
 
   if (loading) {
     return (
@@ -132,8 +186,8 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
         </CardHeader>
         <CardContent>
           <div className="animate-pulse">
-            <div className="grid gap-1 mb-4" style={{ gridTemplateColumns: 'repeat(53, 12px)', gridTemplateRows: 'repeat(7, 12px)' }}>
-              {Array.from({ length: 371 }).map((_, i) => (
+            <div className="grid gap-1 mb-4" style={{ gridTemplateColumns: 'repeat(20, 12px)', gridTemplateRows: 'repeat(7, 12px)' }}>
+              {Array.from({ length: 140 }).map((_, i) => (
                 <motion.div
                   key={i}
                   className="w-3 h-3 bg-muted rounded-sm"
@@ -168,6 +222,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
   }
 
   const weeks = getWeeksInYear(year);
+  const monthLabels = getMonthLabels(weeks);
 
   return (
     <TooltipProvider delayDuration={0} skipDelayDuration={0} disableHoverableContent={true}>
@@ -196,21 +251,21 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
           </motion.div>
         </CardHeader>
         <CardContent className="pb-6">
-      
+
           <div className="relative overflow-x-auto">
             {/* Month labels */}
             <motion.div
               className="flex mb-3 ml-8"
-              style={{ width: '636px' }}
+              style={{ width: `${weeks.length * 12 + (weeks.length - 1) * 6}px` }}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
             >
               {monthLabels.map((month, index) => (
                 <motion.div
-                  key={month}
+                  key={`${month}-${index}`}
                   className="text-xs font-medium text-muted-foreground text-left"
-                  style={{ width: '53px' }}
+                  style={{ width: '18px' }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 + index * 0.05 }}
@@ -246,9 +301,9 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
               <motion.div
                 className="grid gap-1.5 p-2 rounded-lg bg-gradient-to-br from-background/50 to-muted/30"
                 style={{
-                  gridTemplateColumns: 'repeat(53, 12px)',
+                  gridTemplateColumns: `repeat(${weeks.length}, 12px)`,
                   gridTemplateRows: 'repeat(7, 12px)',
-                  width: '636px',
+                  width: `${weeks.length * 12 + (weeks.length - 1) * 6 + 16}px`,
                   height: '84px'
                 }}
                 initial={{ opacity: 0, scale: 0.95 }}
