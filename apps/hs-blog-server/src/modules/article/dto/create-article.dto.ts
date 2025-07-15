@@ -29,6 +29,31 @@ export class CreateArticleDto {
   @Transform(({ value }) => parseInt(value, 10))
   readonly status: number;
 
+  @IsOptional()
+  @IsString()
+  readonly short_content: string;
+
+  @IsOptional()
+  @IsString()
+  readonly short_audio_url: string;
+
+  @IsOptional()
+  @IsString()
+  readonly long_content: string;
+
+  @IsOptional()
+  @IsString()
+  readonly long_audio_url: string;
+
+  @IsNotEmpty({ message: "文章类型必填" })
+  @IsEnum(ArticleType, { message: "错误文章类型" })
+  @Transform(({ value }) => parseInt(value, 10))
+  readonly type: number;
+
+  @IsOptional()
+  @IsString()
+  readonly link_url?: string;
+
   @IsNotEmpty({ message: "临时UUID必填" })
   @IsString()
   readonly articleUUID: string;
