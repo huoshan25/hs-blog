@@ -183,30 +183,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* GitHub Heatmap Links */}
-          <div
-            className="opacity-0 animate-fade-in-up mt-4 space-y-3"
-            style={{animationDelay: '1.8s'}}
-          >
-            <Link
-              href="/github-heatmap"
-              className="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              <span className="text-xl group-hover:animate-bounce">📊</span>
-              <span className="font-medium">View GitHub Contributions</span>
-              <span className="opacity-70 group-hover:opacity-100 transition-opacity">→</span>
-            </Link>
-
-            <div className="ml-4">
-              <Link
-                href="/test-tooltip"
-                className="group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm"
-              >
-                <span className="text-sm group-hover:animate-pulse">✨</span>
-                <span className="font-medium">Test Enhanced Tooltips</span>
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </>
